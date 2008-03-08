@@ -7,15 +7,24 @@
 This program created a corner detector by optimizing a decision tree using simulated annealing.
 The tree is optimized to maximize the repeatability of the corner detector.
 
-\section Instructions
 
 To make on any unix-like environment, do:
 
-<code>./configure @@ make</code>
+<code>./configure && make</code>
 
-There is no install option. To set the parameters, examine <code>learn_detector.cfg</code>.
+There is no install option.
+
+This will create the following executables:
+ - <code>learn_detector</code> This learns a detector from a repeatability dataset.
+ - <code>warp_to_png</code> This converts a repeatability dataset in to a rather faster loading format.
+
+
+ 
+\section learn_detector
+
+To set the parameters, examine <code>learn_detector.cfg</code>.
 In order to run this program, you will need a repeatability dataset, such as the one from
-http://mi.eng.cam.ac.uk/~er258/work/datasets.html
+http://mi.eng.cam.ac.uk/~er258/work/datasets.html or
 
 The running program will generate a very extensive logfile on the standard
 output, which will include the learned detector and the results of its
@@ -55,7 +64,7 @@ The complete sequence of operations is as follows
 	     training images. Any reasonable images can be used, including the 
 		 training images used earlier.  Do:
 
-		 <code>./extract-fast2<code><i>imagefile  imagefile2 ...<i><code>&gt; features</code>
+		 <code>./extract-fast2</code><i>imagefile  imagefile2 ...</i><code>&gt; features</code>
 </ol>
 
 */
@@ -76,6 +85,57 @@ frames must all be the same size. The warps are stored in
 one line for every pixel in image Y (pixels arranged in raster-scan order). The
 line is the position that the pixel warps to in image Z. If location of -1, -1
 indicates that this pixel does not appear in image Z.
+
+*/
+
+/**       
+@defgroup  gDataset Repeatability dataset
+
+
+\section repDataset Repeatability datasets in general
+
+To compute repeatability, you must know for every pixel in image <i>A</i>, where
+that pixel ends up in image <i>B</i>. The datasets are stored internally as:
+- Images are simply stored internally as: <code> vector<Image<byte> > </code>
+- Mappings from <i>A</i> to <i>B</i> are stored as: <code> vector<vector<array<float, 2> > > </code>
+  so <code>mapping[i][j][y][x]</code>, is where pixel \f$(x, y)\f$ in image <i>i</i>  should appear in image <i>j</i>
+
+
+These datasets can be stored in disk in several formats. However, they are
+loaded by a single function, ::load_data In all datasets, all images must
+be the same size.
+
+\section camDataset Cambridge dataset.
+
+The consists of <i>N</i> images, and an arbitrary warp for each image pair. From
+some base directory, the files are stored as:
+	- frames/frame_<i>x</i>.pgm
+	- warps/warp_<i>i</i>_<i>j</i>.warp
+The warp files have the mapping positions stored in row-major format, one pixel
+per line, stored as a pair of real numbers in text format. Details are in
+::load_warps_cambridge().
+
+\subsection canPNG Cambridge PNG dataset.
+This stores the warp data in 16 bit per channel (with a numeric range of
+0--65535), colour PNG format:
+	- frames/frame_<i>x</i>.pgm
+	- pngwarps/warp_<i>i</i>_<i>j</i>.png
+The destination of the <i>x</i> coordinare is stored as \f$x =
+\frac{rec}{MULTIPLIER} - SHIFT\f$, and the <i>y</i> destination as \f$y =
+\frac{rec}{MULTIPLIER} - SHIFT\f$. ::MULTIPLIER is 64.0 and ::SHIFT is 10.0 The
+blue channel stores nothing.
+
+
+
+The dataset consists of a number of registered images. The images are stored in
+<code>frames/frame_X.pgm</code> where X is an integer counting from zero.  The
+frames must all be the same size. The warps are stored in
+<code>waprs/warp_Y_Z.warp</code>. The file <code>warp_Y_Z.warp</code> contains
+one line for every pixel in image Y (pixels arranged in raster-scan order). The
+line is the position that the pixel warps to in image Z. If location of -1, -1
+indicates that this pixel does not appear in image Z.
+
+\section oxDataset Oxford VGG dataset
 
 */
 

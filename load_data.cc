@@ -79,7 +79,7 @@ stored encoded in PNG files. See load_warps_cambridge
 
 @param dir  The base directory of the dataset.
 @param num   The numbers of images in the dataset.
-@aram size  The size of the corresponding images.
+@param size  The size of the corresponding images.
 @return  <code>return_value[i][j][y][x]</code> is where pixel x, y in image i warps to in image j.
 @ingroup gDataset
 */
@@ -134,7 +134,7 @@ FAST-ER generated detectors produce exactly the same results when loaded back in
 
 @param dir  The base directory of the dataset.
 @param num   The numbers of images in the dataset.
-@aram size  The size of the corresponding images.
+@param size  The size of the corresponding images.
 @return  <code>return_value[i][j][y][x]</code> is where pixel x, y in image i warps to in image j.
 @ingroup gDataset
 */
@@ -203,7 +203,7 @@ as homographies, so warps need to be generated.
 
 @param dir  The base directory of the dataset.
 @param num   The numbers of images in the dataset.
-@aram size  The size of the corresponding images.
+@param size  The size of the corresponding images.
 @return  <code>return_value[i][j][y][x]</code> is where pixel x, y in image i warps to in image j.
 @ingroup gDataset
 */
