@@ -1,4 +1,4 @@
-CXXFLAGS+=-Wall -Wextra -O3 -march=pentium-m -g -ggdb -DNOJIT
+CXXFLAGS+=-Wall -Wextra -O3 -march=pentium-m -g -ggdb 
 CXX=colorgcc
 LDFLAGS=-lGVars3 -lcvd 
 

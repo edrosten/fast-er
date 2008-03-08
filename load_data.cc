@@ -8,6 +8,7 @@
 
 #include "load_data.h"
 #include "warp_to_png.h"
+#include "utility.h"
 
 using namespace std;
 using namespace CVD;
@@ -340,3 +341,28 @@ pair<vector<Image<byte> >, vector<vector<Image<array<float, 2> > > > > load_data
 
 	return make_pair(images, warps);
 }
+
+
+/**
+This function prunes a dataset so that no warped point will lie outside an image. This
+will save onmn .in_image() tests later.
+@param warps The warps to prune.
+@param size the image size to prune to.
+@ingroup gDataset
+*/
+void prune_warps(vector<vector<Image<array<float, 2> > > >& warps, ImageRef size)
+{
+	BasicImage<byte> test(NULL, size);
+	array<float, 2> outside = make_tuple(-1, -1);
+
+	for(unsigned int i=0; i < warps.size(); i++)	
+		for(unsigned int j=0; j < warps[i].size(); j++)	
+		{
+			for(Image<array<float, 2> >::iterator  p=warps[i][j].begin(); p != warps[i][j].end(); p++)
+				if(!test.in_image(ir_rounded(*p)))
+					*p = outside;
+		}
+}
+
+
+

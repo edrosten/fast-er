@@ -124,6 +124,7 @@ indicates that this pixel does not appear in image Z.
 #include "faster_tree.h"
 #include "faster_bytecode.h"
 #include "offsets.h"
+#include "utility.h"
 #include "load_data.h"
 
 using namespace std;
@@ -206,16 +207,6 @@ Image<bool> paint_circles(const vector<ImageRef>& corners, const vector<ImageRef
 	return im;
 }
 
-/// Convert a float array into an image co-ordinate. Numbers are rounded
-/// @param v The array to convert
-/// @ingroup gRepeatability
-inline ImageRef ir_rounded(const array<float, 2>& v)
-{
-	return ImageRef(
-  static_cast<int>(v[0] > 0.0 ? v[0] + 0.5 : v[0] - 0.5),
-  static_cast<int>(v[1] > 0.0 ? v[1] + 0.5 : v[1] - 0.5));
-}
-
 ///Computes repeatability the quick way, by caching, but has small rounding errors. This 
 ///function paints a disc of <code>true</code> around each detected corner in to an image. 
 ///If a corner warps to a pixel which has the value <code>true</code> then it is a repeat.
@@ -249,7 +240,7 @@ float compute_repeatability(const vector<vector<Image<array<float, 2> > > >& war
 			{	
 				ImageRef dest = ir_rounded(warps[i][j][corners[i][k]]);
 
-				if(dest.x != -1 && detected[j].in_image(dest))
+				if(dest.x != -1)
 				{
 					corners_tested++;
 					if(detected[j][dest])
@@ -260,8 +251,6 @@ float compute_repeatability(const vector<vector<Image<array<float, 2> > > >& war
 	
 	return 1.0 * good_corners / (DBL_EPSILON + corners_tested);
 }
-
-
 
 
 /// Generate a random tree.
@@ -585,6 +574,8 @@ void mmain(int argc, char** argv)
 	vector<vector<Image<array<float, 2> > > > warps;
 	
 	rpair(images, warps) = load_data(dir, num, format);
+
+	prune_warps(warps, images[0].size());
 
 
 	//Learn a detector
