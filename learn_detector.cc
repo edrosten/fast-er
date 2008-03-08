@@ -124,6 +124,7 @@ indicates that this pixel does not appear in image Z.
 #include "faster_tree.h"
 #include "faster_bytecode.h"
 #include "offsets.h"
+#include "load_data.h"
 
 using namespace std;
 using namespace CVD;
@@ -205,6 +206,16 @@ Image<bool> paint_circles(const vector<ImageRef>& corners, const vector<ImageRef
 	return im;
 }
 
+/// Convert a float array into an image co-ordinate. Numbers are rounded
+/// @param v The array to convert
+/// @ingroup gRepeatability
+inline ImageRef ir_rounded(const array<float, 2>& v)
+{
+	return ImageRef(
+  static_cast<int>(v[0] > 0.0 ? v[0] + 0.5 : v[0] - 0.5),
+  static_cast<int>(v[1] > 0.0 ? v[1] + 0.5 : v[1] - 0.5));
+}
+
 ///Computes repeatability the quick way, by caching, but has small rounding errors. This 
 ///function paints a disc of <code>true</code> around each detected corner in to an image. 
 ///If a corner warps to a pixel which has the value <code>true</code> then it is a repeat.
@@ -215,7 +226,7 @@ Image<bool> paint_circles(const vector<ImageRef>& corners, const vector<ImageRef
 /// @param size		Size of the region for cacheing. All images must be this size.
 /// @return 		The repeatability.
 /// @ingroup gRepeatability
-float compute_repeatability(const vector<vector<Image<Vector<2> > > >& warps, const vector<vector<ImageRef> >& corners, int r, ImageRef size)
+float compute_repeatability(const vector<vector<Image<array<float, 2> > > >& warps, const vector<vector<ImageRef> >& corners, int r, ImageRef size)
 {
 	unsigned int n = corners.size();
 
@@ -250,88 +261,6 @@ float compute_repeatability(const vector<vector<Image<Vector<2> > > >& warps, co
 	return 1.0 * good_corners / (DBL_EPSILON + corners_tested);
 }
 
-
-
-/**Load warps from a repeatability dataset. 
-
-
-The dataset contains warps which round to outside the image by one pixel in the max direction.
-  Fast repeatability testing founds values to integers, which causes errors, so these points need
-  to be pruned from the dataset. Slow repeatability testing does not do this, and these values must
-  be left so that the same data _exactly_ are used for the testing as int FAST-9 paper.
-
-@param stub  The directory of the whole dataset.
-@param num   The image numbers for which warps will be loaded.
-@param size  The size of the corresponding images.
-@param prune Whether to prune points which warp to outside the images.
-@return  <code>return_value[i][j][y][x]</code> is where pixel x, y in image i warps to in image j.
-@ingroup gRepeatability
-*/
-vector<vector<Image<Vector<2> > > > load_warps(string stub, const vector<int>& num, ImageRef size, bool prune=1)
-{
-	stub += "/warps/";
-
-	vector<vector<Image<Vector<2> > > > ret(num.size(), vector<Image<Vector<2> > >(num.size()));
-
-	BasicImage<byte> tester(NULL, size);
-
-	Vector<2> outside = (make_Vector, -1, -1);
-
-	for(unsigned int from = 0; from < num.size(); from ++)
-		for(unsigned int to = 0; to < num.size(); to ++)
-			if(from != to)
-			{
-				Image<Vector<2> > w(size, (make_Vector, -1, -1));
-				int n = size.x * size.y;
-				Image<Vector<2> >::iterator p = w.begin();
-
-				ifstream f;
-				string fname = stub + sPrintf("warp_%i_%i.warp", num[from], num[to]);
-				f.open(fname.c_str());
-
-				if(!f.good())
-				{
-					cerr << "Error: " << fname << ": " << strerror(errno) << endl;
-					exit(1);
-				}
-
-				for(int i=0; i < n; ++i, ++p)
-				{
-					f >> *p;
-					if(prune && !tester.in_image(ir_rounded(*p)))
-						*p = outside;
-				}
-				
-				if(!f.good())
-				{
-					cerr << "Error: " << fname << " went bad" << endl;
-					exit(1);
-				}
-
-				cerr << "Loaded " << fname << endl;
-
-				ret[from][to] = w;
-			}
-
-	return ret;
-}
-
-///Load images from a dataset
-///@param stub  The directory of the whole dataset.
-///@param num   The image numbers for which warps will be loaded.
-///@return The loaded images.
-///@ingroup gRepeatability
-vector<Image<byte> > load_images(string stub, const vector<int>& num)
-{
-	stub += "/frames/";
-
-	vector<Image<byte> > r;
-
-	for(unsigned int i=0; i < num.size(); i++)
-		r.push_back(img_load(stub + sPrintf("frame_%i.pgm", num[i])));
-	
-	return r;
-}
 
 
 
@@ -382,7 +311,7 @@ double compute_temperature(int i, int imax)
 ///@param images The training images
 ///@param warps  Warps for evaluating the performance on the training images.
 ///@return An optimized detector.
-tree_element* learn_detector(const vector<Image<byte> >& images, const vector<vector<Image<Vector<2> > > >& warps)
+tree_element* learn_detector(const vector<Image<byte> >& images, const vector<vector<Image<array<float,2> > > >& warps)
 {
 	unsigned int  iterations=GV3::get<unsigned int>("iterations");
 	int threshold = GV3::get<int>("FAST_threshold");
@@ -632,23 +561,36 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 //@ingroup gRepeatability
 void mmain(int argc, char** argv)
 {
+
+	//Process configuration information
 	GUI.LoadFile("learn_detector.cfg");
 	GUI.parseArguments(argc, argv);
-	
-	string dir=GV3::get<string>("repeatability_dataset.directory");
-	vector<int> nums=GV3::get<vector<int> >("repeatability_dataset.examples");
 
+	
+	//Load a ransom seed.
 	if(GV3::get<int>("random_seed") != -1)
 		srand(GV3::get<int>("random_seed"));
 
-	
+	//Initialize the global information for the tree	
 	create_offsets();
 	draw_offsets();
 
-	vector<Image<byte> > images = load_images(dir, nums);
-	vector<vector<Image<Vector<2> > > > warps = load_warps(dir, nums, images.at(0).size());
+	
+	//Load the training set
+	string dir=GV3::get<string>("repeatability_dataset.directory");
+	string format=GV3::get<string>("repeatability_dataset.format");
+	int num=GV3::get<int>("repeatability_dataset.size");
+
+	vector<Image<byte> > images;
+	vector<vector<Image<array<float, 2> > > > warps;
+	
+	rpair(images, warps) = load_data(dir, num, format);
+
+
+	//Learn a detector
 	tree_element* tree = learn_detector(images, warps);
 
+	//Print out the results
 	cout << "Final tree is:" << endl;
 	tree->print(cout);
 	cout << endl;

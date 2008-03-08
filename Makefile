@@ -11,7 +11,7 @@ all:$(PROGS)
 learn_detector_orig:learn_detector_orig.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
-learn_detector:offsets.o faster_bytecode.o faster_tree.o learn_detector.o	
+learn_detector:offsets.o faster_bytecode.o faster_tree.o learn_detector.o load_data.o	
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 clean:
