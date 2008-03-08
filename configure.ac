@@ -93,7 +93,7 @@ fi
 gvars=yes
 AC_CHECK_HEADERS(gvars3/instances.h, [], [gvars=no])
 
-AC_ARG_ENABLE(headless, [  --enable-headless-gvars       Use headless GVars (useful for batch jobs)])
+AC_ARG_ENABLE(headless, [AS_HELP_STRING([--enable-headless-gvars],[Use headless GVars (useful for batch jobs)])])
 
 if test "$enable_headless" = yes
 then
@@ -125,29 +125,35 @@ fi
 # JIT compiler
 #
 
-code=yes
+AC_ARG_ENABLE(jit, [AS_HELP_STRING([--disable-jit], [disable JIT compilation of the FAST-ER detector.])])
+
 comp=no
-AC_MSG_CHECKING(32 bit x86 machine code)
 
-AC_RUN_IFELSE([
-#include <sys/mman.h>
-int main()
-{
-	unsigned char* c = (unsigned char*) mmap(0, 1, PROT_EXEC | PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	*c = 0xc3; //Ret
-	
-	__asm__ __volatile__(
-		"	call *%0	"
-		:
-		: "m"(c)
-	);
+if test "$enable_jit" != no
+then
+	AC_CHECK_SIZEOF(void*)
+	AC_MSG_CHECKING(working x86 machine code)
 
-	return 0;
-}], [comp=yes], [code=no]);
+	AC_RUN_IFELSE([
+	#include <sys/mman.h>
+	int main()
+	{
+		unsigned char* c = (unsigned char*) mmap(0, 1, PROT_EXEC | PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		*c = 0xc3; //Ret
+		
+		__asm__ __volatile__(
+			"	call *%0	"
+			:
+			: "m"(c)
+		);
 
-AC_MSG_RESULT($comp)
+		return 0;
+	}], [comp=yes], [comp=no])
 
-if test $code = no
+	AC_MSG_RESULT($comp)
+fi
+
+if test $comp = no || test $ac_cv_sizeof_voidp != 4
 then
 	echo
 	echo Warning:
@@ -159,7 +165,7 @@ else
 	CXXFLAGS="$CXXFLAGS -DJIT"
 fi
 
-AC_ARG_ENABLE(debug, [  --enable-debugging            compile with debugging enabled])
+AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debugging],[compile with debugging enabled])])
 if test "$enable_debug" = yes
 then
 	CXXFLAGS="$CXXFLAGS -DSAFE_VECTOR -DTOON_DEBUG -DCVD_IMAGE_DEBUG"
