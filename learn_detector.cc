@@ -249,7 +249,7 @@ float compute_repeatability(const vector<vector<Image<array<float, 2> > > >& war
 			{	
 				ImageRef dest = ir_rounded(warps[i][j][corners[i][k]]);
 
-				if(dest.x != -1)
+				if(dest.x != -1 && detected[j].in_image(dest))
 				{
 					corners_tested++;
 					if(detected[j][dest])

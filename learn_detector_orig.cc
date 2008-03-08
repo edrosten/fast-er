@@ -1300,8 +1300,8 @@ vector<ImageRef> detect_corners(const Image<byte>& im, const tree_element* detec
 	for(int y = ymin; y < ymax; y++)
 	{
 		#ifdef NOJIT
-			for(int x=xmin, x < xmax; x++)
-				if(f2->detect(&im[y][x], threshold))
+			for(int x=xmin; x < xmax; x++)
+				if(f2.detect(&im[y][x], threshold))
 					corners.push_back(&im[y][x] - im.data());
 		#else
 			jit.detect_in_row(im, y, xmin, xmax, corners, threshold);
