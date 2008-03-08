@@ -119,7 +119,19 @@ void draw_offset_list(const vector<ImageRef>& offsets)
 
 }
 
-
+///Create a list of offsets with various transformation to map the offset number
+/// (see Figure 7 in the accompanying paper) to a pixel coordinate, inclusing all 
+/// combinations of rotation and reflection.
+/// 
+/// The function populates ::offsets, and must be called before anything uses
+/// this variable.
+///
+/// All possible offsets are selected in an annulus, which uses the following gvars:
+/// - \c offsets.min_radius Minimum distance from (0,0) for offset
+/// - \c offsets.max_radius Maximum distance from (0,0) for offset
+///
+///
+///@ingroup gTree
 void create_offsets()
 {
 	//Pixel offsets are represented as integer indices in to an array of
@@ -163,8 +175,8 @@ void create_offsets()
 	num_offsets=offsets[0].size();
 }
 
-
-
+///Prettyprints the contents of ::offsets
+///@ingroup gUtility
 void draw_offsets()
 {
 	//Print the offsets out.	

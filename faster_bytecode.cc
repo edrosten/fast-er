@@ -295,7 +295,7 @@ class jit_detector
 };
 #endif
 
-void block_bytecode::detect(const Image<byte>& im, vector<int>& corners, int threshold, int xmin, int xmax, int ymin, int ymax)
+void block_bytecode::detect(const CVD::Image<CVD::byte>& im, std::vector<int>& corners, int threshold, int xmin, int xmax, int ymin, int ymax)
 {
 	#ifdef NOJIT
 	for(int y = ymin; y < ymax; y++)

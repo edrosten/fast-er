@@ -19,9 +19,15 @@ struct block_bytecode
 	/// blocks representing a 3 way branch. Special values of
 	/// of a block indicate the result that a pixel is a corner or
 	/// non-corner.
+	///
+	/// Specifically, if <code>lt == 0</code>, then this is a leaf and \c gt holds the class.
+	/// The root node is always stored as the first bytecode instruction.
+
+	/// @ingroup gFastTree
 	struct fast_detector_bit
 	{
-		int offset; ///< Memory offset from centre pixel to examine.
+		int offset; ///< Memory offset from centre pixel to examine. This means that the fast 
+		            ///detector must be created for an image of a known width.
 
 		//Root node is 0. If lt == 0, then this is a leaf.
 		//gt holds the class.

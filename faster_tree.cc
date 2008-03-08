@@ -12,7 +12,12 @@ using namespace GVars3;
 
 ///Detect corners with nonmaximal suppression in an image. This contains a large amount of
 ///configurable debugging code to verify the correctness of the detector by comparing different
-///implementations.
+///implementations. High speed is achieved by converting the detector in to \link gFastTree bytecode
+///and JIT-compiling if possible\endlink.
+///
+///The function recognises the following GVars:
+/// - \c debug.verify_detections Veryify JIT or bytecode detected corners using tree_element::detect_corner
+/// - \c debug.verify_scores     Veryify bytecode computed scores using tree_element::detect_corner
 ///
 ///@param im The image to detect corners in.
 ///@param detector The corner detector.
@@ -20,6 +25,7 @@ using namespace GVars3;
 ///@param scores This image will be used to store the corner scores for nonmaximal suppression and is
 ///              the same size as im. It is passed as a parameter since allocation of an image of this
 ///              size is a significant expense.
+///@ingroup gTree
 vector<ImageRef> tree_detect_corners(const Image<byte>& im, const tree_element* detector, int threshold, Image<int> scores)
 {
 	ImageRef tl, br, s;
