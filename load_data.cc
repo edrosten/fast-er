@@ -281,7 +281,7 @@ enum DataFormat
 /**Load a dataset.
 @param dir The base directory of the dataset.
 @param num The number of images in the dataset.
-@param format The type of the dataset.
+@param format The type of the dataset. This should be one of `vgg', `cam-png' or `cam'.
 @return The images and the warps.
 @ingroup gDataset
 */

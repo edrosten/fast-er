@@ -102,10 +102,10 @@ that pixel ends up in image <i>B</i>. The datasets are stored internally as:
 
 
 These datasets can be stored in disk in several formats. However, they are
-loaded by a single function, ::load_data In all datasets, all images must
+loaded by a single function, ::load_data(string, int, string) In all datasets, all images must
 be the same size.
 
-\section camDataset Cambridge dataset.
+\section camDataset Cambridge dataset format.
 
 The consists of <i>N</i> images, and an arbitrary warp for each image pair. From
 some base directory, the files are stored as:
@@ -113,9 +113,11 @@ some base directory, the files are stored as:
 	- warps/warp_<i>i</i>_<i>j</i>.warp
 The warp files have the mapping positions stored in row-major format, one pixel
 per line, stored as a pair of real numbers in text format. Details are in
-::load_warps_cambridge().
+::load_warps_cambridge() and ::load_images_cambridge(). The indices, <i>x</i>,
+<i>i</i> and <i>j</i> count from zero.
 
 \subsection canPNG Cambridge PNG dataset.
+
 This stores the warp data in 16 bit per channel (with a numeric range of
 0--65535), colour PNG format:
 	- frames/frame_<i>x</i>.pgm
@@ -123,19 +125,22 @@ This stores the warp data in 16 bit per channel (with a numeric range of
 The destination of the <i>x</i> coordinare is stored as \f$x =
 \frac{rec}{MULTIPLIER} - SHIFT\f$, and the <i>y</i> destination as \f$y =
 \frac{rec}{MULTIPLIER} - SHIFT\f$. ::MULTIPLIER is 64.0 and ::SHIFT is 10.0 The
-blue channel stores nothing.
+blue channel stores nothing. Details are in ::load_warps_cambridge_png().
 
+The executable warp_to_png.cc converts a <code>.warp</code> file to a
+<code>.png</code> file.
 
+\section oxDataset Oxford VGG dataset format.
 
-The dataset consists of a number of registered images. The images are stored in
-<code>frames/frame_X.pgm</code> where X is an integer counting from zero.  The
-frames must all be the same size. The warps are stored in
-<code>waprs/warp_Y_Z.warp</code>. The file <code>warp_Y_Z.warp</code> contains
-one line for every pixel in image Y (pixels arranged in raster-scan order). The
-line is the position that the pixel warps to in image Z. If location of -1, -1
-indicates that this pixel does not appear in image Z.
+The datasets consist on <i>N</i> images and <i>N-1</i> Homographies describing
+the warps between images the first and <i>N</i><sup>th</sup> image. The first
+homography is therefore the identity matrix.
 
-\section oxDataset Oxford VGG dataset
+From a base directory, the files are:
+- H1to<i>i</i>p
+- img<i>i</i>.ppm
+
+where the index <i>i</i> counts from 1. More details are in ::load_warps_cambridge_png() and ::load_images_vgg().
 
 */
 
