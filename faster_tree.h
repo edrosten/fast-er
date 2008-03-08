@@ -13,11 +13,6 @@
 #include "offsets.h"
 #include "faster_bytecode.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Fast implementations of the detector
-//
-
 /// This struct represents a node of the tree, and has pointers to other 
 /// structs, thereby representing a branch or the entire tree.
 ///
@@ -259,7 +254,7 @@ class tree_element
 
 		/// Apply the tree to detect a corner in a single form.
 		///
-		/// @param im CVD::Image in which to detecto corners
+		/// @param im Image in which to detect corners
 		/// @param pos position at which to perform detection
 		/// @param b Threshold
 		/// @param n tree orientation to use (index in to offsets)

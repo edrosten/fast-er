@@ -1,10 +1,10 @@
-CXXFLAGS+=-Wall -Wextra -O3 -march=pentium-m -g -ggdb 
-CXX=colorgcc
-LDFLAGS=-lGVars3 -lcvd 
+CXXFLAGS=@CXXFLAGS@
+LDFLAGS=@LDFLAGS@
+CXX=@CXX@
 
 PROGS=learn_detector learn_detector_orig warp_to_png
 
-.PHONY: all
+.PHONY: all clean
 
 all:$(PROGS)
 
@@ -19,3 +19,10 @@ warp_to_png:warp_to_png.o
 
 clean:
 	rm -f $(PROGS) *.o
+
+docs:
+	doxygen
+
+distclean: clean
+	rm -fr autom4te.cache  config.status config.log Makefile
+

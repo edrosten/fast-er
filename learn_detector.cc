@@ -162,6 +162,14 @@ where the index <i>i</i> counts from 1. More details are in ::load_warps_cambrid
 /**
 @defgroup  gOptimize Optimization routines
 
+The functions in this section deal specifically with optimizing a decision tree
+detector for repeatability. The code in ::learn_detector() is a direct
+implementation of the algorithm described in section V of the accompanying
+paper.
+
+The manipulation of the tree is necessarily tied to the internal representation
+which is described in \link gTree the tree representation\endlink.
+
 */
 #include <iostream>
 #include <fstream>
@@ -318,14 +326,13 @@ float compute_repeatability(const vector<vector<Image<array<float, 2> > > >& war
 }
 
 
-/// Generate a random tree.
+/// Generate a random tree, as part of a stochastic optimization scheme.
 ///
-/// @param s Does nothing
 /// @param d Depth of tree to generate
 /// @param is_eq_branch Whether eq-branch constraints should be applied. This should
 ///                     always be true when the function is called.
-/// @ingroup gTree
-tree_element* random_tree(double s, int d, bool is_eq_branch=1)
+/// @ingroup gOptimize
+tree_element* random_tree(int d, bool is_eq_branch=1)
 {
 	//Recursively generate a tree of depth d
 	//
@@ -336,7 +343,7 @@ tree_element* random_tree(double s, int d, bool is_eq_branch=1)
 		else
 			return new tree_element(rand()%2);
 	else
-		return new tree_element(random_tree(s, d-1, 0), random_tree(s, d-1, 1), random_tree(s, d-1, 0), rand()%num_offsets );
+		return new tree_element(random_tree(d-1, 0), random_tree(d-1, 1), random_tree(d-1, 0), rand()%num_offsets );
 }
 
 
@@ -367,29 +374,25 @@ double compute_temperature(int i, int imax)
 ///@return An optimized detector.
 tree_element* learn_detector(const vector<Image<byte> >& images, const vector<vector<Image<array<float,2> > > >& warps)
 {
-	unsigned int  iterations=GV3::get<unsigned int>("iterations");
-	int threshold = GV3::get<int>("FAST_threshold");
-	int fuzz_radius=GV3::get<int>("fuzz");
-	double repeatability_scale = GV3::get<double>("repeatability_scale");
-	double num_cost	=	GV3::get<double>("num_cost");
-	int max_nodes = GV3::get<int>("max_nodes");
-
-	double offset_sigma = GV3::get<double>("offset_sigma");
-	
-
+	unsigned int  iterations=GV3::get<unsigned int>("iterations");       // Number of iterations of simulated annealing.
+	int threshold = GV3::get<int>("FAST_threshold");                     // Threshold at which to perform detection
+	int fuzz_radius=GV3::get<int>("fuzz");                               // A point must be this close to be repeated (\varepsilon)
+	double repeatability_scale = GV3::get<double>("repeatability_scale");// w_r 
+	double num_cost	=	GV3::get<double>("num_cost");                    // w_n
+	int max_nodes = GV3::get<int>("max_nodes");                          // w_s
 
 	bool first_time = 1;
-	double old_cost = HUGE_VAL;
+	double old_cost = HUGE_VAL;                                          //This will store the final score on the previous iteration: \hat{k}_{I-1}
 
 	ImageRef image_size = images[0].size();
 
-	set<int> debug_triggers = GV3::get<set<int> >("triggers");
+	set<int> debug_triggers = GV3::get<set<int> >("triggers");           //Allow artitrary GVars code to be executed at a given iteration.
 	
 	//Preallocated space for nonmax-suppression. See tree_detect_corners()
 	Image<int> scratch_scores(image_size, 0);
 
 	//Start with an initial random tree
-	tree_element* tree = random_tree(offset_sigma, GV3::get<int>("initial_tree_depth"));
+	tree_element* tree = random_tree(GV3::get<int>("initial_tree_depth"));
 	
 	for(unsigned int itnum=0; itnum < iterations; itnum++)
 	{
@@ -409,19 +412,17 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 				Nodes:
 					3: Copy one subtree to another subtree (no invariants need be respected)
 					4: Randomize offset (no invariants need be respected)
+					5: Splat a subtree in to a single node.
 
-			Costs:
-				Tree size: should respect operation 4 and reduce node count accordingly
+
+		Cost:
 		
+		  (1 + (#nodes/max_nodes)^2) * (1 - repeatability)^2 * Sum_{frames} exp(- (fast_9_num-detected_num)^2/2sigma^2)
+		 
 		*/
 
-		//Cost:
-		//
-		//  (1 + (#nodes/max_nodes)^2) * (1 - repeatability)^2 * Sum_{frames} exp(- (fast_9_num-detected_num)^2/2sigma^2)
-		// 
 
-
-		//Copy the new tree and work with the copy.
+		//Deep copy in to new_tree and work with the copy.
 		tree_element* new_tree = tree->copy();
 
 		cout << "\n\n-------------------------------------\n";
@@ -441,23 +442,24 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 			//Create a tree permutation
 			tree_element* node;
 			bool node_is_eq;
+			
 
+			//Select a random node
 			int nnum = rand() % new_tree->num_nodes();
-
-			cout << "Permuting tree at node " << nnum << endl;
-
-
 			rpair(node, node_is_eq) = new_tree->nth_element(nnum);
 
+			cout << "Permuting tree at node " << nnum << endl;
 			cout << print << "Node" << node << node_is_eq;
+			
 
+			//See section 4 in the paper.
 			if(node->eq == NULL) //A leaf
 			{
 				if(rand() % 2 || node_is_eq)  //Operation 1, invariant 1
 				{
 					cout << "Growing a subtree:\n";
 					//Grow a subtree
-					tree_element* stub = random_tree(offset_sigma, 1);
+					tree_element* stub = random_tree(1);
 
 					stub->print(cout);
 
@@ -484,13 +486,14 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 				}
 				else if(d < 2./3.)
 				{
+					//Select r, c \in {0, 1, 2} without replacement
 					int r = rand() % 3; //Remove
 					int c;				//Copy
 					while((c = rand()%3) == r);
 
 					cout << "Copying branches " << c << " to " << r <<endl;
 
-
+					//Deep copy node c: it's a tree, not a graph.
 					tree_element* tmp;
 
 					if(c == 0)
@@ -500,6 +503,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 					else
 						tmp = node->gt->copy();
 					
+					//Delete r and put the copy of c in its place
 					if(r == 0)
 					{
 						delete node->lt;
@@ -537,17 +541,16 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 		{
 			cout << "New tree is: "<< endl;
 			new_tree->print(cout);
-
 		}
 	
 		
-		//Detect all corners
+		//Detect all corners in all images
 		vector<vector<ImageRef> > detected_corners;
 		for(unsigned int i=0; i < images.size(); i++)
 			detected_corners.push_back(tree_detect_corners(images[i], new_tree, threshold, scratch_scores));
 
 
-		//Compute repeatability
+		//Compute repeatability and assosciated cost
 		double repeatability = compute_repeatability(warps, detected_corners, fuzz_radius, image_size);
 		double repeatability_cost = 1 + sq(repeatability_scale/repeatability);
 
@@ -586,7 +589,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 		cout << print << "Old cost" << old_cost;
 		cout << print << "Liklihood" << liklihood;
 		
-
+		//Make the Boltzmann decision
 		if(rand_u() < liklihood)
 		{
 			cout << "Keeping change" << endl;
@@ -609,11 +612,12 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 }
 
 
-//Generate a detector, and compute its repeatability for all the tests.
-//
-//@param argc Number of command line arguments
-//@ingroup gRepeatability
-void mmain(int argc, char** argv)
+///Generate a detector, and compute its repeatability for all the tests.
+///
+///@param argc Number of command line arguments
+///@param argv Vector of command line arguments
+///@ingroup gOptimize
+void run_learn_detector(int argc, char** argv)
 {
 
 	//Process configuration information
@@ -658,12 +662,16 @@ void mmain(int argc, char** argv)
 	}
 }
 
-
+///Driver wrapper.
+///
+///@param argc Number of command line arguments
+///@param argv Vector of command line arguments
+///@ingroup gOptimize
 int main(int argc, char** argv)
 {
 	try
 	{	
-		mmain(argc, argv);
+		run_learn_detector(argc, argv);
 	}
 	catch(Exceptions::All w)
 	{	

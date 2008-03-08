@@ -345,7 +345,7 @@ pair<vector<Image<byte> >, vector<vector<Image<array<float, 2> > > > > load_data
 
 /**
 This function prunes a dataset so that no warped point will lie outside an image. This
-will save onmn .in_image() tests later.
+will save on .in_image() tests later.
 @param warps The warps to prune.
 @param size the image size to prune to.
 @ingroup gDataset
