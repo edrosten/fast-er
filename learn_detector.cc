@@ -1,5 +1,5 @@
 /** 
-@file learn_detector.cc
+@file learn_detector.cc Main file for the \c learn_detector executable.
 
 \code
 learn_detector [--var value] ... [--exec config_file] ...
@@ -62,11 +62,13 @@ For details on how the data loading and so on operated, refer to
 #include "utility.h"
 #include "load_data.h"
 
+///\cond never
 using namespace std;
 using namespace CVD;
 using namespace tag;
 using namespace GVars3;
 using namespace TooN;
+///\endcond
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Utility functions
@@ -474,7 +476,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 }
 
 
-///Generate a detector, and compute its repeatability for all the tests.
+///Load configuration and data and learn a detector.
 ///
 ///@param argc Number of command line arguments
 ///@param argv Vector of command line arguments

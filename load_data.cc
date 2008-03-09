@@ -10,10 +10,12 @@
 #include "warp_to_png.h"
 #include "utility.h"
 
+///\cond never
 using namespace std;
 using namespace CVD;
 using namespace tag;
 using namespace TooN;
+///\endcond
 
 /** Load images from a "Cambridge" style dataset.
 

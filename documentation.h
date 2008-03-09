@@ -91,9 +91,6 @@ indicates that this pixel does not appear in image Z.
 /**       
 @defgroup  gDataset Repeatability dataset
 
-
-\section repDataset Repeatability datasets in general
-
 To compute repeatability, you must know for every pixel in image <i>A</i>, where
 that pixel ends up in image <i>B</i>. The datasets are stored internally as:
 - Images are simply stored internally as: <code> vector<Image<byte> > </code>
@@ -123,8 +120,8 @@ This stores the warp data in 16 bit per channel (with a numeric range of
 	- frames/frame_<i>x</i>.pgm
 	- pngwarps/warp_<i>i</i>_<i>j</i>.png
 The destination of the <i>x</i> coordinare is stored as \f$x =
-\frac{rec}{MULTIPLIER} - SHIFT\f$, and the <i>y</i> destination as \f$y =
-\frac{rec}{MULTIPLIER} - SHIFT\f$. ::MULTIPLIER is 64.0 and ::SHIFT is 10.0 The
+\frac{\text{red}}{\text{MULTIPLIER}} - \text{SHIFT}\f$, and the <i>y</i> destination as \f$y =
+\frac{\text{green}}{\text{MULTIPLIER}} - \text{SHIFT}\f$. ::MULTIPLIER is 64.0 and ::SHIFT is 10.0 The
 blue channel stores nothing. Details are in ::load_warps_cambridge_png().
 
 The executable warp_to_png.cc converts a <code>.warp</code> file to a

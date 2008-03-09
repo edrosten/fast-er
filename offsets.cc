@@ -14,11 +14,13 @@
 
 #include "offsets.h"
 
+///\cond never
 using namespace std;
 using namespace CVD;
 using namespace TooN;
 using namespace tag;
 using namespace GVars3;
+///\endcond
 
 
 

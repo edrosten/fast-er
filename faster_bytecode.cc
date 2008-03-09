@@ -2,9 +2,10 @@
 #include <cvd/image.h>
 #include <cerrno>
 
-
+///\cond never
 using namespace CVD;
 using namespace std;
+///\endcond
 
 #ifndef NOJIT
 #include <sys/mman.h>

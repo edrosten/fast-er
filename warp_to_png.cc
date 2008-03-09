@@ -24,10 +24,12 @@ and defaults to 768 by 576.
 
 #include "warp_to_png.h"
 
+///\cond never
 using namespace std;
 using namespace CVD;
 using namespace GVars3;
 using namespace TooN;
+///\endcond
 
 
 

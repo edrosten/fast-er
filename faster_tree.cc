@@ -3,11 +3,12 @@
  
 #include "faster_tree.h"
 
+///\cond never
 using namespace std;
 using namespace tag;
 using namespace CVD;
 using namespace GVars3;
-
+///\endcond
 
 
 ///Detect corners with nonmaximal suppression in an image. This contains a large amount of

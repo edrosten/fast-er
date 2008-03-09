@@ -3,7 +3,7 @@
 
 #include <gvars3/serialize.h>
 
-
+///\cond never
 namespace GVars3{ namespace serialize {
 	
 	/**GVars serialization for containers. FIXME: should use existing serialization
@@ -44,6 +44,7 @@ namespace GVars3{ namespace serialize {
 		}
 	}
 }}
+///\endcond
 #include <gvars3/instances.h>
 #endif
 
