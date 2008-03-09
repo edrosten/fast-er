@@ -147,7 +147,10 @@ vector<ImageRef> tree_detect_corners(const Image<byte>& im, const tree_element* 
 	return nonmax;
 }
 
-
+///Tokenise a string.
+///@param s String to be split
+///@return Tokens
+///@ingroup gUtility
 vector<string> split(const string& s)
 {
 	istringstream i(s);
@@ -164,8 +167,16 @@ vector<string> split(const string& s)
 	return v;
 }
 
+///A named symbol to throw in the case that 
+///tree deserialization fails with a parse error.
+///@ingroup gTree
 struct ParseError{};
 
+
+///String to some class. Name modelled on atoi.
+///@param s String to parse
+///@return class the string was parsed in to.
+///@ingroup gUtility
 template<class C> C ato(const string & s)
 {
 	istringstream i(s);
@@ -178,7 +189,11 @@ template<class C> C ato(const string & s)
 	return c;
 }
 
-
+///Parses a tree from an istream. This will deserialize a tree serialized by ::tree_element::print().
+///On error, ParseError is thrown.
+///@param i The stream to parse
+///@return An allocated tree. Ownership is passed to the callee.
+///@ingroup gTree
 tree_element* load_a_tree(istream& i)
 {	
 	string line;

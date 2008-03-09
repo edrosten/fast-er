@@ -262,15 +262,16 @@ class jit_detector
 
 		}
 
-
+		///Destroy object, unmapping executable memory.
 		~jit_detector()
 		{
 			munmap(proc, length);
 		}
 
 	private:
-		//Not copyable
+		///Prevent copying
 		void operator=(const jit_detector&);
+		///Prevent copying
 		jit_detector(const jit_detector&);
 
 		unsigned char* proc;			///< The machine code is stored in this mmap() allocated data which allows code execution.
@@ -296,6 +297,16 @@ class jit_detector
 };
 #endif
 
+///Detect corners in an image. The width of the image must match the width the
+///detector was compiled to (using tree_elemeent::make_fast_detector for the
+///results to make sense. The bytecode is JIT coimpiled if possible.
+///@param im The image in which to detect corners
+///@param corners Detected corners are inserted in to this container.
+///@param threshold Corner detector threshold to use
+///@param xmin x coordinate to start at.
+///@param ymin y coordinate to start at.
+///@param xmax x coordinate to go up to.
+///@param ymax y coordinate to go up to.
 void block_bytecode::detect(const CVD::Image<CVD::byte>& im, std::vector<int>& corners, int threshold, int xmin, int xmax, int ymin, int ymax)
 {
 	#ifdef NOJIT
