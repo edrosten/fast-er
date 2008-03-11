@@ -1,14 +1,15 @@
+/**
+	\file learn_fast_tree.cc Build a FAST tree detector.
+
+*/
+
 #include <iostream>
-#include <stack>
 #include <sstream>
-#include <fstream>
 #include <cstdlib>
 #include <list>
 #include <map>
 #include <vector>
 #include <cassert>
-#include <cmath>
-#include <limits>
 #include <bitset>
 #include <algorithm>
 #include <string>
@@ -21,7 +22,6 @@
 #include <tag/stdpp.h>
 #include <tag/fn.h>
 
-#include <cvd/timer.h>
 #include <cvd/image_ref.h>
 
 #include <gvars3/instances.h>
@@ -32,7 +32,7 @@ using namespace tag;
 using namespace CVD;
 using namespace GVars3;
 
-
+///Representations of ternary digits.
 enum Ternary
 {
 	Brighter='b',
@@ -53,6 +53,13 @@ template<class C> void vfatal(int err, const string& s, const C& list)
 	exit(err);
 }
 
+///Simple and inefficient function to replace all instances of
+///a pattern in a string with the specified text.
+///@param ss String in which to perform search and replace
+///@param pattern String to search for
+///@param text Replacement text.
+///@return The string with the patterns replaced.
+///@ingroup gUtility
 string replace_all(const string& ss, const string& pattern, const string& text)
 {
 	string s = ss;
@@ -67,6 +74,13 @@ string replace_all(const string& ss, const string& pattern, const string& text)
 	}
 }
 
+///Simple function to replace the first instance of
+///a pattern in a string with the specified text.
+///@param s String in which to perform search and replace
+///@param pattern String to search for
+///@param text Replacement text.
+///@return The string with pattern replaced.
+///@ingroup gUtility
 string replace_1st(const string& s, const string& pattern, const string& text)
 {
 	string::size_type pos = s.find(pattern);
@@ -77,6 +91,10 @@ string replace_1st(const string& s, const string& pattern, const string& text)
 	return s.substr(0, pos) + text + s.substr(pos + pattern.size());
 }
 
+///Serializes an object to a string using the default operator<<
+///@param c object to serialize
+///@return serialized object
+///@ingroup gUtility
 template<class C> string xtoa(const C& c)
 {
 	ostringstream o;
@@ -84,32 +102,46 @@ template<class C> string xtoa(const C& c)
 	return o.str();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Definition of a feature
-//
+/**This structure represents a datapoint. A datapoint is a group of pixels with
+ternary values (much brighter than the centre, much darker than the centre or
+similar to the centre pixel). In addition to the feature descriptor, the class
+and number of instances is also stored.
 
-template<int FEATURE_SIZE> struct feature
+The maximum feature vector size is determined by the template parameter. This
+allows the ternary vector to be stored in a bitset. This keeps the struct a
+fixed size and removes the need for dynamic allocation.
+
+@ingroup gFastTree
+*/
+template<int FEATURE_SIZE> struct datapoint
 {
-	feature(const string& s, unsigned long c, bool is)
+	///Construct a datapoint 
+	///@param s The feature vector in string form 
+	///@param c The number of instances
+	///@param is The class
+	datapoint(const string& s, unsigned long c, bool is)
 	:count(c),is_a_corner(is)
 	{
 		pack_trits(s);
 	}
-
-	feature()
+	
+	///Default constructor allows for storage in a
+	///std::vector.
+	datapoint()
 	{}
 
-	unsigned long count;
-	bool is_a_corner;
+	unsigned long count; ///< Number of instances
+	bool is_a_corner;   ///< Class
 
-	static const unsigned int max_size = FEATURE_SIZE;
+	static const unsigned int max_size = FEATURE_SIZE; ///< Maximum number of features representable.
+	
 
+	///Extract a trit (ternary bit) from the feture vector.
+	///@param tnum Number of the bit to extract
+	///@return  The trit.
 	Ternary get_trit(unsigned int tnum) const
 	{
 		assert(tnum < size);
-		//return (Ternary)f[tnum];
-
 		if(tests[tnum] == 1)
 			return Brighter;
 		else if(tests[tnum + max_size] == 1)
@@ -120,9 +152,24 @@ template<int FEATURE_SIZE> struct feature
 
 	private:
 
-		bitset<max_size*2> tests;
+		bitset<max_size*2> tests; ///<Used to store the ternary vector
+		                          ///Ternary bits are stored using 3 out of the
+								  ///4 values storable by two bits.
+								  ///Trit \e n is stored using the bits \e n and
+								  ///\e n + \e max_size, with bit \e n being the
+								  ///most significant bit.
+								  ///
+								  ///The values are
+								  ///- 3 unused
+								  ///- 2 Brighter
+								  ///- 1 Darker
+								  ///- 0 Similar
 
-		//Deserialization code
+		///This code reads a stringified representation of the feature vector
+		///and converts it in to the internal representation. 
+		///The string represents one feature per character, using "b", "d" and
+		//"s".
+		///@param unpacked String to parse.
 		void pack_trits(const string& unpacked)
 		{
 			tests = 0;
@@ -135,42 +182,41 @@ template<int FEATURE_SIZE> struct feature
 				else if(unpacked[i] == 's')
 					set_trit(i, Similar);
 				else
-					fatal(2, "Bad char while packing feature: %s", unpacked);
+					fatal(2, "Bad char while packing datapoint: %s", unpacked);
 			}
 		}
-
+		
+		///Set a ternary digit.
+		///@param tnum Digit to set
+		///@param val Value to set it to.
 		void set_trit(unsigned int tnum, Ternary val)
 		{
 			assert(val == Brighter || val == Darker || val == Similar);
-			assert(tnum < size);
-			//s[tnum] = val;
+			assert(tnum < max_size);
 
 			if(val == Brighter)
 				tests[tnum] = 1;
 			else if(val == Darker)
 				tests[tnum + max_size] = 1;
-
-
 		}
-
-		int stringlen(int num_of_trits)
-		{
-			return num_of_trits;
-		}
-
 };
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Load trit string data. It has the following format:
-//
-//  <num_features>
-//  <feature as string of b, d, s>  <count> <class>
-//  ...
+/**
+This function loads as many datapoints from the standard input as 
+possible. Datapoints consist of a feature vector (a string containing the
+characters "b", "d" and "s"), a number of instances and a class.
 
-template<int S> typename V_tuple<shared_ptr<vector<feature<S> > >, uint64_t >::type load_features(int nfeats)
+See datapoint::pack_trits for a more complete description of the feature vector.
+
+The tokens are whitespace separated.
+
+@param nfeats Number of features in a feature vector. Used to spot errors.
+@return Loaded datapoints and total number of instances.
+@ingroup gFastTree
+*/
+template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >::type load_features(int nfeats)
 {
-	shared_ptr<vector<feature<S> > > ret(new vector<feature<S> >);
+	shared_ptr<vector<datapoint<S> > > ret(new vector<datapoint<S> >);
 
 
 	string unpacked_feature;
@@ -193,7 +239,7 @@ template<int S> typename V_tuple<shared_ptr<vector<feature<S> > >, uint64_t >::t
 		if(count == 0)
 			fatal(4, "Zero count is invalid");
 
-		ret->push_back(feature<S>(unpacked_feature, count, is));
+		ret->push_back(datapoint<S>(unpacked_feature, count, is));
 
 		total_num += count;
 	}
@@ -201,15 +247,15 @@ template<int S> typename V_tuple<shared_ptr<vector<feature<S> > >, uint64_t >::t
 	cerr << "Num features: " << total_num << endl
 	     << "Num distinct: " << ret->size() << endl;
 
-	return make_pair(ret, total_num);
+	return make_vtuple(ret, total_num);
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Entropy functions.
-//
-
+///Compute the entropy of a set with binary annotations.
+///@param n Number of elements in the set
+///@param c1 Number of elements in class 1
+///@return The set entropy.
+///@ingroup gFastTree
 double entropy(uint64_t n, uint64_t c1)
 {
 	assert(c1 <= n);
@@ -227,11 +273,12 @@ double entropy(uint64_t n, uint64_t c1)
 	}
 }
 
-template<int S> int find_best_split(const vector<feature<S> >& fs, const vector<double>& weights, const string& ind, int nfeats)
+
+template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, const string& ind, int nfeats)
 {
 	unsigned long long num_total = 0, num_corners=0;
 
-	for(typename vector<feature<S> >::const_iterator i=fs.begin(); i != fs.end(); i++)
+	for(typename vector<datapoint<S> >::const_iterator i=fs.begin(); i != fs.end(); i++)
 	{
 		num_total += i->count;
 		if(i->is_a_corner)
@@ -250,7 +297,7 @@ template<int S> int find_best_split(const vector<feature<S> >& fs, const vector<
 
 
 
-		for(typename vector<feature<S> >::const_iterator f=fs.begin(); f != fs.end(); f++)
+		for(typename vector<datapoint<S> >::const_iterator f=fs.begin(); f != fs.end(); f++)
 		{
 			switch(f->get_trit(i))
 			{
@@ -284,8 +331,6 @@ template<int S> int find_best_split(const vector<feature<S> >& fs, const vector<
 			feature_num = i;
 		}	
 	}
-
-	cout << ind << print <<  feature_num << num_total << num_corners;
 
 	if(feature_num == -1)
 		fatal(3, "Couldn't find a split.");
@@ -359,7 +404,7 @@ struct tree{
 
 
 
-template<int S> pair<shared_ptr<tree>, uint64_t> build_tree(vector<feature<S> >& corners, const vector<double>& weights, int nfeats, string ind="")
+template<int S> pair<shared_ptr<tree>, uint64_t> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats, string ind="")
 {
 	ind += " ";
 
@@ -367,7 +412,7 @@ template<int S> pair<shared_ptr<tree>, uint64_t> build_tree(vector<feature<S> >&
 	int f = find_best_split<S>(corners, weights, ind, nfeats);
 
 	//Perform the split
-	vector<feature<S> > brighter, darker, similar;
+	vector<datapoint<S> > brighter, darker, similar;
 	uint64_t num_bri=0, cor_bri=0, num_dar=0, cor_dar=0, num_sim=0, cor_sim=0;
 
 	while(!corners.empty())
@@ -848,12 +893,13 @@ class CXX_print: public print_code
 template<int S> V_tuple<shared_ptr<tree>, uint64_t, uint64_t>::type load_and_build_tree(int num_features, const vector<double>& weights)
 {
 
-	shared_ptr<vector<feature<S> > > l;
+	shared_ptr<vector<datapoint<S> > > l;
 	uint64_t num_datapoints;
 	
 	//Load the data
 	make_rtuple(l, num_datapoints) = load_features<S>(num_features);
-
+	
+	cerr << "Loaded.\n";
 	
 	//Build the tree
 	shared_ptr<tree> tree;
