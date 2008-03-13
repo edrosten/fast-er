@@ -36,8 +36,8 @@ $(
             awk '
                 { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
                 /if_brighter/{print ind "if( p[pixel["$2"]] > cb)"}
-                /elif_darker/ {print ind "else if( p[pixel["$2"]] < c_b)"}
-                /\<if_darker/{print ind "if( p[pixel["$2"]] < c_b)"}
+                /elsf_darker/ {print ind "else if( p[pixel["$2"]] < c_b)"}
+                /if_darker/{print ind "if( p[pixel["$2"]] < c_b)"}
                 /if_either/{print ind "if( p[pixel["$2"]] > cb || p[pixel["$2"]] < c_b )"}
                 /else/{print ind "else"}
                 /corner/{print ind "goto corner;"}
@@ -71,12 +71,6 @@ void $name(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vect
         
         NR==2{
           gsub(/[\[\],]/, "")
-          if(features != NF/2)
-          {
-            print "Malformed offsets line"
-            exit(1);
-          }
-          
           print "int pixel[" features "] = {"
           for(x=1; x <= features; x++)
             print "        "$(2*x-1) " + i.row_stride() * " $(2*x)","

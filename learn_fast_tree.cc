@@ -497,7 +497,7 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 				print_tree(bt, o, ii);
 			o << i << "else" << endl;
 				print_tree(st, o, ii);
-			o << i << "endif" << endl;
+			o << i << "end" << endl;
 
 		}
 		else if(b == s)	//Dark is different
@@ -506,7 +506,7 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 				print_tree(dt, o, ii);
 			o << i << "else" << endl;
 				print_tree(st, o, ii);
-			o << i << "endif" << endl;
+			o << i << "end" << endl;
 		}
 		else if(b == d) //Similar is different
 		{
@@ -514,17 +514,17 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 				print_tree(bt, o, ii);
 			o << i << "else" << endl;
 				print_tree(st, o, ii);
-			o << i << "endif" << endl;
+			o << i << "end" << endl;
 		}
 		else //All different
 		{
 			o << i << "if_brighter " << f << " "  <<  bt->num_datapoints << " " << dt->num_datapoints  << " " << st->num_datapoints << endl;
 				print_tree(bt, o, ii);
-			o << i << "elif_darker " << f << endl;
+			o << i << "elsf_darker " << f << endl;
 				print_tree(dt, o, ii);
 			o << i << "else" << endl;
 				print_tree(st, o, ii);
-			o << i << "endif" << endl;
+			o << i << "end" << endl;
 		}
 	}
 }

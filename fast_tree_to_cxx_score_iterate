@@ -44,8 +44,8 @@ $(
             awk '
                 { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
                 /if_brighter/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff))"}
-                /elif_darker/ {print ind "else if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
-                /\<if_darker/ {print ind "if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /elsf_darker/ {print ind "else if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /if_darker/ {print ind "if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
                 /if_either/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff) || test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
                 /else/{print ind "else"}
                 /corner/{print ind "b += min_diff;"}
@@ -59,7 +59,7 @@ $(
 }
 
 
-void fast_corner_score_NN(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
+void $name(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
 {
     scores.resize(corners.size());
     $(
