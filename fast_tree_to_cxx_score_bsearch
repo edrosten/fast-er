@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+file="$2"
+name="$1"
+if [ "$#" != 2 ]
+then
+	echo `basename $0`: error: incirrect arguments.
+	echo "Usage:  `basename $0` <function_name> <file>"
+	exit 1
+fi
+
+
+
+cat << END
+#include <cvd/image.h>
+#include <cvd/byte.h>
+#include <vector>
+using namespace CVD;
+using namespace std;
+
+static inline int fast_corner_score(const byte* p, const int pixel[], int bstart)
+{    
+    int bmin = bstart;
+    int bmax = 255;
+    int b = (bmax + bmin)/2;
+    
+    //This function computes the score for a pixel which is known to be 
+    //a corner at barrier b. So we start looking at b+1 and above to 
+    //establish where it stops becoming a corner.
+    for(;;)
+    {
+        int cb = *p + b;
+        int c_b= *p - b;
+
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if( p[pixel["$2"]] > cb)"}
+                /elif_darker/ {print ind "else if( p[pixel["$2"]] < c_b)"}
+                /\<if_darker/{print ind "if( p[pixel["$2"]] < c_b)"}
+                /if_either/{print ind "if( p[pixel["$2"]] > cb || p[pixel["$2"]] < c_b )"}
+                /else/{print ind "else"}
+                /corner/{print ind "goto corner;"}
+                /background/{print ind "goto non_corner;"}
+            ' $file
+        )
+
+
+        corner:
+            bmin = b;
+            goto cont;
+
+        non_corner:
+            bmax = b;
+            goto cont;
+        
+        cont:
+            if(bmin == bmax - 1)
+                return bmin;
+            b = (bmin + bmax) / 2;
+    }
+}
+
+
+void $name(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
+{
+    scores.resize(corners.size());
+    $(
+      awk '
+        NR==1{features = $1}
+        
+        NR==2{
+          gsub(/[\[\],]/, "")
+          if(features != NF/2)
+          {
+            print "Malformed offsets line"
+            exit(1);
+          }
+          
+          print "int pixel[" features "] = {"
+          for(x=1; x <= features; x++)
+            print "        "$(2*x-1) " + i.row_stride() * " $(2*x)","
+          print "    };"
+      } ' $file 
+    )
+  
+    for(unsigned int n=0; n < corners.size(); n++)
+        scores[n] = fast_corner_score(&i[corners[n]], pixel, b);
+}
+END
+

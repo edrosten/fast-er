@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+file="$2"
+name="$1"
+if [ "$#" != 2 ]
+then
+	echo `basename $0`: error: incirrect arguments.
+	echo "Usage:  `basename $0` <function_name> <file>"
+	exit 1
+fi
+
+
+file=$1
+cat << END
+#include <cvd/image.h>
+#include <cvd/byte.h>
+#include <vector>
+using namespace CVD;
+using namespace std;
+
+static inline bool test_gt_set(int a, int b, int& min_diff)
+{
+	if(a > b)
+	{
+		if(a-b < min_diff)
+			min_diff = a-b;
+
+		return 1;
+	}
+	return 0;
+}
+static inline int fast_corner_score(const byte* p, const int pixel[], int b)
+{	
+	b++;
+	//This function computes the score for a pixel which is known to be 
+	//a corner at barrier b. So we start looking at b+1 and above to 
+	//establish where it stops becoming a corner.
+	for(;;)
+	{
+		int cb = *p + b;
+		int c_b= *p - b;
+		int min_diff = INT_MAX;
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff))"}
+                /elif_darker/ {print ind "else if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /\<if_darker/ {print ind "if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /if_either/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff) || test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /else/{print ind "else"}
+                /corner/{print ind "b += min_diff;"}
+                /background/{print ind "break;"}
+            ' $file
+        )
+
+	}
+
+	return b-1;
+}
+
+
+void fast_corner_score_NN(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
+{
+    scores.resize(corners.size());
+    $(
+      awk '
+        NR==1{features = $1}
+        
+        NR==2{
+          gsub(/[\[\],]/, "")
+          if(features != NF/2)
+          {
+            print "Malformed offsets line"
+            exit(1);
+          }
+          
+          print "int pixel[" features "] = {"
+          for(x=1; x <= features; x++)
+            print "        "$(2*x-1) " + i.row_stride() * " $(2*x)","
+          print "    };"
+      } ' $file 
+    )
+  
+    for(unsigned int n=0; n < corners.size(); n++)
+        scores[n] = fast_corner_score(&i[corners[n]], pixel, b);
+}
+END
+

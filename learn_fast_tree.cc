@@ -26,11 +26,13 @@
 
 #include <gvars3/instances.h>
 
+///\cond never
 using namespace std;
 using namespace tr1;
 using namespace tag;
 using namespace CVD;
 using namespace GVars3;
+///\endcond
 
 ///Representations of ternary digits.
 enum Ternary
@@ -51,55 +53,6 @@ template<class C> void vfatal(int err, const string& s, const C& list)
 {
 	vfPrintf(cerr, s + "\n", list);
 	exit(err);
-}
-
-///Simple and inefficient function to replace all instances of
-///a pattern in a string with the specified text.
-///@param ss String in which to perform search and replace
-///@param pattern String to search for
-///@param text Replacement text.
-///@return The string with the patterns replaced.
-///@ingroup gUtility
-string replace_all(const string& ss, const string& pattern, const string& text)
-{
-	string s = ss;
-	for(;;)
-	{
-		string::size_type pos = s.find(pattern);
-
-		if(pos == string::npos)
-			return s;
-		else
-			s = s.substr(0, pos) + text + s.substr(pos + pattern.size());
-	}
-}
-
-///Simple function to replace the first instance of
-///a pattern in a string with the specified text.
-///@param s String in which to perform search and replace
-///@param pattern String to search for
-///@param text Replacement text.
-///@return The string with pattern replaced.
-///@ingroup gUtility
-string replace_1st(const string& s, const string& pattern, const string& text)
-{
-	string::size_type pos = s.find(pattern);
-
-	if(pos == string::npos)
-		return s;
-
-	return s.substr(0, pos) + text + s.substr(pos + pattern.size());
-}
-
-///Serializes an object to a string using the default operator<<
-///@param c object to serialize
-///@return serialized object
-///@ingroup gUtility
-template<class C> string xtoa(const C& c)
-{
-	ostringstream o;
-	o << c;
-	return o.str();
 }
 
 /**This structure represents a datapoint. A datapoint is a group of pixels with
@@ -274,7 +227,7 @@ double entropy(uint64_t n, uint64_t c1)
 }
 
 
-template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, const string& ind, int nfeats)
+template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, int nfeats)
 {
 	unsigned long long num_total = 0, num_corners=0;
 
@@ -294,8 +247,6 @@ template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vecto
 	{
 		uint64_t num_bri = 0, num_dar = 0, num_sim = 0;
 		uint64_t cor_bri = 0, cor_dar = 0, cor_sim = 0;
-
-
 
 		for(typename vector<datapoint<S> >::const_iterator f=fs.begin(); f != fs.end(); f++)
 		{
@@ -344,7 +295,16 @@ template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vecto
 // Tree buliding
 //
 
+///This class represents a decision tree.
+///Each leaf node contains a class, being Corner or NonCorner.
+///Each decision node contains a feature about which to make a ternary decision.
+///Additionally, each node records how many datapoints were tested.
+///The generated tree structure is not mutable.
 struct tree{
+	///The class of the leaf, and a sentinal to indacate that the node is
+	///not a leaf. Now that I come back to this, it looks suspiciously like
+	///an instance of http://thedailywtf.com/Articles/What_Is_Truth_0x3f_.aspx
+	///Oh well.
 	enum IsCorner
 	{
 		Corner,
@@ -352,12 +312,14 @@ struct tree{
 		NonTerminal
 	};
 
-	shared_ptr<tree> brighter, darker, similar;
-	IsCorner is_a_corner;
-	int feature_to_test;
-	uint64_t num_tests;
+	const shared_ptr<tree> brighter, darker, similar; ///<Subtrees
+	const IsCorner is_a_corner;                       ///<Class of this node (if its a leaf)
+	const int feature_to_test;                        ///<Feature (ie pixel) to test if this  is a non-leaf.
+	const uint64_t num_datapoints;	   				  ///<Number of datapoints passing through this node.
 
-
+	///Convert the tree to a simple string representation.
+	///This is allows comparison of two trees to see if they are the same
+	///@return a stringified tree representation
 	string stringify()
 	{
 		ostringstream o;
@@ -365,26 +327,48 @@ struct tree{
 		return o.str();
 	}
 
-
-	static shared_ptr<tree> CornerLeaf()
+	static bool is_equal(const tree* t1, const tree* t2)
 	{
-		return shared_ptr<tree>(new tree(Corner));
+		if(t1->is_a_corner == t2-> is_a_corner && t1->feature_to_test == t2->feature_to_test)
+			if(t1->is_a_corner == NonTerminal)
+				return is_equal(t1->brighter.get(), t1->brighter.get()) && 
+				       is_equal(t1->darker.get(), t2->darker.get()) && 
+					   is_equal(t1->similar.get(), t2->similar.get());
+			else
+				return 1;
+		else
+			return 0;
 	}
 
-	static shared_ptr<tree> NonCornerLeaf()
+	///Create a leaf node which is a corner
+	static shared_ptr<tree> CornerLeaf(uint64_t n)
 	{
-		return shared_ptr<tree>(new tree(NonCorner));
+		return shared_ptr<tree>(new tree(Corner, n));
 	}
-
+	
+	///Creat a leaf node which is a non-corner
+	static shared_ptr<tree> NonCornerLeaf(uint64_t n)
+	{
+		return shared_ptr<tree>(new tree(NonCorner, n));
+	}
+	
+	///Create a non-leaf node
+	///@param b The brighter subtree
+	///@param d The darker subtree
+	///@param s The similar subtree
 	tree(shared_ptr<tree> b, shared_ptr<tree> d, shared_ptr<tree> s, int n, uint64_t num)
-	:brighter(b), darker(d), similar(s), is_a_corner(NonTerminal), feature_to_test(n), num_tests(num)
-	{}
+	:brighter(b), darker(d), similar(s), is_a_corner(NonTerminal), feature_to_test(n), num_datapoints(num)
+{}
 
 	private:
-	tree(IsCorner c)
-	:is_a_corner(c),feature_to_test(-1),num_tests(0)
+	tree(IsCorner c, uint64_t n)
+	:is_a_corner(c),feature_to_test(-1),num_datapoints(n)
 	{}
 
+	//Convert the tree to a simple string representation.
+	///This is allows comparison of two trees to see if they are the same. 
+	///The use of an ostream is more efficient that repeatedly returning and concatenating strings.
+	///@param o ostream in which to stringify the tree.
 	void stringify(ostream& o)
 	{
 		o << "(";
@@ -403,13 +387,19 @@ struct tree{
 };
 
 
-
-template<int S> pair<shared_ptr<tree>, uint64_t> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats, string ind="")
+///This function uses ID3 to construct a decision tree. The entropy changes
+///are weighted by the list of weights, to allow bias towards certain features.
+///This function assumes that the class is an exact function of the data. If 
+///there datapoints with different classes share the same feature vector, the program
+///will crash with error code 3.
+///@param corners Datapoints in this part of the subtree to classify
+///@param weights Weights on the features
+///@nfeats Number of features actually used
+///@return The tree required to classify corners
+template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats)
 {
-	ind += " ";
-
 	//Find the split
-	int f = find_best_split<S>(corners, weights, ind, nfeats);
+	int f = find_best_split<S>(corners, weights, nfeats);
 
 	//Perform the split
 	vector<datapoint<S> > brighter, darker, similar;
@@ -447,112 +437,47 @@ template<int S> pair<shared_ptr<tree>, uint64_t> build_tree(vector<datapoint<S> 
 	uint64_t num_tests =  num_bri + num_dar + num_sim;
 
 	
-	uint64_t bri_tests = 0, dar_tests = 0, sim_tests = 0;
-
 	//Build the subtrees
 	shared_ptr<tree> b_tree, d_tree, s_tree;
 
 	if(cor_bri == 0)
-		b_tree = tree::NonCornerLeaf();
+		b_tree = tree::NonCornerLeaf(num_bri);
 	else if(cor_bri == num_bri)
-		b_tree = tree::CornerLeaf();
+		b_tree = tree::CornerLeaf(num_bri);
 	else
-		rpair(b_tree, bri_tests) = build_tree<S>(brighter, weights, nfeats, ind);
+		b_tree = build_tree<S>(brighter, weights, nfeats);
 	
 
 	if(cor_dar == 0)
-		d_tree = tree::NonCornerLeaf();
+		d_tree = tree::NonCornerLeaf(num_dar);
 	else if(cor_dar == num_dar)
-		d_tree = tree::CornerLeaf();
+		d_tree = tree::CornerLeaf(num_dar);
 	else
-		rpair(d_tree, dar_tests) = build_tree<S>(darker, weights, nfeats, ind);
+		d_tree = build_tree<S>(darker, weights, nfeats);
 
 
 	if(cor_sim == 0)
-		s_tree = tree::NonCornerLeaf();
+		s_tree = tree::NonCornerLeaf(num_sim);
 	else if(cor_sim == num_sim)
-		s_tree = tree::CornerLeaf();
+		s_tree = tree::CornerLeaf(num_sim);
 	else
-		rpair(s_tree, sim_tests) = build_tree<S>(similar, weights, nfeats, ind);
+		s_tree = build_tree<S>(similar, weights, nfeats);
 
-	return make_pair(shared_ptr<tree>(new tree(b_tree, d_tree, s_tree, f, num_tests)), bri_tests + dar_tests + sim_tests + num_tests);
-}
-
-#if 0
-////////////////////////////////////////////////////////////////////////////////
-//
-// Tree visiting
-//
-string load_file(const string& name)
-{
-	string file;
-	ifstream f;
-	f.open(name.c_str());
-	getline(f, file, '\xff');
-	return file;
+	return shared_ptr<tree>(new tree(b_tree, d_tree, s_tree, f, num_tests));
 }
 
 
-class print_code
-{
-	public:
-		virtual std::string print_if(const std::string& test) const=0;
-		virtual std::string print_elseif(const std::string& test) const=0;
-		virtual std::string print_else() const=0;
-		virtual std::string print_endif() const=0;
-		virtual std::string print_non_corner() const=0;
-		virtual std::string print_corner() const=0;
-		virtual std::string brighter_test(int pixel) const=0;
-		virtual std::string darker_test(int pixel) const=0;
-		virtual std::string both_tests(int pixel) const=0;
-		virtual ~print_code(){}
-		
-		print_code(const tree* t, const vector<ImageRef>& o)
-		:node(t), offsets(o)
-		{}
-
-
-	protected:
-		void visit_tree(const tree* node, const std::string& i, ostream& o) const;
-		const tree* node;
-		vector<ImageRef> offsets;
-
-	private:
-		
-		void indent(ostream& o, const string&s, const string& i) const
-		{
-			if(s == "")
-				return;
-
-			o << i;
-
-			for(unsigned int n=0; n < s.size(); n++)
-			{
-				if(s[n] == '\n')
-					o << endl << i;
-				else
-					o << s[n];
-			}
-			o << endl;
-		}
-};
-
-
-void print_code::visit_tree(const tree* node, const string& i, ostream& o) const
+void print_tree(const tree* node, ostream& o, const string& i="")
 {
 	if(node->is_a_corner == tree::Corner)
-		indent(o, print_corner(), i);
+		o << i << "corner" << endl;
 	else if(node->is_a_corner == tree::NonCorner)
-		indent(o, print_non_corner(), i);
+		o << i << "background" << endl;
 	else
 	{
 		string b = node->brighter->stringify();
 		string d = node->darker->stringify();
 		string s = node->similar->stringify();
-
-		//b = "A";
-		//d = "B";
-		//s = "C";
 
 		const tree * bt = node->brighter.get();
 		const tree * dt = node->darker.get();
@@ -561,336 +486,50 @@ void print_code::visit_tree(const tree* node, const string& i, ostream& o) const
 
 		int f = node->feature_to_test;
 	
-		string ef = print_endif();
-
 		if(b == d && d == s) //All the same
 		{
 			//o << i << "if " << f << " is whatever\n";
-			visit_tree(st, i, o);
+			print_tree(st, o, i);
 		}
 		else if(d == s)  //Bright is different
 		{
-			indent(o, print_if(brighter_test(f)), i);
-			visit_tree(bt, ii, o);
-			indent(o, print_else(), i);
-			visit_tree(st, ii, o);
-			indent(o, ef, ii);
+			o << i << "if_brighter " << f << " " << bt->num_datapoints << " " << dt->num_datapoints+st->num_datapoints << endl;
+				print_tree(bt, o, ii);
+			o << i << "else" << endl;
+				print_tree(st, o, ii);
+			o << i << "endif" << endl;
 
 		}
 		else if(b == s)	//Dark is different
 		{	
-			indent(o, print_if(darker_test(f)), i);
-			visit_tree(dt, ii, o);
-			indent(o, print_else(), i);
-			visit_tree(st, ii, o);
-			indent(o, ef, ii);
+			o << i << "if_darker " << f << " " << dt->num_datapoints << " " << bt->num_datapoints + st->num_datapoints << endl;
+				print_tree(dt, o, ii);
+			o << i << "else" << endl;
+				print_tree(st, o, ii);
+			o << i << "endif" << endl;
 		}
 		else if(b == d) //Similar is different
 		{
-			indent(o, print_if(both_tests(f)), i);
-			visit_tree(bt, ii, o);
-			indent(o, print_else(), i);
-			visit_tree(st, ii, o);
-			indent(o, ef, ii);
+			o << i << "if_either " << f << " " <<  bt->num_datapoints + dt->num_datapoints  << " " << st->num_datapoints << endl;
+				print_tree(bt, o, ii);
+			o << i << "else" << endl;
+				print_tree(st, o, ii);
+			o << i << "endif" << endl;
 		}
 		else //All different
 		{
-			indent(o, print_if(brighter_test(f)), i);
-			visit_tree(bt, ii, o);
-			indent(o, print_elseif(darker_test(f)), i);
-			visit_tree(dt, ii, o);
-			indent(o, print_else(), i);
-			visit_tree(st, ii, o);
-			indent(o, ef, ii);
+			o << i << "if_brighter " << f << " "  <<  bt->num_datapoints << " " << dt->num_datapoints  << " " << st->num_datapoints << endl;
+				print_tree(bt, o, ii);
+			o << i << "elif_darker " << f << endl;
+				print_tree(dt, o, ii);
+			o << i << "else" << endl;
+				print_tree(st, o, ii);
+			o << i << "endif" << endl;
 		}
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-class C_print_with_scores_bsearch: public print_code
-{
-	public:
-		virtual std::string print_if(const std::string& test)const { return "if(" + test + ")";}
-		virtual std::string print_elseif(const std::string& test) const { return "else if(" + test + ")";}
-		virtual std::string print_else()const {return "else";}
-		virtual std::string print_endif()const {return "";}
-		virtual std::string print_non_corner() const { return "goto non_corner;";}
-		virtual std::string print_corner() const {return "goto corner;";}
-
-		virtual std::string brighter_test(int pixel) const {return "*(cache_0 + offset[" + xtoa(pixel) + "]) >  cb";}
-		virtual std::string darker_test(int pixel) const {return "*(cache_0 + offset[" + xtoa(pixel) + "]) <  c_b";}
-		virtual std::string both_tests(int pixel) const { return brighter_test(pixel) + "||" + darker_test(pixel);}
-		C_print_with_scores_bsearch(const tree* t, const vector<ImageRef>& o, ostream& oo)
-		:print_code(t, o)
-		{
-			visit_tree(node, "		", oo);
-		}
-
-};
-
-class C_print_with_scores: public print_code
-{
-	public:
-		virtual std::string print_if(const std::string& test)const { return "if(" + test + ")";}
-		virtual std::string print_elseif(const std::string& test) const { return "else if(" + test + ")";}
-		virtual std::string print_else()const {return "else";}
-		virtual std::string print_endif()const {return "";}
-		virtual std::string print_non_corner() const { return "break;";}
-		virtual std::string print_corner() const {return "b += min_diff;";}
-		//virtual std::string print_non_corner() const { return "return 0;";}
-		//virtual std::string print_corner() const {return "return min_diff;";}
-
-
-		virtual std::string brighter_test(int pixel) const {return "test_gt_set(*(cache_0 + offset[" + xtoa(pixel) + "]), cb, min_diff)";}
-		virtual std::string darker_test(int pixel) const {return "test_gt_set(c_b, *(cache_0 + offset[" + xtoa(pixel) + "]), min_diff)";}
-		virtual std::string both_tests(int pixel) const { return brighter_test(pixel) + "||" + darker_test(pixel);}
-		C_print_with_scores(const tree* t, const vector<ImageRef>& o, ostream& oo)
-		:print_code(t, o)
-		{
-			visit_tree(node, "		", oo);
-		}
-
-};
-
-class CXX_print: public print_code
-{
-	public:
-		virtual std::string print_if(const std::string& test)const { return "if(" + test + ")";}
-		virtual std::string print_elseif(const std::string& test) const { return "else if(" + test + ")";}
-		virtual std::string print_else()const {return "else";}
-		virtual std::string print_endif()const {return "";}
-		virtual std::string print_non_corner() const { return "continue;";}
-		virtual std::string print_corner() const {return "goto success;";}
-		virtual std::string brighter_test(int pixel) const {return pixel_access[pixel] + " > cb" ;}
-		virtual std::string darker_test(int pixel) const {return pixel_access[pixel] + " < c_b" ;}
-		virtual std::string both_tests(int pixel) const { return brighter_test(pixel) + "||" + darker_test(pixel);}
-
-		CXX_print(const tree* t, const vector<ImageRef>& o, string outfilename, string infilename)
-		:print_code(t, o)
-		{
-			num_to_cache = GV3::get<int>("c++.num_to_cache");
-			string file;
-			{
-				ifstream f;
-				f.open(infilename.c_str());
-				getline(f, file, '\xff');
-			}
-
-			ofstream outfile;
-			outfile.open(outfilename.c_str());
-			
-
-			generate_pixel_accessor();
-
-
-
-			//See if we can do the SSE test?
-			const tree * bt = node->brighter.get();
-			const tree * dt = node->darker.get();
-			const tree * st = node->similar.get();
-			
-			int bto=-1, dto=-2, sto=-3;
-
-			if(bt && bt->is_a_corner == tree::NonTerminal)
-				bto = bt->feature_to_test;
-				
-			if(dt && dt->is_a_corner == tree::NonTerminal)
-				dto = dt->feature_to_test;
-			
-			if(st && st->is_a_corner == tree::NonTerminal)
-				sto = st->feature_to_test;
-
-			cerr << print << bto << dto << sto;
-
-			if(!(dto == bto && bto == sto && st->similar->is_a_corner == tree::NonCorner))
-				cerr << print << "SSE is b0rked!" << bto << dto << sto;
-
-			
-			//Insert the pixel access for the SSE test
-			file = replace_1st(file, "SSE_TEST_1", "&" + pixel_access[node->feature_to_test]);
-			file = replace_1st(file, "SSE_TEST_2", "&" + pixel_access[bto]);
-			
-
-			//Insert the correct (aligned or unaligned) load instruction
-			if(offsets[node->feature_to_test].x == 0)
-				file = replace_1st(file, "SSE_LOAD_1", "_mm_load_si128");
-			else
-				file = replace_1st(file, "SSE_LOAD_1", "_mm_loadu_si128");
-
-			if(offsets[bto].x  == 0)
-				file = replace_1st(file, "SSE_LOAD_2", "_mm_load_si128");
-			else
-				file = replace_1st(file, "SSE_LOAD_2", "_mm_load_si128");
-
-
-			file = replace_all(file, "PIXEL_ARRAY", pixel_array());
-			file = replace_all(file, "DECLARE_CACHES", declare_caches());
-			file = replace_all(file, "SET_CACHES", set_caches());
-			file = replace_all(file, "INCREMENT_CACHES", increment_caches());
-			file = replace_all(file, "INCREMENT_16_CACHES", increment_caches_16());
-			file = replace_all(file, "NN", GV3::get<string>("N"));
-
-			file = replace_all(file, "BORDER", xtoa(*max_element(member_iterator(o.begin(), &ImageRef::x), member_iterator(o.end(), &ImageRef::x))));
-
-			ostringstream score;
-			C_print_with_scores(node, offsets, score);
-			file = replace_1st(file, "SCORE_CODE", score.str());
-			//C_print_with_scores_bsearch(node, offsets, score);
-			//file = replace_1st(file, "SCORE_BSEARCH", score.str());
-
-
-			ostringstream blob;
-			visit_tree(node, "			", blob);
-			file = replace_all(file, "CODE", blob.str());
-			outfile << file;
-		}
-
-	private:
-		vector<string> pixel_access;
-		vector<int>  caches;
-		int num_to_cache;
-	
-		string declare_caches()
-		{
-			string r;
-			for(unsigned int i=1; i < caches.size(); i++)
-				r += string(i==0?"":"\n") + "	const byte* cache_" + xtoa(i) +  ";";
-			return r;
-		}
-
-		string increment_caches_16()
-		{
-			string r;
-			for(unsigned int i=1; i < caches.size(); i++)
-				r += "				cache_" + xtoa(i) + "+=16;";
-			return r;
-		}
-
-		string increment_caches()
-		{
-			string r;
-			for(unsigned int i=1; i < caches.size(); i++)
-				r += ", cache_" + xtoa(i) + "++";
-			return r;
-		}
-
-
-		string set_caches()
-		{
-			string r;
-			for(unsigned int i=1; i < caches.size(); i++)
-				r += "		cache_" + xtoa(i) + " = cache_0 + pixel[" + xtoa(caches[i]) + "];\n";
-			
-			return r;
-		}
-		
-		string pixel_array()
-		{
-			ostringstream s;
-			s << "	int pixel[" << offsets.size() << "] = {\n";
-
-			for(unsigned int i=0; i < offsets.size(); i++)
-				s << "		" << offsets[i].x << " + i.row_stride() * " << offsets[i].y << ",\n";
-			s << "	};";
-		
-			return s.str();
-		}
-
-
-		void generate_pixel_accessor()
-		{
-
-			//First, compute the frequency of access.
-			vector<pair<int,int> > counts(offsets.size());
-			
-			//Number of things to cache
-			unsigned int cache_pointers = num_to_cache + 1;
-			//The first one is a bodge because we know we're visiting the centre point.
-			
-
-			for(unsigned int i=0; i < offsets.size(); i++)
-			{
-				counts[i].second = i;
-				counts[i].first = 0;
-			}
-			
-			//Now compute the frequency of access, by traversing the tree.
-			{
-				stack<const tree*>  s;
-				s.push(node);
-
-				while(!s.empty())
-				{
-					const tree* n = s.top();
-					s.pop();
-
-					if(n->is_a_corner == tree::NonTerminal)
-					{
-						counts[n->feature_to_test].first += n->num_tests;
-						s.push(n->brighter.get());
-						s.push(n->darker.get());
-						s.push(n->similar.get());
-					}
-				}
-			}
-
-			
-			sort(counts.begin(), counts.end());
-			reverse(counts.begin(), counts.end());
-
-			map<int, int> row_to_cache;
-
-
-			pixel_access.resize(offsets.size());
-
-			//Hack to put in cache for the centre point.
-			caches.push_back(offsets.size());
-			offsets.push_back(ImageRef(0,0));
-			row_to_cache[0] = 0;
-
-			
-			//Figure out how to access each pixel
-			//ie is it a big index, or can it use cached
-			//row pointers directly or indirectly
-			for(unsigned int i=0; i < counts.size(); i++)
-			{
-				int offset = counts[i].second;
-
-
-				if( row_to_cache.count(offsets[offset].y) != 0)
-				{
-					//There's already a cached pixel on this row, so use it.
-					int cache_num = row_to_cache[offsets[offset].y];
-					int dx = offsets[offset].x - offsets[caches[cache_num]].x;
-
-					
-					pixel_access[offset] = "*(cache_" + xtoa(cache_num) + " + " + xtoa(dx) + ")";// +" /*" + xtoa(offsets[offset]) + "*/";
-				}
-				else if(caches.size() < cache_pointers)
-				{
-					//We have space cache slots, so fill one
-					pixel_access[offset] = "*cache_" + xtoa(caches.size());// + "/*" + xtoa(offsets[offset]) + "*/";
-					row_to_cache[offsets[offset].y] = caches.size();
-					caches.push_back(offset);
-				}
-				else
-				{
-					pixel_access[offset] = "*(cache_0 + pixel["+xtoa(offset)+"])";//  + "/*" + xtoa(offsets[offset]) + "*/";
-				}
-			}
-
-			offsets.pop_back();
-		}
-
-
-
-
-};
-#endif
-
-
-template<int S> V_tuple<shared_ptr<tree>, uint64_t, uint64_t>::type load_and_build_tree(int num_features, const vector<double>& weights)
+template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(int num_features, const vector<double>& weights)
 {
 
 	shared_ptr<vector<datapoint<S> > > l;
@@ -903,10 +542,9 @@ template<int S> V_tuple<shared_ptr<tree>, uint64_t, uint64_t>::type load_and_bui
 	
 	//Build the tree
 	shared_ptr<tree> tree;
-	uint64_t num_tests;
-	rpair(tree, num_tests) = build_tree<S>(*l, weights, num_features);
+	tree  = build_tree<S>(*l, weights, num_features);
 
-	return make_vtuple(tree, num_tests, num_datapoints);
+	return make_vtuple(tree, num_datapoints);
 }
 
 
@@ -950,30 +588,22 @@ int main(int argc, char** argv)
 
 
 	shared_ptr<tree> tree;
-	uint64_t num_tests;
 	uint64_t num_datapoints;
 
 	if(num_features <= 16)
-		make_rtuple(tree, num_tests, num_datapoints) = load_and_build_tree<16>(num_features, weights);
+		make_rtuple(tree, num_datapoints) = load_and_build_tree<16>(num_features, weights);
 	else if(num_features <= 32)
-		make_rtuple(tree, num_tests, num_datapoints) = load_and_build_tree<32>(num_features, weights);
+		make_rtuple(tree, num_datapoints) = load_and_build_tree<32>(num_features, weights);
 	else if(num_features <= 48)
-		make_rtuple(tree, num_tests, num_datapoints) = load_and_build_tree<48>(num_features, weights);
+		make_rtuple(tree, num_datapoints) = load_and_build_tree<48>(num_features, weights);
 	else if(num_features <= 64)
-		make_rtuple(tree, num_tests, num_datapoints) = load_and_build_tree<64>(num_features, weights);
+		make_rtuple(tree, num_datapoints) = load_and_build_tree<64>(num_features, weights);
 	else
 		fatal(8, "Too many feratures (%i). To learn from this, see %s, line %i.", num_features, __FILE__, __LINE__);
 
 	
-	cerr << "Num tests: " << num_tests << endl;
-	cerr << "Num datapoints: " << num_datapoints<< endl;
-	cerr << "Tests per pixel: " << 1.0 * num_tests / num_datapoints<< endl;
-
-	for(unsigned int i=0; i < offsets.size(); i++)
-		cerr << offsets[i] << "(" << weights[i] << ") ";
-	cerr << endl;
-
-	//CXX_print(tree.get(), offsets, "fast_"+GV3::get<string>("N")+ "_detect.cxx","libcvd_fast_detect.template");
-	//CXX_print(tree.get(), offsets, "fast_"+GV3::get<string>("N")+ "_score.cxx","libcvd_fast_score.template");
-
+	cout << num_features << endl;
+	copy(offsets.begin(), offsets.end(), ostream_iterator<ImageRef>(cout, " "));
+	cout << endl;
+	print_tree(tree.get(), cout);
 }
