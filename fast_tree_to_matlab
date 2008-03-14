@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+file="$2"
+name="$1"
+if [ "$#" != 2 ]
+then
+	echo `basename $0`: error: incorrect arguments.
+	echo "Usage:  `basename $0` <function_name> <file>"
+	exit 1
+fi
+
+cat << END
+function r = ${name}is_corner(image, x, y, threshold)
+	cb = image(y,x) + threshold;
+	c_b = image(y,x) - threshold;
+    
+$(
+	awk '
+		function s(a) { return a < 0 ? a : ("+" a) }
+		NR==1{next}
+		NR==2{
+			gsub(/[][]/, "")
+			for(i=0; i < NF/2; i++)
+				ac[i] = "image(y" s($(i*2+2)) ", x"s($(i*2+1))")"
+			next
+		}	
+
+
+		{ ind = "    "substr($0, 1, match($0, /[^ ]/)-1)}
+		/if_brighter/{print ind "if "ac[$2]" > cb"}
+		/elsf_darker/ {print ind "elseif "ac[$2]" < c_b"}
+		/if_darker/{print ind "if "ac[$2]" < c_b"}
+		/if_either/{print ind "if "ac[$2]" > cb || "ac[$2]" < c_b "}
+		/else/||/end/{print ind $1}
+		/corner/{print ind "r = 1;"
+				 print ind "return"}
+		/background/{print ind "r = 0;"
+				 print ind "return"}
+	' $file
+)
+
+END
+
