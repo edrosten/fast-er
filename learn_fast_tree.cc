@@ -1,6 +1,55 @@
 /**
-	\file learn_fast_tree.cc Build a FAST tree detector.
+	\file learn_fast_tree.cc Main file for the \p learn_fast_tree executable.  
 
+    <tt> learn_fast_tree [--weight.</tt><i>x  weight</i><tt> ] ... \< </tt> \e infile \p \> \e outfile
+    
+    \p learn_fast_tree used ID3 to learn a ternary decision tree for corner
+    detection. The data is read from the standard input, and the tree is written
+    to the standard output. This is designed to learn FAST feature detectors,
+    and does not allow for the possibility ambbiguity in the input data.
+
+    \section lfInput Input data
+
+    The input data has the following format:
+
+    \verbatim
+
+5
+[-1 -1] [1 1] [3 4] [5 6] [-3 4]
+bbbbb 1     0
+bsdsb 1000  1
+.
+.
+.
+\endverbatim
+    
+    The first row is the number of features. The second row is the the list of
+    offsets assosciated with each feature. This list has no effect on the
+    learning of the tree, but it is passed through to the outpur for
+    convinience.
+
+    The remaining rows contain the data. The first field is the ternary feature
+    vector. The three characters "b", "d" and "s" are the correspond to
+    brighter, darker and similar respectively, with the first feature being
+    stored in the first character and so on.
+
+    The next field is the number of instances of the particular feature.
+    The third field is the class, with 1 for corner, and 0 for background.
+
+
+
+
+
+
+\section f9Generate Generating input data
+    
+    Ideally, input data will be generated from some sample images. The 
+    program FIXME can be used to do this.
+
+    Additionally, a the program fast_N_features can be used to generate all 
+    possible feature combinations for FAST-N features. When run without
+    arguments, it generates data for FAST-9 features, otherwise the argument can
+    be used to specify N.
 */
 
 #include <iostream>
@@ -32,7 +81,7 @@ using namespace tr1;
 using namespace tag;
 using namespace CVD;
 using namespace GVars3;
-///\endcond
+///\endcond 
 
 ///Representations of ternary digits.
 enum Ternary
@@ -63,8 +112,6 @@ and number of instances is also stored.
 The maximum feature vector size is determined by the template parameter. This
 allows the ternary vector to be stored in a bitset. This keeps the struct a
 fixed size and removes the need for dynamic allocation.
-
-@ingroup gFastTree
 */
 template<int FEATURE_SIZE> struct datapoint
 {
@@ -121,7 +168,7 @@ template<int FEATURE_SIZE> struct datapoint
 		///This code reads a stringified representation of the feature vector
 		///and converts it in to the internal representation. 
 		///The string represents one feature per character, using "b", "d" and
-		//"s".
+		///"s".
 		///@param unpacked String to parse.
 		void pack_trits(const string& unpacked)
 		{
@@ -165,7 +212,6 @@ The tokens are whitespace separated.
 
 @param nfeats Number of features in a feature vector. Used to spot errors.
 @return Loaded datapoints and total number of instances.
-@ingroup gFastTree
 */
 template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >::type load_features(int nfeats)
 {
@@ -208,7 +254,6 @@ template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >:
 ///@param n Number of elements in the set
 ///@param c1 Number of elements in class 1
 ///@return The set entropy.
-///@ingroup gFastTree
 double entropy(uint64_t n, uint64_t c1)
 {
 	assert(c1 <= n);
@@ -226,9 +271,14 @@ double entropy(uint64_t n, uint64_t c1)
 	}
 }
 
-
+///Find the feature that has the highest weighted entropy change.
+///@param fs datapoints to split in to three subsets.
+///@param weights weights on features
+///@param nfeats Number of features in use.
+///@return best feature.
 template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, int nfeats)
 {
+    assert(nfeats == weights.size());
 	unsigned long long num_total = 0, num_corners=0;
 
 	for(typename vector<datapoint<S> >::const_iterator i=fs.begin(); i != fs.end(); i++)
@@ -312,41 +362,39 @@ struct tree{
 		NonTerminal
 	};
 
-	const shared_ptr<tree> brighter, darker, similar; ///<Subtrees
+	const shared_ptr<tree> brighter;                  ///<Subtrees
+	const shared_ptr<tree> darker;                    ///<Subtrees
+	const shared_ptr<tree> similar;                   ///<Subtrees
 	const IsCorner is_a_corner;                       ///<Class of this node (if its a leaf)
 	const int feature_to_test;                        ///<Feature (ie pixel) to test if this  is a non-leaf.
 	const uint64_t num_datapoints;	   				  ///<Number of datapoints passing through this node.
 
 	///Convert the tree to a simple string representation.
-	///This is allows comparison of two trees to see if they are the same
+	///This is allows comparison of two trees to see if they are the same.
+	///It's probably rather inefficient to hammer the string class compared
+	///to using an ostringstream, but this is not the slowest part of the program.
 	///@return a stringified tree representation
 	string stringify()
 	{
-		ostringstream o;
-		stringify(o);
-		return o.str();
-	}
-
-	static bool is_equal(const tree* t1, const tree* t2)
-	{
-		if(t1->is_a_corner == t2-> is_a_corner && t1->feature_to_test == t2->feature_to_test)
-			if(t1->is_a_corner == NonTerminal)
-				return is_equal(t1->brighter.get(), t1->brighter.get()) && 
-				       is_equal(t1->darker.get(), t2->darker.get()) && 
-					   is_equal(t1->similar.get(), t2->similar.get());
-			else
-				return 1;
+		if(is_a_corner == NonTerminal)
+			return "(" + brighter->stringify() + darker->stringify() + similar->stringify() + ")";
 		else
-			return 0;
+			return string("(") + (is_a_corner == Corner?"1":"0")  +  ")";
 	}
 
 	///Create a leaf node which is a corner
+	///This special constructor function makes it impossible to 
+	///construct a leaf with the NonTerminal class.
+    ///@param n number of datapoints reaching this node.
 	static shared_ptr<tree> CornerLeaf(uint64_t n)
 	{
 		return shared_ptr<tree>(new tree(Corner, n));
 	}
 	
 	///Creat a leaf node which is a non-corner
+	///This special constructor function makes it impossible to 
+	///construct a leaf with the NonTerminal class.
+    ///@param n number of datapoints reaching this node.
 	static shared_ptr<tree> NonCornerLeaf(uint64_t n)
 	{
 		return shared_ptr<tree>(new tree(NonCorner, n));
@@ -356,34 +404,19 @@ struct tree{
 	///@param b The brighter subtree
 	///@param d The darker subtree
 	///@param s The similar subtree
+    ///@param n Feature number to test
+    ///@param num Number of datapoints reaching this node.
 	tree(shared_ptr<tree> b, shared_ptr<tree> d, shared_ptr<tree> s, int n, uint64_t num)
 	:brighter(b), darker(d), similar(s), is_a_corner(NonTerminal), feature_to_test(n), num_datapoints(num)
-{}
+	{}
 
 	private:
+	///The leaf node constructor is private to prevent a tree
+	///being constructed with invalid values.
+	///see also CornerLeaf and NonCornerLeaf.
 	tree(IsCorner c, uint64_t n)
 	:is_a_corner(c),feature_to_test(-1),num_datapoints(n)
 	{}
-
-	//Convert the tree to a simple string representation.
-	///This is allows comparison of two trees to see if they are the same. 
-	///The use of an ostream is more efficient that repeatedly returning and concatenating strings.
-	///@param o ostream in which to stringify the tree.
-	void stringify(ostream& o)
-	{
-		o << "(";
-		if(is_a_corner == NonTerminal)
-		{
-			o << feature_to_test;
-			brighter->stringify(o);
-			darker->stringify(o);
-			similar->stringify(o);
-		}
-		else
-			o << "(" << (is_a_corner == Corner) << ")";
-
-		o << ")";
-	}
 };
 
 
@@ -394,52 +427,61 @@ struct tree{
 ///will crash with error code 3.
 ///@param corners Datapoints in this part of the subtree to classify
 ///@param weights Weights on the features
-///@nfeats Number of features actually used
+///@param nfeats Number of features actually used
 ///@return The tree required to classify corners
 template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats)
 {
 	//Find the split
 	int f = find_best_split<S>(corners, weights, nfeats);
 
-	//Perform the split
+	//Split corners in to the three chunks, based on the result of find_best_split.
+	//Also, count how many of each class ends up in each of the three bins.
+	//It may apper to be inefficient to use a vector here instead of a list, in terms
+	//of memory, but the per-element storage overhead of the list is such that it uses
+	//considerably more memory and is much slower.
 	vector<datapoint<S> > brighter, darker, similar;
 	uint64_t num_bri=0, cor_bri=0, num_dar=0, cor_dar=0, num_sim=0, cor_sim=0;
 
-	while(!corners.empty())
+	for(size_t i=0; i < corners.size(); i++)
 	{
-			switch(corners.back().get_trit(f))
-			{
-				case Brighter:
-					brighter.push_back(corners.back());
-					num_bri += corners.back().count;
-					if(corners.back().is_a_corner)
-						cor_bri += corners.back().count;
-					break;
+		switch(corners[i].get_trit(f))
+		{
+			case Brighter:
+				brighter.push_back(corners[i]);
+				num_bri += corners[i].count;
+				if(corners[i].is_a_corner)
+					cor_bri += corners[i].count;
+				break;
 
-				case Darker:
-					darker.push_back(corners.back());
-					num_dar += corners.back().count;
-					if(corners.back().is_a_corner)
-						cor_dar += corners.back().count;
-					break;
+			case Darker:
+				darker.push_back(corners[i]);
+				num_dar += corners[i].count;
+				if(corners[i].is_a_corner)
+					cor_dar += corners[i].count;
+				break;
 
-				case Similar:
-					similar.push_back(corners.back());
-					num_sim += corners.back().count;
-					if(corners.back().is_a_corner)
-						cor_sim += corners.back().count;
-					break;
-			}
-		
-		corners.resize(corners.size() -1);
+			case Similar:
+				similar.push_back(corners[i]);
+				num_sim += corners[i].count;
+				if(corners[i].is_a_corner)
+					cor_sim += corners[i].count;
+				break;
+		}
 	}
 	
+	//Deallocate the memory now it's no longer needed.
+	corners.clear();
+	
+	//This is not the same as corners.size(), since the corners (datapoints)
+	//have a count assosciated with them.
 	uint64_t num_tests =  num_bri + num_dar + num_sim;
 
 	
 	//Build the subtrees
 	shared_ptr<tree> b_tree, d_tree, s_tree;
-
+	
+	//If the sublist contains a single class, then instantiate a leaf,
+	//otherwise recursively build the tree.
 	if(cor_bri == 0)
 		b_tree = tree::NonCornerLeaf(num_bri);
 	else if(cor_bri == num_bri)
@@ -462,11 +504,63 @@ template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, cons
 		s_tree = tree::CornerLeaf(num_sim);
 	else
 		s_tree = build_tree<S>(similar, weights, nfeats);
-
+	
 	return shared_ptr<tree>(new tree(b_tree, d_tree, s_tree, f, num_tests));
 }
 
 
+/**This function traverses the tree and produces a textual representation of it.
+Additionally, if any of the subtrees are the same, then a single subtree is produced
+and the test is removed.
+
+A subtree has the following format:
+\verbatim 
+    subtree= lead | node;
+    
+    leaf = "corner" | "background" ;
+
+    node = node2 | node3;
+
+    node3 = "if_brighter" feature_number n1 n2 n3
+                subtree
+            "elsf_darker" feature_number
+                subtree
+            "else"
+                subtree
+            "end";
+
+     node2= if_statement feature_number n1 n2
+                subtree
+            "else"
+                subtree
+            "end";
+
+    if_statement = "if_brighter" | "if_darker" | "if_either";
+    feature_number ==integer;
+    n1 = integer;
+    n2 = integer;
+    n3 = integer;
+\endverbatim
+
+\e feature_number refers to the index of the feature that the test is performed on.
+
+In \e node3, a 3 way test is performed. \e n1, \e n2 and \e n3 refer to the
+number of training examples landing in the \e if block, the \e elfs block and
+the \e else block respectivly.
+
+In a \e node2 node, one of the tests has been removed. \e n1 and  \e n2refer to
+the number of training examples landing in the \e if block and the \e else
+block respectivly.
+
+Although not mentioned in the grammar, the indenting is kept very strict.
+
+This representation has been designed to be parsed very easily with simple
+regular expressions, hence the use if "elsf" as opposed to "elif" or "elseif".
+
+@param node (sub)tree to serialize
+@param o Stream to serialize to.
+@param i Indent to print before each line of the serialized tree.
+*/
 void print_tree(const tree* node, ostream& o, const string& i="")
 {
 	if(node->is_a_corner == tree::Corner)
@@ -529,8 +623,14 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 	}
 }
 
+///This function loads data and builds a tree. It is templated because datapoint
+///is templated, for reasons of memory efficiency.
+///@param num_features Number of features used
+///@param weights Weights on each feature. 
+///@return The learned tree, and number of datapoints.
 template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(int num_features, const vector<double>& weights)
 {
+    assert(weights.size() == num_features);
 
 	shared_ptr<vector<datapoint<S> > > l;
 	uint64_t num_datapoints;
@@ -549,16 +649,10 @@ template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(in
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Driver program
-//
-
-
+///The main program
 int main(int argc, char** argv)
 {
 	//Set up default arguments
-	GUI.LoadFile("learn_fast_tree.cfg");
 	GUI.parseArguments(argc, argv);
 
 	cin.sync_with_stdio(false);
@@ -590,6 +684,9 @@ int main(int argc, char** argv)
 	shared_ptr<tree> tree;
 	uint64_t num_datapoints;
 
+    ///Each feature takes up 2 bits. Since GCC doesn't pack any finer
+    ///then 32 bits for hetrogenous structs, there is no point in having
+    ///granularity finer than 16 features.
 	if(num_features <= 16)
 		make_rtuple(tree, num_datapoints) = load_and_build_tree<16>(num_features, weights);
 	else if(num_features <= 32)
