@@ -16,10 +16,25 @@ There is no install option.
 
 This will create the following executables:
  - <code>\link learn_detector.cc learn_detector\endlink</code> This learns a detector from a repeatability dataset.
+ - \p extract_features This extracts features from an image sequence which can be turned in to a decision tree.
+ - \p fast_N_features This generates features for a FAST-N detector without needing images.
+ - \link learn_fast_tree.cc \p learn_fast_tree \endlink This learns a FAST decision tree, from extracted data.
+ - Programs for generating code from the learned tree, in various language/library combinations.
+   - C++ / libCVD
+	   - \p fast_tree_to_cxx_score_bsearch
+	   - \p fast_tree_to_cxx_score_iterate
+	   - \p fast_tree_to_cxx
+   - C++ / OpenCV
+       - \p FIXME
+   - MATLAB
+       - \p FIXME
+  - \p repeatability_test Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
+	   
+  
+*/
 
-
- 
+/*
 \section learn_detector
 
 To set the parameters, examine <code>learn_detector.cfg</code>.

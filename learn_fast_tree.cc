@@ -38,10 +38,7 @@ bsdsb 1000  1
 
 
 
-
-
-
-\section f9Generate Generating input data
+\subsection f9Generate Generating input data
     
     Ideally, input data will be generated from some sample images. The 
     program FIXME can be used to do this.
@@ -50,8 +47,19 @@ bsdsb 1000  1
     possible feature combinations for FAST-N features. When run without
     arguments, it generates data for FAST-9 features, otherwise the argument can
     be used to specify N.
+
+\section lfGen Output data
+    
+    The program does not generate source code directly, rather it generates an
+    easily parsabel representation of a decision tree which can be turned in to
+    source code.
+
+    The structure of the tree is described in detail in ::print_tree.
+    
 */
 
+///\cond never
+#ifndef DOXYGEN_IGNORE
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -74,8 +82,8 @@ bsdsb 1000  1
 #include <cvd/image_ref.h>
 
 #include <gvars3/instances.h>
+#endif
 
-///\cond never
 using namespace std;
 using namespace tr1;
 using namespace tag;
@@ -90,12 +98,6 @@ enum Ternary
 	Darker  ='d',
 	Similar ='s'
 };
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// Utility functions
-//
-
 
 #define fatal(E, S, ...) vfatal((E), (S), (tag::Fmt,## __VA_ARGS__))
 template<class C> void vfatal(int err, const string& s, const C& list)
