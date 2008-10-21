@@ -36,6 +36,13 @@ Get libCVD here: http://savannah.nongnu.org/projects/libcvd
 ])
 fi
 
+cvd_lapack=no
+AC_CHECK_LIB(cvd, dgetri_, [cvd_lapack=yes],[cvd_lapack=no])
+
+if test $cvd_lapack = no
+then
+	AC_MSG_ERROR([libCVD must be compiled with lapack support.])
+fi
 
 ################################################################################
 #
@@ -118,7 +125,6 @@ then
 Get GVars3 here: http://savannah.nongnu.org/projects/libcvd
 ])
 fi
-
 
 ################################################################################
 #
