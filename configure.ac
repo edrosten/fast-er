@@ -1,5 +1,5 @@
 AC_INIT(FAST-ER,1.0)
-AC_COPYRIGHT(Copyright Los Alamos National Laboratory)
+AC_COPYRIGHT(Copyright Los Alamos National Laboratory and Edward Rosten (2008))
 
 
 orig_CXXFLAGS="$CXXFLAGS"
@@ -77,13 +77,27 @@ LDFLAGS="$LDFLAGS -lcvd"
 
 comp=no
 AC_COMPILE_IFELSE([
+	#include <cvd/fast_corner.h>
 	#include <cvd/image_io.h>
 	int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
-], [comp=yes], [cvd=no])
+], [comp=yes], [comp=no])
 
 AC_MSG_RESULT([$comp])
 
-if test $cvd = no
+if test $comp = no
+then
+	AC_MSG_CHECKING(If libcvd needs -msse2)
+	APPEND(CXXFLAGS,[ -msse2])
+
+	AC_COMPILE_IFELSE([
+		#include <cvd/fast_corner.h>
+		#include <cvd/image_io.h>
+		int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
+	], [comp=yes], [comp=no])
+	AC_MSG_RESULT($comp)
+fi
+
+if test $comp = no
 then
 	AC_MSG_ERROR([A working copy of libCVD is required for this program.
 Get libCVD here: http://savannah.nongnu.org/projects/libcvd
@@ -128,8 +142,6 @@ fi
 #
 tag=yes
 AC_CHECK_HEADERS(tag/printf.h, [], [tag=no])
-
-comp=no
 AC_MSG_CHECKING([tag])
 AC_COMPILE_IFELSE([
 	#include <tag/printf.h>

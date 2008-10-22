@@ -7,7 +7,7 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright Los Alamos National Laboratory
+# Copyright Los Alamos National Laboratory and Edward Rosten (2008)
 ## --------------------- ##
 ## M4sh Initialization.  ##
 ## --------------------- ##
@@ -1330,7 +1330,7 @@ Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright Los Alamos National Laboratory
+Copyright Los Alamos National Laboratory and Edward Rosten (2008)
 _ACEOF
   exit
 fi
@@ -3455,6 +3455,7 @@ LDFLAGS="$LDFLAGS -lcvd"
 comp=no
 cat >conftest.$ac_ext <<_ACEOF
 
+	#include <cvd/fast_corner.h>
 	#include <cvd/image_io.h>
 	int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
 
@@ -3481,7 +3482,7 @@ else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	cvd=no
+	comp=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
@@ -3489,7 +3490,50 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { echo "$as_me:$LINENO: result: $comp" >&5
 echo "${ECHO_T}$comp" >&6; }
 
-if test $cvd = no
+if test $comp = no
+then
+	{ echo "$as_me:$LINENO: checking If libcvd needs -msse2" >&5
+echo $ECHO_N "checking If libcvd needs -msse2... $ECHO_C" >&6; }
+	CXXFLAGS="$CXXFLAGS  -msse2"
+
+	cat >conftest.$ac_ext <<_ACEOF
+
+		#include <cvd/fast_corner.h>
+		#include <cvd/image_io.h>
+		int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
+
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  comp=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	comp=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	{ echo "$as_me:$LINENO: result: $comp" >&5
+echo "${ECHO_T}$comp" >&6; }
+fi
+
+if test $comp = no
 then
 	{ { echo "$as_me:$LINENO: error: A working copy of libCVD is required for this program.
 Get libCVD here: http://savannah.nongnu.org/projects/libcvd
@@ -3922,8 +3966,6 @@ fi
 
 done
 
-
-comp=no
 { echo "$as_me:$LINENO: checking tag" >&5
 echo $ECHO_N "checking tag... $ECHO_C" >&6; }
 cat >conftest.$ac_ext <<_ACEOF
