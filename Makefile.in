@@ -2,7 +2,7 @@ CXXFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@
 CXX=@CXX@
 
-PROGS=learn_detector warp_to_png
+PROGS=learn_detector warp_to_png image_warp
 
 .PHONY: all clean
 

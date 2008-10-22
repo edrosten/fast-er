@@ -1,0 +1,106 @@
+/**
+\file image_warp.cc Main file for the image_warp executable.
+
+\section wpUsage Usage
+
+<code> image_warp [--num NUM_IMAGES] [--dir DIR] [--type TYPE] [--out OUT_DIR] [--stub OUT_STUB]</code>
+
+\section Description
+
+Loads a dataset (NUM, DIR and TYPE specify the dataset according to  ::load_data)
+and warp every image to look like every other image. The output is placed in
+the image <code>./dir/warp_FROM_TO.jpg</code>. You need to create the output 
+directory yourself.
+
+By flipping through the images with the same value of TO, you can see the
+quality of alignment within a dataset.
+
+*/
+
+
+#include <iostream>
+#include <cvd/image_io.h>
+#include <cvd/image_interpolate.h>
+#include <gvars3/instances.h>
+#include <tag/printf.h>
+#include <tag/stdpp.h>
+
+#include "load_data.h"
+
+using namespace std;
+using namespace CVD;
+using namespace tag;
+using namespace GVars3;
+using namespace TooN;
+
+///Convert an array<float, 2> in to a Vector<2>
+///@param f The input array
+///@return The output Vector<2>
+inline Vector<2> Vec(const array<float, 2>& f)
+{
+        return (make_Vector, f[0], f[1]);
+}
+
+///Warp one image to look like another, using bilinear interpolation
+///@param in The image to warp
+///@param warp  The warp to use to warp the image
+///@return The warped image
+Image<byte> warp_image(const Image<byte>& in, const Image<array<float, 2> >& warp)
+{
+	Image<byte> ret(in.size(), 0);
+
+	image_interpolate<Interpolate::Bilinear, byte> interp(in);
+
+	for(int y=0; y < ret.size().y; y++)
+		for(int x=0; x < ret.size().x; x++)
+		{
+			if(warp[y][x][0] != -1 && interp.in_image(Vec(warp[y][x])))
+				ret[y][x] = interp[Vec(warp[y][x])];
+		}
+
+	return ret;
+}
+
+///Driving function
+int main(int argc, char** argv)
+{
+	try
+	{
+		//Load command line arguments
+		GUI.parseArguments(argc, argv);
+
+		vector<Image<byte> > images;
+		vector<vector<Image<array<float, 2> > > > warps;
+
+		//Extract arguments relavent to loading a dataset
+		int n = GV3::get<int>("num", 2, 1);
+		string dir = GV3::get<string>("dir", "./", 1);
+		string format = GV3::get<string>("type", "cambridge", 1);
+
+		//Load the dataset
+		rpair(images, warps) = load_data(dir, n, format);
+
+		//Generate the output printf string	
+		string out = GV3::get<string>("out", "./out/", 1) + "/" + GV3::get<string>("stub", "warped_%i_%i.jpg", 1);
+
+		//Warp every image to look like every other image
+		//where this makes sense.
+		for(int to = 0; to < n; to++)
+			for(int from=0; from < n; from ++)
+				if(from != to)
+				{
+					Image<byte> w = warp_image(images[from], warps[to][from]);
+					img_save(w, sPrintf(out, to, from));
+
+					cout << "Done " << from << " -> " << to << endl;
+				}
+				else
+				{
+					img_save(images[from], sPrintf(out, to, from));
+				}
+	}
+	catch(Exceptions::All e)
+	{
+		cerr << "Error: " << e.what << endl;
+	}	
+}
