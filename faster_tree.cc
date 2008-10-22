@@ -168,12 +168,6 @@ vector<string> split(const string& s)
 	return v;
 }
 
-///A named symbol to throw in the case that 
-///tree deserialization fails with a parse error.
-///@ingroup gTree
-struct ParseError{};
-
-
 ///String to some class. Name modelled on atoi.
 ///@param s String to parse
 ///@return class the string was parsed in to.

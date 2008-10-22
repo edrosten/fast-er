@@ -360,6 +360,16 @@ class tree_element
 };
 
 
+tree_element* load_a_tree(std::istream& i);
 std::vector<CVD::ImageRef> tree_detect_corners(const CVD::Image<CVD::byte>& im, const tree_element* detector, int threshold, CVD::Image<int> scores);
+
+
+///A named symbol to throw in the case that 
+///tree deserialization fails with a parse error.
+///@ingroup gTree
+struct ParseError{};
+
+
+
 
 #endif
