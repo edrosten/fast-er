@@ -6,6 +6,8 @@
 #include <TooN/LU.h>
 #include <TooN/helpers.h>
 
+#include <cstdlib>
+
 #include "load_data.h"
 #include "warp_to_png.h"
 #include "utility.h"

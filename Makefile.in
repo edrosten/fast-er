@@ -17,6 +17,10 @@ learn_detector:offsets.o faster_bytecode.o faster_tree.o learn_detector.o load_d
 warp_to_png:warp_to_png.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
+image_warp:image_warp.o load_data.o
+	$(CXX) -o $@ $^ $(LDFLAGS) 
+
+
 clean:
 	rm -f $(PROGS) *.o
 

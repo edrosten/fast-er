@@ -353,7 +353,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 					//Select r, c \in {0, 1, 2} without replacement
 					int r = rand() % 3; //Remove
 					int c;				//Copy
-					while((c = rand()%3) == r);
+					while((c = rand()%3) == r){}
 
 					cout << "Copying branches " << c << " to " << r <<endl;
 

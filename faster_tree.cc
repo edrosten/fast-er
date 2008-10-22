@@ -1,4 +1,5 @@
 #include <tag/stdpp.h>
+#include <memory>
 #include <gvars3/instances.h>
  
 #include "faster_tree.h"

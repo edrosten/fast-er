@@ -2,6 +2,8 @@
 #define FASTER_BYTECODE_H
 
 #include <vector>
+#include <climits>
+#include <cstdlib>
 #include <iostream>
 #include <cvd/byte.h>
 #include <cvd/image.h>
