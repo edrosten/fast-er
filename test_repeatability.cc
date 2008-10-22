@@ -156,6 +156,7 @@ void compute_repeatability_noise(const vector<Image<byte> >& images, const vecto
 /// @ingroup gRepeatability
 void mmain(int argc, char** argv)
 {
+	GUI.LoadFile("test_repeatability.cfg");
 	GUI.parseArguments(argc, argv);
 
 	vector<Image<byte> > images;
