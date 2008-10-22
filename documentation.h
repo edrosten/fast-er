@@ -30,7 +30,7 @@ This will create the following executables:
        - \p FIXME
   - \p repeatability_test Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
- - <code>\link image_warp.cc image_warp\endlink</code> This program allows visual inspection of the quality of a dataset.
+ - <code>\link image_warp.cc image_warp</code> This program allows visual inspection of the quality of a dataset.
 	   
   
 */
@@ -58,12 +58,7 @@ The complete sequence of operations is as follows
 		 except you will need to set up <code>datadir</code> to point to the
 		 repeatability dataset.
 
-	<li> Run the corner detector learning progr	}
-	catch(Exceptions::All e)
-	{
-		cerr << "Error: " << e.what << endl;
-	}	
-am
+	<li> Run the corner detector learning program
 
 		<code>./learn_detector > logfile</code>
 
