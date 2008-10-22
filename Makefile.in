@@ -20,7 +20,7 @@ warp_to_png:warp_to_png.o
 image_warp:image_warp.o load_data.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
-test_repeatability:test_repeatability.o load_data.o detectors.o
+test_repeatability:test_repeatability.o load_data.o detectors.o harrislike.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 clean:
