@@ -662,6 +662,7 @@ OBJEXT
 CXXCPP
 GREP
 EGREP
+susan
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -4231,6 +4232,31 @@ fi
 
 ################################################################################
 #
+# SUSAN
+#
+
+{ echo "$as_me:$LINENO: checking for susan" >&5
+echo $ECHO_N "checking for susan... $ECHO_C" >&6; }
+if test -f susan2l.c
+then
+	susan="mod_susan.o susan.o"
+
+	CXXFLAGS="$CXXFLAGS -DUSESUSAN"
+	{ echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }
+else
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+	{ echo "$as_me:$LINENO: WARNING: susan2l.c not found. I can not distribute it, but it can be found here:
+http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
+" >&5
+echo "$as_me: WARNING: susan2l.c not found. I can not distribute it, but it can be found here:
+http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
+" >&2;}
+fi
+
+################################################################################
+#
 # JIT compiler
 #
 
@@ -5417,11 +5443,12 @@ OBJEXT!$OBJEXT$ac_delim
 CXXCPP!$CXXCPP$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
+susan!$susan$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 50; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 51; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

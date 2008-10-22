@@ -194,6 +194,24 @@ fi
 
 ################################################################################
 #
+# SUSAN
+#
+
+AC_MSG_CHECKING(for susan)
+if test -f susan2l.c
+then
+	AC_SUBST(susan, ["mod_susan.o susan.o"])
+	APPEND(CXXFLAGS, -DUSESUSAN)
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+	AC_MSG_WARN([susan2l.c not found. I can not distribute it, but it can be found here:
+http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
+])
+fi
+
+################################################################################
+#
 # JIT compiler
 #
 
