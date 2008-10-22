@@ -172,6 +172,10 @@ where the index <i>i</i> counts from 1. More details are in ::load_warps_cambrid
 
 */
 
+/** 
+@defgroup gDetect Functions for detecting corners of various types.
+*/
+
 /**
 @defgroup  gOptimize Optimization routines
 

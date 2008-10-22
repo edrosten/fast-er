@@ -9,7 +9,7 @@
 
 Loads a dataset (NUM, DIR and TYPE specify the dataset according to  ::load_data)
 and warp every image to look like every other image. The output is placed in
-the image <code>./dir/warp_FROM_TO.jpg</code>. You need to create the output 
+the image <code>./dir/warp_TO_FROM.jpg</code>. You need to create the output 
 directory yourself.
 
 By flipping through the images with the same value of TO, you can see the
