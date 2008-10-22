@@ -26,20 +26,13 @@ quality of alignment within a dataset.
 #include <tag/stdpp.h>
 
 #include "load_data.h"
+#include "utility.h"
 
 using namespace std;
 using namespace CVD;
 using namespace tag;
 using namespace GVars3;
 using namespace TooN;
-
-///Convert an array<float, 2> in to a Vector<2>
-///@param f The input array
-///@return The output Vector<2>
-inline Vector<2> Vec(const array<float, 2>& f)
-{
-        return (make_Vector, f[0], f[1]);
-}
 
 ///Warp one image to look like another, using bilinear interpolation
 ///@param in The image to warp

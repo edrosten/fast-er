@@ -2,7 +2,7 @@ CXXFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@
 CXX=@CXX@
 
-PROGS=learn_detector warp_to_png image_warp
+PROGS=learn_detector warp_to_png image_warp test_repeatability
 
 .PHONY: all clean
 
@@ -20,6 +20,8 @@ warp_to_png:warp_to_png.o
 image_warp:image_warp.o load_data.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
+test_repeatability:test_repeatability.o load_data.o
+	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 clean:
 	rm -f $(PROGS) *.o
