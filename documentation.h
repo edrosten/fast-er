@@ -4,9 +4,9 @@
 
 \section Introduction
 
-This program created a corner detector by optimizing a decision tree using simulated annealing.
-The tree is optimized to maximize the repeatability of the corner detector.
-
+This code contains a suite of pograms to generate an optimized corner detector,
+test corner detectors on a variety of datasets, generate optimized C++ code, and
+some utilities for handling the datasets.
 
 To make on any unix-like environment, do:
 
@@ -17,7 +17,7 @@ There is no install option.
 This will create the following executables:
  - <code>\link learn_detector.cc learn_detector\endlink</code> This learns a detector from a repeatability dataset.
  - \p extract_features This extracts features from an image sequence which can be turned in to a decision tree.
- - \p fast_N_features This generates features for a FAST-N detector without needing images.
+ - \p fast_N_features This generates a complete set of features for a FAST-N detector without needing images.
  - \link learn_fast_tree.cc \p learn_fast_tree \endlink This learns a FAST decision tree, from extracted data.
  - Programs for generating code from the learned tree, in various language/library combinations.
    - C++ / libCVD
@@ -26,15 +26,21 @@ This will create the following executables:
 	   - \p fast_tree_to_cxx
    - MATLAB
        - \p FIXME
-   - \p repeatability_test Measure the repeatability of a detector.
+ - <code>\link test_repeatability.cc test_repeatability\endlink</code> Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
  - <code>\link image_warp.cc image_warp\endlink</code> This program allows visual inspection of the quality of a dataset.
-	   
-  
-*/
 
-/*
-\section learn_detector
+\section sRequirements Requirements
+
+This code requires the following libraries from http://mi.eng.cam.ac.uk/~er258/cvd
+- libCVD (compiled with TooN and LAPACK support)
+- TooN
+- GVars3
+- tag
+For repeatability testing, the SUSAN detector can be used if the reference implementation
+is downloaded and placed in the directory. It is abailable from http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
+
+\section learn_detector Running the system
 
 To set the parameters, examine <code>learn_detector.cfg</code>.
 In order to run this program, you will need a repeatability dataset, such as the one from
@@ -53,8 +59,8 @@ The complete sequence of operations is as follows
 		<code> ./configure && make </code>
 
 	<li> Set up <code>learn_detector.cfg</code>. The default parameters are good,
-		 except you will need to set up <code>datadir</code> to point to the
-		 repeatability dataset.
+		 except you will need to set up the system to point to the
+		 repeatability dataset you wish to use.
 
 	<li> Run the corner detector learning program
 
@@ -65,7 +71,14 @@ The complete sequence of operations is as follows
 
 	<li> Extract a detector from the logfile
 
-	     <code>./get_block_detector logfile &gt; learned-faster-detector.h</code>
+		<code>awk 'a&&!NF{exit}a;/Final tree/{a=1}' logfile &gt; new_detector.tree</code>
+
+	<li> Measure the repeatability of the detector
+	    
+		<code>./test_repeatability --detector faster2 --faster2 new_detector.tree > new_detector_repeatability.txt</code>
+
+		The file <code>new_detector_repeatability.txt</code> can be plotted with almost any graph
+		plotting program.
 
 	<li> make <code>extract-fast2.cxx</code>
 		
