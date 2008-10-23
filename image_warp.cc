@@ -55,6 +55,8 @@ Image<byte> warp_image(const Image<byte>& in, const Image<array<float, 2> >& war
 }
 
 ///Driving function
+///@param argc Number of command line arguments
+///@param argv Commandline argument list
 int main(int argc, char** argv)
 {
 	try

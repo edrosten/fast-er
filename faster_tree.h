@@ -342,7 +342,8 @@ class tree_element
 			}
 		}
 		
-		
+	    ///Destruct the tree node. This destructs all child nodes,
+		///so deleting a tree a deep modification operation.
 		~tree_element()
 		{	
 			delete lt;
@@ -350,10 +351,17 @@ class tree_element
 			delete gt;
 		}
 		
+		///Construct a leaf-node
+		///@param b Class of the node
 		tree_element(bool b)
 		:lt(0),eq(0),gt(0),is_corner(b),offset_index(0)
 		{}
-
+		
+		///Construct a non-leaf tree node
+		///@param a Less-Than branch of tree
+		///@param b Equal branch of tree
+		///@param c Greater-Than branch of tree
+		///@param i Pixel number to examine.
 		tree_element(tree_element*a, tree_element* b, tree_element* c, int i)
 		:lt(a),eq(b),gt(c),is_corner(0),offset_index(i)
 		{}

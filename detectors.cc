@@ -81,21 +81,28 @@ int binary_search_threshold(const Image<byte>& i, vector<ImageRef>& c, unsigned 
 	}
 }
 
+///This class wraps a ::DetectT class with ::binary_search_threshold and presents
+///is as a DetectN class.
+///@ingroup gDetect
 struct SearchThreshold:public DetectN
 {
-
+	///@param d Detector to wrap. This will be managed by SearchThreshold
 	SearchThreshold(DetectT* d)
 	:detector(d)
 	{
 	}
-
+    
+	///Detect corners
+	///@param im Image in which to detect corners
+	///@param corners Detected corners are inserted in to this array
+	///@param N number of corners to detect
 	virtual void operator()(const Image<byte>& im, vector<ImageRef>& corners, unsigned int N)const
 	{
 		int t = binary_search_threshold(im, corners, N, *detector);	
 	}
 	
 	private: 
-	auto_ptr<DetectT> detector;
+	auto_ptr<DetectT> detector; //<Detector to wrap
 };
 
 ///@ingroup gDetect
@@ -114,13 +121,22 @@ struct Random:public DetectN
 ///the GVars database. The parameter "detector" determines the
 ///detector type. Valid options are:
 ///  - \link ::Random random \endlink Randomly scatter corners around the image.
-///
+///  - \link ::dog dog \endlink Difference of Gaussians detector
+///  - \link ::harrisdog harrisdog \endlink Harris-Laplace (actually implemented as Harris-DoG) detector
+///  - \link ::HarrisDetect harris\endlink Harris detector with Gaussian blur
+///  - \link ::ShiTomasiDetect shitomasi\endlink Shi-Tomasi detector
+///  - \link ::SUSAN susan\endlink Reference implementation of the SUSAN detector
+///  - \link ::fast_9 fast9\endlink libCVD's builtin FAST-9 detector
+///  - \link ::fast_9_old fast9old\endlink libCVD's builtin FAST-9 detector with the old
+///          scoring algorithm, as seen in [Rosten, Drummond 2006].
+///  - \link ::fast_12 fast12\endlink libCVD's builtin FAST-12 detector
+///  - \link ::faster_learn faster2\endlink A FAST-ER detector loaded from a file containing the tree
 ///@ingroup gDetect
 auto_ptr<DetectN> get_detector()
 {
 	
 	string d = GV3::get<string>("detector", "fast9", 1);
-
+	
 	if(d == "random")
 		return auto_ptr<DetectN>(new Random);
 	else if(d == "dog")
@@ -139,7 +155,7 @@ auto_ptr<DetectN> get_detector()
 		return auto_ptr<DetectN>(new SearchThreshold(new fast_9));
 	else if(d == "fast9old")
 		return auto_ptr<DetectN>(new SearchThreshold(new fast_9_old));
-	else if(d == "fast_12")
+	else if(d == "fast12")
 		return auto_ptr<DetectN>(new SearchThreshold(new fast_12));
 	else if(d == "faster2")
 		return auto_ptr<DetectN>(new SearchThreshold(new faster_learn(GV3::get<string>("faster2"))));

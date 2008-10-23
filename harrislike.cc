@@ -130,6 +130,7 @@ void HarrisDetector(const Image<float>& i, vector<pair<float, ImageRef> >& c, un
 	harris_like<HarrisScore, PairInserter>(i, c, N, blur, sigmas);
 }
 
+
 void HarrisDetect::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const 
 {
 	float blur = GV3::get<float>("harris.blur", 2.5, 1);
@@ -139,7 +140,7 @@ void HarrisDetect::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigne
 
 void ShiTomasiDetect::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const
 {
-	float blur = GV3::get<float>("shit.blur", 2.5, 1);
-	float sigmas = GV3::get<float>("shit.sigmas", 2.0, 1);
+	float blur = GV3::get<float>("shitomasi.blur", 2.5, 1);
+	float sigmas = GV3::get<float>("shitomasi.sigmas", 2.0, 1);
 	harris_like<ShiTomasiScore, PosInserter>(i, c, N, blur, sigmas);
 }

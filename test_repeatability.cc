@@ -1,3 +1,25 @@
+/**
+\file test_repeatability.cc Main file for the test_repeatability executable.
+
+\section wpUsage Usage
+
+<code> test_repeatability [--var VAL] [--exec FILE] </code>
+
+\section Description
+
+This program \link gDataset loads a dataset\endlink and then 
+computes repeatability of the specified detector on the dataset. This
+program accepts standard GVars3 commandline arguments and loads 
+<code>learn_detector.cfg</code> as a the default configuration:
+
+\include learn_detector.cfg
+
+The available detectors are selected using the <code>detector</code> variable.
+Options are given in ::get_detector.
+
+*/
+
+
 #include <iostream>
 #include <sstream>
 #include <cfloat>

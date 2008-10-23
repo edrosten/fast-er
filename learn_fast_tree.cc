@@ -99,7 +99,16 @@ enum Ternary
 	Similar ='s'
 };
 
+///Print an error message and the exit
+///@param E Error code
+///@param S Format string
+///@ingroup gUtility
 #define fatal(E, S, ...) vfatal((E), (S), (tag::Fmt,## __VA_ARGS__))
+///Print an error message and the exit, using Tuple stype VARARGS
+///@param err Error code
+///@param s Format string
+///@param list Argument list
+///@ingroup gUtility
 template<class C> void vfatal(int err, const string& s, const C& list)
 {
 	vfPrintf(cerr, s + "\n", list);
@@ -416,6 +425,8 @@ struct tree{
 	///The leaf node constructor is private to prevent a tree
 	///being constructed with invalid values.
 	///see also CornerLeaf and NonCornerLeaf.
+	///@param c Class of the node
+	///@param n Number of datapoints which this node represents
 	tree(IsCorner c, uint64_t n)
 	:is_a_corner(c),feature_to_test(-1),num_datapoints(n)
 	{}
@@ -652,6 +663,8 @@ template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(in
 
 
 ///The main program
+///@param argc Number of commandline arguments
+///@param argv Commandline arguments
 int main(int argc, char** argv)
 {
 	//Set up default arguments

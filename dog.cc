@@ -25,6 +25,10 @@ using namespace TooN;
 //
 typedef Image<float>::iterator fi;
 
+
+//These classes are used in local_maxima to determine how to 
+//modify the indexing of the coarser and finer input images.
+//It allows the images to either be a factor of 2 larger or smaller.
 struct Equal { static int eval(int x){ return x;} };
 struct Larger { static int eval(int x){ return 1+2*x;} };
 struct Smaller{ static int eval(int x){ return x/2;} };
@@ -117,21 +121,13 @@ void dog::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) 
 				*i1 = (*i2 - *i1);
 
 			//im is now dog
-			//clurred 
+			//blurred 
 
 			d1 = d2;
 			d2 = d3;
 			d3 = im;
 			im = blurred;
-/*
-	Image<float> t(d3.size());
-	for(fi i1=t.begin(), i2 = d3.begin(); i1!= t.end(); ++i1, ++i2)
-		*i1 = *i2 * 10 + 0.5;
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawPixels(t);
-	glFlush();
-	cin.get();
-*/
+
 			d1m = d2m;
 			d2m = d3m;
 			d3m = scalemul;
@@ -166,7 +162,6 @@ void dog::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) 
 	}
 	
 
-	//sort(corners.begin(), corners.end());
 	if(corners.size() > N)
 	{
 		nth_element(corners.begin(), corners.begin() + N, corners.end());
@@ -176,16 +171,6 @@ void dog::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) 
 
 	for(unsigned int i=0; i < corners.size(); i++)
 		c.push_back(corners[i].second);
-/*
-	glDrawPixels(i);
-	glColor3f(1, 0, 0);
-	glPointSize(3);
-	glBegin(GL_POINTS);
-	glVertex(c);
-	glEnd();
-	glFlush();
-	cin.get();
-*/
 }
 
 template<class LEval, class SEval> bool is_scale_maximum(const Image<float>& large, const Image<float>& mid, const Image<float>& small, ImageRef c)

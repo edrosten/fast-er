@@ -24,13 +24,11 @@ This will create the following executables:
 	   - \p fast_tree_to_cxx_score_bsearch
 	   - \p fast_tree_to_cxx_score_iterate
 	   - \p fast_tree_to_cxx
-   - C++ / OpenCV
-       - \p FIXME
    - MATLAB
        - \p FIXME
-  - \p repeatability_test Measure the repeatability of a detector.
+   - \p repeatability_test Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
- - <code>\link image_warp.cc image_warp</code> This program allows visual inspection of the quality of a dataset.
+ - <code>\link image_warp.cc image_warp\endlink</code> This program allows visual inspection of the quality of a dataset.
 	   
   
 */
