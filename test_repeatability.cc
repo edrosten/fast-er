@@ -99,6 +99,7 @@ double compute_repeatability_exact(const vector<vector<Image<array<float,2> > > 
 ///This wrapper function computed the repeatability for a given detector and a given
 ///container of corner densities. The result is printed to stdout.
 ///
+/// @param images   Images to test repeatability on
 /// @param warps    Every warping where warps[i][j] specifies warp from image i to image j.
 /// @param detector Pointer to the corner detection function.
 /// @param cpf      The number of corners per frame to be tested.
@@ -132,6 +133,7 @@ void compute_repeatability_all(const vector<Image<byte> >& images, const vector<
 ///container of corner densities for variable levels of noise, from 0 to n in steps of 1
 ///The result is printed to stdout.
 ///
+/// @param images   Images to test repeatability on
 /// @param warps    Every warping where warps[i][j] specifies warp from image i to image j.
 /// @param detector Pointer to the corner detection function.
 /// @param cpf      The number of corners per frame to be tested.
@@ -207,6 +209,9 @@ void mmain(int argc, char** argv)
 
 }
 
+///Driving function which catches exceptions
+///@param argc Number of command line arguments
+///@param argv Commandline argument list
 int main(int argc, char** argv)
 {
 	try

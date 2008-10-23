@@ -62,6 +62,8 @@ vector<Image<byte> > load_images_vgg(string dir, int n)
 }
 
 ///Load an array from an istream
+///@param i Stream to load from
+///@param f array to load in to
 ///@ingroup gUtility
 istream& operator>>(istream& i, array<float, 2>& f)
 {
@@ -70,6 +72,7 @@ istream& operator>>(istream& i, array<float, 2>& f)
 }
 
 ///Convert a vector in to an array
+///@param vec Vector to convert
 ///@ingroup gUtility
 array<float, 2> Arr(const Vector<2>& vec)
 {
@@ -195,6 +198,7 @@ vector<vector<Image<array<float,2> > > > load_warps_cambridge(string dir, int nu
 }
 
 ///Invert a matrix
+///@param m Matrix to invert
 ///@ingroup gUtility
 Matrix<3> invert(const Matrix<3>& m)
 {

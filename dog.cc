@@ -29,9 +29,11 @@ typedef Image<float>::iterator fi;
 //These classes are used in local_maxima to determine how to 
 //modify the indexing of the coarser and finer input images.
 //It allows the images to either be a factor of 2 larger or smaller.
+///\cond never
 struct Equal { static int eval(int x){ return x;} };
 struct Larger { static int eval(int x){ return 1+2*x;} };
 struct Smaller{ static int eval(int x){ return x/2;} };
+///\endcond
 
 
 template<class LEval, class SEval> void local_maxima(const Image<float>& large, const Image<float>& mid, const Image<float>& small, vector<pair<float, ImageRef> >& corners, int m)
@@ -86,7 +88,7 @@ template<class LEval, class SEval> void local_maxima(const Image<float>& large, 
 			}
 }
 
-void dog::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const
+void dog::operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& c, unsigned int N) const
 {
 	int s = GV3::get<int>("dog.divisions_per_octave", 3,1);	//Divisions per octave
 	int octaves=GV3::get<int>("dog.octaves", 4, 1);
@@ -203,7 +205,7 @@ bool is_scale_maximum(const Image<float>& d1, const Image<float>& d2, const Imag
 }
 
 
-void harrisdog::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const
+void harrisdog::operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& c, unsigned int N) const
 {
 	int s = GV3::get<int>("harrislaplace.dog.divisions_per_octave", 11);	//Divisions per octave
 	int octaves=GV3::get<int>("harrislaplace.dog.octaves", 4, 1);

@@ -85,7 +85,7 @@ faster_learn::faster_learn(const std::string& fname)
 }
 
 
-void faster_learn::operator()(const Image<byte>& i, vector<ImageRef>& v, unsigned int t) const
+void faster_learn::operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& v, unsigned int t) const
 {
 	Image<int> scratch(i.size(), 0);
 

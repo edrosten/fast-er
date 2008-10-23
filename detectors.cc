@@ -102,13 +102,18 @@ struct SearchThreshold:public DetectN
 	}
 	
 	private: 
-	auto_ptr<DetectT> detector; //<Detector to wrap
+	///Detector to wrap
+	auto_ptr<DetectT> detector; 
 };
 
 ///@ingroup gDetect
 ///Detector which randomly scatters corners around an image.
 struct Random:public DetectN
 {
+	///Detect corners by scattering points around at random
+	///@param im Image in which to detect corners
+	///@param corners Detected corners are inserted in to this array
+	///@param N number of corners to detect
 	virtual void operator()(const Image<byte>& im, vector<ImageRef>& corners, unsigned int N)const
 	{
 		for(unsigned int i=0; i < N; i++)

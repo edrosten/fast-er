@@ -15,10 +15,13 @@ using namespace GVars3;
 //
 // Harris-like corners.
 // 
+
+///\cond never
 template<class C> inline C sq(const C& c)
 {
 	return c*c;
 }
+
 
 struct HarrisScore
 {
@@ -53,6 +56,7 @@ struct PairInserter
 		i.push_back(p);
 	}
 };
+///\endcond
 
 template<class Score, class Inserter, class C, class B> void harris_like(const Image<B>& i, C& c, unsigned int N, float blur, float sigmas)
 {
@@ -131,14 +135,14 @@ void HarrisDetector(const Image<float>& i, vector<pair<float, ImageRef> >& c, un
 }
 
 
-void HarrisDetect::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const 
+void HarrisDetect::operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& c, unsigned int N) const 
 {
 	float blur = GV3::get<float>("harris.blur", 2.5, 1);
 	float sigmas = GV3::get<float>("harris.sigmas", 2.0, 1);
 	harris_like<HarrisScore,PosInserter>(i, c, N, blur, sigmas);
 }
 
-void ShiTomasiDetect::operator()(const Image<byte>& i, vector<ImageRef>& c, unsigned int N) const
+void ShiTomasiDetect::operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& c, unsigned int N) const
 {
 	float blur = GV3::get<float>("shitomasi.blur", 2.5, 1);
 	float sigmas = GV3::get<float>("shitomasi.sigmas", 2.0, 1);

@@ -32,7 +32,9 @@ using namespace TooN;
 ///\endcond
 
 
-
+///Driving function
+///@param argc Number of command line arguments
+///@param argv Commandline argument list
 int main(int argc, char** argv)
 {
 	try
