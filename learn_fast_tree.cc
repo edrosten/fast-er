@@ -12,7 +12,7 @@
 
     The input data has the following format:
 
-    \verbatim
+\verbatim
 
 5
 [-1 -1] [1 1] [3 4] [5 6] [-3 4]
@@ -224,7 +224,7 @@ The tokens are whitespace separated.
 @param nfeats Number of features in a feature vector. Used to spot errors.
 @return Loaded datapoints and total number of instances.
 */
-template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >::type load_features(int nfeats)
+template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >::type load_features(unsigned int nfeats)
 {
 	shared_ptr<vector<datapoint<S> > > ret(new vector<datapoint<S> >);
 
@@ -287,10 +287,10 @@ double entropy(uint64_t n, uint64_t c1)
 ///@param weights weights on features
 ///@param nfeats Number of features in use.
 ///@return best feature.
-template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, int nfeats)
+template<int S> int find_best_split(const vector<datapoint<S> >& fs, const vector<double>& weights, unsigned int nfeats)
 {
     assert(nfeats == weights.size());
-	unsigned long long num_total = 0, num_corners=0;
+	uint64_t num_total = 0, num_corners=0;
 
 	for(typename vector<datapoint<S> >::const_iterator i=fs.begin(); i != fs.end(); i++)
 	{
@@ -641,7 +641,7 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 ///@param num_features Number of features used
 ///@param weights Weights on each feature. 
 ///@return The learned tree, and number of datapoints.
-template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(int num_features, const vector<double>& weights)
+template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(unsigned int num_features, const vector<double>& weights)
 {
     assert(weights.size() == num_features);
 
@@ -678,7 +678,7 @@ int main(int argc, char** argv)
 	//read file
 	
 	//Read number of features
-	int num_features;
+	unsigned int num_features;
 	cin >> num_features;
 	if(!cin.good() || cin.eof())
 		fatal(6, "Error reading number of features.");
