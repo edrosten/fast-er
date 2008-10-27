@@ -1,0 +1,538 @@
+  29 0xa148be0 0xa146e48 0xa147100 0xa141f30
+    Is corner:  0 0xa146e48 0 0 0
+    Is corner:  0 0xa147100 0 0 0
+    14 0xa141f30 0xa144238 0xa1421b0 0xa144520
+      Is corner:  0 0xa144238 0 0 0
+      32 0xa1421b0 0xa145140 0xa144758 0xa146ef0
+        19 0xa145140 0xa146558 0xa142ab0 0xa142750
+          38 0xa146558 0xa1468f0 0xa1449c8 0xa144e40
+            Is corner:  0 0xa1468f0 0 0 0
+            Is corner:  0 0xa1449c8 0 0 0
+            Is corner:  1 0xa144e40 0 0 0
+          Is corner:  0 0xa142ab0 0 0 0
+          Is corner:  1 0xa142750 0 0 0
+        12 0xa144758 0xa1475a0 0xa1480f8 0xa1475e8
+          15 0xa1475a0 0xa1475b8 0xa145368 0xa144860
+            6 0xa1475b8 0xa1446e0 0xa144848 0xa1446f8
+              Is corner:  1 0xa1446e0 0 0 0
+              Is corner:  1 0xa144848 0 0 0
+              Is corner:  0 0xa1446f8 0 0 0
+            23 0xa145368 0xa145380 0xa1426a8 0xa1447d0
+              Is corner:  0 0xa145380 0 0 0
+              0 0xa1426a8 0xa144b58 0xa146408 0xa1463f0
+                25 0xa144b58 0xa144b70 0xa149528 0xa144968
+                  Is corner:  0 0xa144b70 0 0 0
+                  46 0xa149528 0xa149540 0xa147558 0xa147540
+                    Is corner:  1 0xa149540 0 0 0
+                    Is corner:  0 0xa147558 0 0 0
+                    Is corner:  0 0xa147540 0 0 0
+                  34 0xa144968 0xa144980 0xa142870 0xa142858
+                    Is corner:  1 0xa144980 0 0 0
+                    Is corner:  1 0xa142870 0 0 0
+                    Is corner:  1 0xa142858 0 0 0
+                Is corner:  1 0xa146408 0 0 0
+                Is corner:  1 0xa1463f0 0 0 0
+              8 0xa1447d0 0xa1447e8 0xa142ca8 0xa142c90
+                Is corner:  0 0xa1447e8 0 0 0
+                9 0xa142ca8 0xa143f40 0xa142690 0xa143f58
+                  Is corner:  0 0xa143f40 0 0 0
+                  Is corner:  0 0xa142690 0 0 0
+                  Is corner:  1 0xa143f58 0 0 0
+                Is corner:  1 0xa142c90 0 0 0
+            Is corner:  0 0xa144860 0 0 0
+          7 0xa1480f8 0xa142c18 0xa142d08 0xa142c30
+            Is corner:  0 0xa142c18 0 0 0
+            9 0xa142d08 0xa142d20 0xa148a18 0xa1471f0
+              5 0xa142d20 0xa145850 0xa149120 0xa147dc8
+                30 0xa145850 0xa145868 0xa147db0 0xa148ef8
+                  Is corner:  1 0xa145868 0 0 0
+                  Is corner:  0 0xa147db0 0 0 0
+                  39 0xa148ef8 0xa148f10 0xa147a20 0xa147a08
+                    Is corner:  0 0xa148f10 0 0 0
+                    Is corner:  1 0xa147a20 0 0 0
+                    Is corner:  1 0xa147a08 0 0 0
+                24 0xa149120 0xa149138 0xa145ac0 0xa145aa8
+                  Is corner:  0 0xa149138 0 0 0
+                  Is corner:  1 0xa145ac0 0 0 0
+                  Is corner:  1 0xa145aa8 0 0 0
+                Is corner:  1 0xa147dc8 0 0 0
+              22 0xa148a18 0xa1481b8 0xa144490 0xa1481d0
+                Is corner:  0 0xa1481b8 0 0 0
+                41 0xa144490 0xa145b60 0xa146bc0 0xa145b78
+                  Is corner:  1 0xa145b60 0 0 0
+                  2 0xa146bc0 0xa145290 0xa1459d0 0xa1494b0
+                    14 0xa145290 0xa1452a8 0xa147fd8 0xa1452c0
+                      Is corner:  1 0xa1452a8 0 0 0
+                      15 0xa147fd8 0xa147ff0 0xa145cf8 0xa148008
+                        Is corner:  1 0xa147ff0 0 0 0
+                        43 0xa145cf8 0xa145d10 0xa149498 0xa145d28
+                          Is corner:  1 0xa145d10 0 0 0
+                          Is corner:  0 0xa149498 0 0 0
+                          Is corner:  0 0xa145d28 0 0 0
+                        Is corner:  0 0xa148008 0 0 0
+                      Is corner:  1 0xa1452c0 0 0 0
+                    10 0xa1459d0 0xa148128 0xa142b28 0xa144a28
+                      31 0xa148128 0xa148140 0xa144a10 0xa148158
+                        Is corner:  0 0xa148140 0 0 0
+                        Is corner:  1 0xa144a10 0 0 0
+                        Is corner:  1 0xa148158 0 0 0
+                      Is corner:  1 0xa142b28 0 0 0
+                      39 0xa144a28 0xa144a40 0xa146010 0xa142470
+                        Is corner:  0 0xa144a40 0 0 0
+                        26 0xa146010 0xa146028 0xa147f90 0xa147f78
+                          Is corner:  1 0xa146028 0 0 0
+                          30 0xa147f90 0xa147fa8 0xa148308 0xa1482f0
+                            Is corner:  1 0xa147fa8 0 0 0
+                            46 0xa148308 0xa148320 0xa142b10 0xa147b70
+                              Is corner:  1 0xa148320 0 0 0
+                              Is corner:  1 0xa142b10 0 0 0
+                              33 0xa147b70 0xa147b88 0xa142af8 0xa147ba0
+                                Is corner:  0 0xa147b88 0 0 0
+                                Is corner:  1 0xa142af8 0 0 0
+                                Is corner:  1 0xa147ba0 0 0 0
+                            Is corner:  0 0xa1482f0 0 0 0
+                          Is corner:  1 0xa147f78 0 0 0
+                        45 0xa142470 0xa142488 0xa145ff8 0xa1424a0
+                          Is corner:  0 0xa142488 0 0 0
+                          Is corner:  0 0xa145ff8 0 0 0
+                          Is corner:  1 0xa1424a0 0 0 0
+                    47 0xa1494b0 0xa1494c8 0xa146a70 0xa146a58
+                      Is corner:  0 0xa1494c8 0 0 0
+                      37 0xa146a70 0xa146a88 0xa148a60 0xa1442e0
+                        Is corner:  1 0xa146a88 0 0 0
+                        8 0xa148a60 0xa148a78 0xa144920 0xa144908
+                          Is corner:  1 0xa148a78 0 0 0
+                          44 0xa144920 0xa144938 0xa146360 0xa146348
+                            Is corner:  1 0xa144938 0 0 0
+                            24 0xa146360 0xa146378 0xa1459b8 0xa1459a0
+                              Is corner:  0 0xa146378 0 0 0
+                              Is corner:  0 0xa1459b8 0 0 0
+                              Is corner:  1 0xa1459a0 0 0 0
+                            Is corner:  1 0xa146348 0 0 0
+                          Is corner:  1 0xa144908 0 0 0
+                        0 0xa1442e0 0xa1442f8 0xa1478a0 0xa144310
+                          Is corner:  0 0xa1442f8 0 0 0
+                          36 0xa1478a0 0xa1478b8 0xa148a48 0xa1478d0
+                            Is corner:  1 0xa1478b8 0 0 0
+                            Is corner:  1 0xa148a48 0 0 0
+                            Is corner:  1 0xa1478d0 0 0 0
+                          Is corner:  0 0xa144310 0 0 0
+                      Is corner:  1 0xa146a58 0 0 0
+                  2 0xa145b78 0xa145b90 0xa146ba8 0xa146b90
+                    42 0xa145b90 0xa145a18 0xa145a48 0xa145a30
+                      Is corner:  1 0xa145a18 0 0 0
+                      6 0xa145a48 0xa1469e0 0xa146a10 0xa1469f8
+                        Is corner:  1 0xa1469e0 0 0 0
+                        43 0xa146a10 0xa146ab8 0xa146ae8 0xa146ad0
+                          Is corner:  1 0xa146ab8 0 0 0
+                          Is corner:  1 0xa146ae8 0 0 0
+                          Is corner:  1 0xa146ad0 0 0 0
+                        Is corner:  1 0xa1469f8 0 0 0
+                      Is corner:  0 0xa145a30 0 0 0
+                    Is corner:  1 0xa146ba8 0 0 0
+                    Is corner:  1 0xa146b90 0 0 0
+                24 0xa1481d0 0xa1481e8 0xa144478 0xa144460
+                  Is corner:  0 0xa1481e8 0 0 0
+                  Is corner:  1 0xa144478 0 0 0
+                  Is corner:  1 0xa144460 0 0 0
+              47 0xa1471f0 0xa147208 0xa148820 0xa1447a0
+                13 0xa147208 0xa148d00 0xa144788 0xa148d18
+                  Is corner:  0 0xa148d00 0 0 0
+                  Is corner:  1 0xa144788 0 0 0
+                  Is corner:  1 0xa148d18 0 0 0
+                18 0xa148820 0xa148838 0xa148a00 0xa1465f0
+                  Is corner:  0 0xa148838 0 0 0
+                  Is corner:  0 0xa148a00 0 0 0
+                  2 0xa1465f0 0xa146608 0xa143ac0 0xa146620
+                    Is corner:  0 0xa146608 0 0 0
+                    24 0xa143ac0 0xa143ad8 0xa1489e8 0xa143af0
+                      Is corner:  0 0xa143ad8 0 0 0
+                      Is corner:  1 0xa1489e8 0 0 0
+                      Is corner:  1 0xa143af0 0 0 0
+                    Is corner:  1 0xa146620 0 0 0
+                30 0xa1447a0 0xa149348 0xa144698 0xa149360
+                  Is corner:  1 0xa149348 0 0 0
+                  18 0xa144698 0xa1453c8 0xa1465a0 0xa1453e0
+                    Is corner:  0 0xa1453c8 0 0 0
+                    37 0xa1465a0 0xa145af0 0xa1454a8 0xa145b08
+                      Is corner:  1 0xa145af0 0 0 0
+                      26 0xa1454a8 0xa1454c0 0xa148808 0xa1454d8
+                        Is corner:  1 0xa1454c0 0 0 0
+                        Is corner:  1 0xa148808 0 0 0
+                        27 0xa1454d8 0xa148760 0xa148790 0xa148778
+                          Is corner:  1 0xa148760 0 0 0
+                          Is corner:  0 0xa148790 0 0 0
+                          Is corner:  1 0xa148778 0 0 0
+                      36 0xa145b08 0xa147320 0xa1477f8 0xa147338
+                        Is corner:  1 0xa147320 0 0 0
+                        Is corner:  1 0xa1477f8 0 0 0
+                        41 0xa147338 0xa147298 0xa1477e0 0xa1472b0
+                          Is corner:  0 0xa147298 0 0 0
+                          Is corner:  1 0xa1477e0 0 0 0
+                          35 0xa1472b0 0xa142d50 0xa1477c8 0xa142d68
+                            Is corner:  1 0xa142d50 0 0 0
+                            Is corner:  1 0xa1477c8 0 0 0
+                            Is corner:  1 0xa142d68 0 0 0
+                    28 0xa1453e0 0xa146058 0xa146588 0xa146070
+                      Is corner:  0 0xa146058 0 0 0
+                      Is corner:  1 0xa146588 0 0 0
+                      Is corner:  1 0xa146070 0 0 0
+                  23 0xa149360 0xa1457c0 0xa144680 0xa1457d8
+                    Is corner:  0 0xa1457c0 0 0 0
+                    Is corner:  0 0xa144680 0 0 0
+                    11 0xa1457d8 0xa148e20 0xa145598 0xa148e38
+                      Is corner:  1 0xa148e20 0 0 0
+                      15 0xa145598 0xa1455b0 0xa1480b0 0xa148098
+                        Is corner:  0 0xa1455b0 0 0 0
+                        Is corner:  1 0xa1480b0 0 0 0
+                        Is corner:  1 0xa148098 0 0 0
+                      Is corner:  1 0xa148e38 0 0 0
+            Is corner:  1 0xa142c30 0 0 0
+          9 0xa1475e8 0xa147600 0xa1464b0 0xa145898
+            Is corner:  0 0xa147600 0 0 0
+            2 0xa1464b0 0xa1464c8 0xa145778 0xa145760
+              Is corner:  0 0xa1464c8 0 0 0
+              26 0xa145778 0xa142270 0xa1480e0 0xa142288
+                Is corner:  1 0xa142270 0 0 0
+                Is corner:  1 0xa1480e0 0 0 0
+                Is corner:  1 0xa142288 0 0 0
+              Is corner:  1 0xa145760 0 0 0
+            20 0xa145898 0xa1458b0 0xa146f80 0xa146f68
+              Is corner:  1 0xa1458b0 0 0 0
+              45 0xa146f80 0xa147e58 0xa148b98 0xa147250
+                2 0xa147e58 0xa147e70 0xa1421f8 0xa1421e0
+                  Is corner:  0 0xa147e70 0 0 0
+                  Is corner:  0 0xa1421f8 0 0 0
+                  Is corner:  1 0xa1421e0 0 0 0
+                15 0xa148b98 0xa148bb0 0xa149210 0xa147f18
+                  Is corner:  1 0xa148bb0 0 0 0
+                  23 0xa149210 0xa149228 0xa1445d0 0xa1455e0
+                    Is corner:  1 0xa149228 0 0 0
+                    19 0xa1445d0 0xa1445e8 0xa149408 0xa1493f0
+                      Is corner:  0 0xa1445e8 0 0 0
+                      Is corner:  1 0xa149408 0 0 0
+                      Is corner:  1 0xa1493f0 0 0 0
+                    6 0xa1455e0 0xa1455f8 0xa148fd0 0xa148fb8
+                      Is corner:  1 0xa1455f8 0 0 0
+                      Is corner:  0 0xa148fd0 0 0 0
+                      Is corner:  1 0xa148fb8 0 0 0
+                  18 0xa147f18 0xa147f30 0xa148c58 0xa148c40
+                    Is corner:  1 0xa147f30 0 0 0
+                    Is corner:  1 0xa148c58 0 0 0
+                    Is corner:  1 0xa148c40 0 0 0
+                27 0xa147250 0xa147268 0xa1448c0 0xa1448a8
+                  Is corner:  0 0xa147268 0 0 0
+                  Is corner:  1 0xa1448c0 0 0 0
+                  Is corner:  1 0xa1448a8 0 0 0
+              Is corner:  0 0xa146f68 0 0 0
+        20 0xa146ef0 0xa1470d0 0xa148958 0xa147d20
+          Is corner:  0 0xa1470d0 0 0 0
+          46 0xa148958 0xa148970 0xa1427e0 0xa1492d0
+            45 0xa148970 0xa149078 0xa1492b8 0xa149090
+              Is corner:  1 0xa149078 0 0 0
+              Is corner:  1 0xa1492b8 0 0 0
+              Is corner:  1 0xa149090 0 0 0
+            24 0xa1427e0 0xa1427f8 0xa144740 0xa148350
+              Is corner:  0 0xa1427f8 0 0 0
+              Is corner:  0 0xa144740 0 0 0
+              34 0xa148350 0xa148368 0xa142b88 0xa142b70
+                Is corner:  1 0xa148368 0 0 0
+                21 0xa142b88 0xa144558 0xa149438 0xa144570
+                  Is corner:  0 0xa144558 0 0 0
+                  41 0xa149438 0xa149450 0xa146fe0 0xa146fc8
+                    Is corner:  1 0xa149450 0 0 0
+                    38 0xa146fe0 0xa142648 0xa146818 0xa142660
+                      Is corner:  1 0xa142648 0 0 0
+                      Is corner:  1 0xa146818 0 0 0
+                      37 0xa142660 0xa147480 0xa146800 0xa147498
+                        Is corner:  0 0xa147480 0 0 0
+                        Is corner:  0 0xa146800 0 0 0
+                        Is corner:  1 0xa147498 0 0 0
+                    Is corner:  0 0xa146fc8 0 0 0
+                  Is corner:  1 0xa144570 0 0 0
+                Is corner:  1 0xa142b70 0 0 0
+            Is corner:  0 0xa1492d0 0 0 0
+          9 0xa147d20 0xa142410 0xa148640 0xa1484a8
+            Is corner:  0 0xa142410 0 0 0
+            37 0xa148640 0xa1490f0 0xa144e10 0xa145a78
+              Is corner:  0 0xa1490f0 0 0 0
+              47 0xa144e10 0xa141ee8 0xa144280 0xa141f00
+                Is corner:  0 0xa141ee8 0 0 0
+                19 0xa144280 0xa147cd8 0xa146300 0xa147cf0
+                  Is corner:  0 0xa147cd8 0 0 0
+                  21 0xa146300 0xa148f70 0xa144db0 0xa148f88
+                    Is corner:  0 0xa148f70 0 0 0
+                    17 0xa144db0 0xa144dc8 0xa142be8 0xa142bd0
+                      Is corner:  1 0xa144dc8 0 0 0
+                      18 0xa142be8 0xa144618 0xa145550 0xa144630
+                        Is corner:  1 0xa144618 0 0 0
+                        8 0xa145550 0xa145568 0xa145338 0xa148c88
+                          Is corner:  1 0xa145568 0 0 0
+                          8 0xa145338 0xa144100 0xa145418 0xa144118
+                            Is corner:  1 0xa144100 0 0 0
+                            7 0xa145418 0xa145430 0xa146de8 0xa146dd0
+                              Is corner:  0 0xa145430 0 0 0
+                              30 0xa146de8 0xa145628 0xa142900 0xa145640
+                                Is corner:  1 0xa145628 0 0 0
+                                16 0xa142900 0xa142918 0xa146938 0xa146920
+                                  Is corner:  1 0xa142918 0 0 0
+                                  Is corner:  1 0xa146938 0 0 0
+                                  Is corner:  1 0xa146920 0 0 0
+                                Is corner:  1 0xa145640 0 0 0
+                              Is corner:  1 0xa146dd0 0 0 0
+                            Is corner:  0 0xa144118 0 0 0
+                          26 0xa148c88 0xa148ca0 0xa145320 0xa146ce0
+                            Is corner:  0 0xa148ca0 0 0 0
+                            Is corner:  0 0xa145320 0 0 0
+                            23 0xa146ce0 0xa146cf8 0xa1482a8 0xa148290
+                              Is corner:  1 0xa146cf8 0 0 0
+                              3 0xa1482a8 0xa147e10 0xa147c78 0xa147e28
+                                Is corner:  1 0xa147e10 0 0 0
+                                2 0xa147c78 0xa147c90 0xa145520 0xa145508
+                                  Is corner:  1 0xa147c90 0 0 0
+                                  Is corner:  1 0xa145520 0 0 0
+                                  Is corner:  1 0xa145508 0 0 0
+                                Is corner:  1 0xa147e28 0 0 0
+                              Is corner:  1 0xa148290 0 0 0
+                        Is corner:  1 0xa144630 0 0 0
+                      Is corner:  1 0xa142bd0 0 0 0
+                    Is corner:  1 0xa148f88 0 0 0
+                  4 0xa147cf0 0xa145f68 0xa1463a8 0xa145f80
+                    Is corner:  1 0xa145f68 0 0 0
+                    18 0xa1463a8 0xa1463c0 0xa148aa8 0xa1456e8
+                      Is corner:  0 0xa1463c0 0 0 0
+                      10 0xa148aa8 0xa148ac0 0xa148520 0xa148508
+                        Is corner:  0 0xa148ac0 0 0 0
+                        8 0xa148520 0xa147bd0 0xa1425a0 0xa147be8
+                          Is corner:  1 0xa147bd0 0 0 0
+                          46 0xa1425a0 0xa1425b8 0xa145098 0xa145080
+                            Is corner:  1 0xa1425b8 0 0 0
+                            1 0xa145098 0xa144cd8 0xa1462e8 0xa144cf0
+                              Is corner:  0 0xa144cd8 0 0 0
+                              Is corner:  1 0xa1462e8 0 0 0
+                              Is corner:  1 0xa144cf0 0 0 0
+                            Is corner:  1 0xa145080 0 0 0
+                          Is corner:  0 0xa147be8 0 0 0
+                        Is corner:  0 0xa148508 0 0 0
+                      3 0xa1456e8 0xa145700 0xa147ae0 0xa147ac8
+                        Is corner:  1 0xa145700 0 0 0
+                        Is corner:  1 0xa147ae0 0 0 0
+                        Is corner:  1 0xa147ac8 0 0 0
+                    21 0xa145f80 0xa144b10 0xa145e60 0xa144b28
+                      Is corner:  1 0xa144b10 0 0 0
+                      38 0xa145e60 0xa145e78 0xa145008 0xa144ff0
+                        Is corner:  1 0xa145e78 0 0 0
+                        Is corner:  0 0xa145008 0 0 0
+                        Is corner:  1 0xa144ff0 0 0 0
+                      Is corner:  1 0xa144b28 0 0 0
+                4 0xa141f00 0xa147840 0xa1462a0 0xa147858
+                  Is corner:  0 0xa147840 0 0 0
+                  5 0xa1462a0 0xa1462b8 0xa1450e0 0xa1450c8
+                    Is corner:  0 0xa1462b8 0 0 0
+                    21 0xa1450e0 0xa146120 0xa1486e8 0xa146138
+                      Is corner:  1 0xa146120 0 0 0
+                      17 0xa1486e8 0xa148700 0xa1474f8 0xa1474e0
+                        Is corner:  0 0xa148700 0 0 0
+                        35 0xa1474f8 0xa148dd8 0xa1464f8 0xa148df0
+                          Is corner:  0 0xa148dd8 0 0 0
+                          23 0xa1464f8 0xa146510 0xa145f38 0xa145f20
+                            Is corner:  1 0xa146510 0 0 0
+                            2 0xa145f38 0xa148b20 0xa144268 0xa148b38
+                              Is corner:  0 0xa148b20 0 0 0
+                              Is corner:  1 0xa144268 0 0 0
+                              Is corner:  1 0xa148b38 0 0 0
+                            Is corner:  1 0xa145f20 0 0 0
+                          45 0xa148df0 0xa148880 0xa144f30 0xa148898
+                            Is corner:  1 0xa148880 0 0 0
+                            Is corner:  1 0xa144f30 0 0 0
+                            40 0xa148898 0xa146758 0xa144f18 0xa146770
+                              Is corner:  1 0xa146758 0 0 0
+                              Is corner:  1 0xa144f18 0 0 0
+                              Is corner:  1 0xa146770 0 0 0
+                        Is corner:  1 0xa1474e0 0 0 0
+                      26 0xa146138 0xa1444d8 0xa144340 0xa1444f0
+                        Is corner:  1 0xa1444d8 0 0 0
+                        19 0xa144340 0xa144358 0xa1466c8 0xa1466b0
+                          Is corner:  1 0xa144358 0 0 0
+                          Is corner:  1 0xa1466c8 0 0 0
+                          Is corner:  1 0xa1466b0 0 0 0
+                        Is corner:  1 0xa1444f0 0 0 0
+                    Is corner:  0 0xa1450c8 0 0 0
+                  Is corner:  1 0xa147858 0 0 0
+              11 0xa145a78 0xa146ec0 0xa148038 0xa149628
+                Is corner:  0 0xa146ec0 0 0 0
+                24 0xa148038 0xa146860 0xa144430 0xa142180
+                  Is corner:  1 0xa146860 0 0 0
+                  28 0xa144430 0xa146d40 0xa147438 0xa145688
+                    Is corner:  0 0xa146d40 0 0 0
+                    16 0xa147438 0xa147450 0xa144c18 0xa144c00
+                      Is corner:  0 0xa147450 0 0 0
+                      31 0xa144c18 0xa148670 0xa145188 0xa148688
+                        Is corner:  1 0xa148670 0 0 0
+                        19 0xa145188 0xa147a50 0xa144df8 0xa147a68
+                          Is corner:  1 0xa147a50 0 0 0
+                          Is corner:  0 0xa144df8 0 0 0
+                          Is corner:  1 0xa147a68 0 0 0
+                        4 0xa148688 0xa145c38 0xa146c80 0xa145c50
+                          Is corner:  0 0xa145c38 0 0 0
+                          27 0xa146c80 0xa148550 0xa145170 0xa148568
+                            Is corner:  1 0xa148550 0 0 0
+                            Is corner:  0 0xa145170 0 0 0
+                            Is corner:  1 0xa148568 0 0 0
+                          35 0xa145c50 0xa145248 0xa146c68 0xa145260
+                            Is corner:  0 0xa145248 0 0 0
+                            Is corner:  1 0xa146c68 0 0 0
+                            Is corner:  1 0xa145260 0 0 0
+                      Is corner:  1 0xa144c00 0 0 0
+                    39 0xa145688 0xa142240 0xa145bd8 0xa147b28
+                      Is corner:  0 0xa142240 0 0 0
+                      21 0xa145bd8 0xa145bf0 0xa144d38 0xa144d20
+                        Is corner:  0 0xa145bf0 0 0 0
+                        Is corner:  1 0xa144d38 0 0 0
+                        Is corner:  1 0xa144d20 0 0 0
+                      27 0xa147b28 0xa147040 0xa141488 0xa147960
+                        Is corner:  0 0xa147040 0 0 0
+                        7 0xa141488 0xa1495d0 0xa142328 0xa1422b8
+                          Is corner:  1 0xa1495d0 0 0 0
+                          15 0xa142328 0xa144a70 0xa1485b0 0xa148598
+                            Is corner:  1 0xa144a70 0 0 0
+                            Is corner:  1 0xa1485b0 0 0 0
+                            Is corner:  1 0xa148598 0 0 0
+                          Is corner:  1 0xa1422b8 0 0 0
+                        Is corner:  1 0xa147960 0 0 0
+                  12 0xa142180 0xa149588 0xa146bf0 0xa149048
+                    Is corner:  1 0xa149588 0 0 0
+                    Is corner:  1 0xa146bf0 0 0 0
+                    Is corner:  0 0xa149048 0 0 0
+                Is corner:  0 0xa149628 0 0 0
+            Is corner:  1 0xa1484a8 0 0 0
+      38 0xa144520 0xa145038 0xa142558 0xa148af0
+        Is corner:  1 0xa145038 0 0 0
+        31 0xa142558 0xa141010 0xa144400 0xa144ea0
+          11 0xa141010 0xa145970 0xa143cb8 0xa143e98
+            Is corner:  1 0xa145970 0 0 0
+            Is corner:  0 0xa143cb8 0 0 0
+            Is corner:  1 0xa143e98 0 0 0
+          43 0xa144400 0xa1479a8 0xa144040 0xa1441a8
+            Is corner:  0 0xa1479a8 0 0 0
+            11 0xa144040 0xa146228 0xa144f90 0xa1451e8
+              Is corner:  0 0xa146228 0 0 0
+              0 0xa144f90 0xa145de8 0xa1443a0 0xa149168
+                Is corner:  1 0xa145de8 0 0 0
+                15 0xa1443a0 0xa146b30 0xa1471c0 0xa147660
+                  Is corner:  1 0xa146b30 0 0 0
+                  Is corner:  1 0xa1471c0 0 0 0
+                  Is corner:  0 0xa147660 0 0 0
+                46 0xa149168 0xa148068 0xa142510 0xa144160
+                  Is corner:  1 0xa148068 0 0 0
+                  44 0xa142510 0xa142120 0xa145730 0xa1440a0
+                    Is corner:  0 0xa142120 0 0 0
+                    42 0xa145730 0xa146f20 0xa144bb8 0xa149198
+                      Is corner:  1 0xa146f20 0 0 0
+                      39 0xa144bb8 0xa1488f8 0xa148610 0xa1427b0
+                        Is corner:  1 0xa1488f8 0 0 0
+                        Is corner:  0 0xa148610 0 0 0
+                        Is corner:  1 0xa1427b0 0 0 0
+                      25 0xa149198 0xa145218 0xa1423b0 0xa1491c8
+                        Is corner:  0 0xa145218 0 0 0
+                        45 0xa1423b0 0xa148928 0xa145928 0xa1473f0
+                          Is corner:  0 0xa148928 0 0 0
+                          34 0xa145928 0xa1428b8 0xa148d60 0xa144c60
+                            Is corner:  0 0xa1428b8 0 0 0
+                            Is corner:  0 0xa148d60 0 0 0
+                            Is corner:  1 0xa144c60 0 0 0
+                          Is corner:  1 0xa1473f0 0 0 0
+                        Is corner:  1 0xa1491c8 0 0 0
+                    Is corner:  1 0xa1440a0 0 0 0
+                  39 0xa144160 0xa145ea8 0xa146668 0xa145478
+                    Is corner:  0 0xa145ea8 0 0 0
+                    45 0xa146668 0xa148478 0xa149318 0xa1467d0
+                      Is corner:  1 0xa148478 0 0 0
+                      14 0xa149318 0xa147190 0xa147930 0xa1461e0
+                        Is corner:  1 0xa147190 0 0 0
+                        Is corner:  1 0xa147930 0 0 0
+                        Is corner:  1 0xa1461e0 0 0 0
+                      10 0xa1467d0 0xa1456b8 0xa149270 0xa144ed0
+                        Is corner:  1 0xa1456b8 0 0 0
+                        Is corner:  0 0xa149270 0 0 0
+                        21 0xa144ed0 0xa1476c0 0xa146480 0xa145808
+                          Is corner:  0 0xa1476c0 0 0 0
+                          Is corner:  1 0xa146480 0 0 0
+                          Is corner:  1 0xa145808 0 0 0
+                    Is corner:  0 0xa145478 0 0 0
+              5 0xa1451e8 0xa148400 0xa142380 0xa142948
+                Is corner:  0 0xa148400 0 0 0
+                25 0xa142380 0xa148e68 0xa148e98 0xa1429a8
+                  Is corner:  0 0xa148e68 0 0 0
+                  2 0xa148e98 0xa144d68 0xa142a08 0xa148398
+                    Is corner:  1 0xa144d68 0 0 0
+                    23 0xa142a08 0xa148230 0xa145db8 0xa1442b0
+                      Is corner:  1 0xa148230 0 0 0
+                      Is corner:  0 0xa145db8 0 0 0
+                      Is corner:  1 0xa1442b0 0 0 0
+                    Is corner:  1 0xa148398 0 0 0
+                  Is corner:  1 0xa1429a8 0 0 0
+                Is corner:  1 0xa142948 0 0 0
+            Is corner:  1 0xa1441a8 0 0 0
+          34 0xa144ea0 0xa147738 0xa1420d8 0xa148f40
+            Is corner:  1 0xa147738 0 0 0
+            46 0xa1420d8 0xa145ef0 0xa142cd8 0xa1426f0
+              Is corner:  1 0xa145ef0 0 0 0
+              35 0xa142cd8 0xa149000 0xa1420a8 0xa148d90
+                Is corner:  0 0xa149000 0 0 0
+                7 0xa1420a8 0xa145e30 0xa147ed0 0xa148448
+                  Is corner:  1 0xa145e30 0 0 0
+                  Is corner:  1 0xa147ed0 0 0 0
+                  16 0xa148448 0xa144ae0 0xa147768 0xa1473a8
+                    Is corner:  0 0xa144ae0 0 0 0
+                    9 0xa147768 0xa143a20 0xa1490c0 0xa1458e0
+                      Is corner:  0 0xa143a20 0 0 0
+                      Is corner:  1 0xa1490c0 0 0 0
+                      Is corner:  1 0xa1458e0 0 0 0
+                    21 0xa1473a8 0xa148188 0xa144ab0 0xa148c10
+                      Is corner:  1 0xa148188 0 0 0
+                      45 0xa144ab0 0xa140bc8 0xa147708 0xa146198
+                        Is corner:  1 0xa140bc8 0 0 0
+                        Is corner:  1 0xa147708 0 0 0
+                        Is corner:  1 0xa146198 0 0 0
+                      Is corner:  1 0xa148c10 0 0 0
+                Is corner:  1 0xa148d90 0 0 0
+              47 0xa1426f0 0xa1479d8 0xa1468a8 0xa1487d8
+                Is corner:  1 0xa1479d8 0 0 0
+                Is corner:  1 0xa1468a8 0 0 0
+                Is corner:  1 0xa1487d8 0 0 0
+            Is corner:  0 0xa148f40 0 0 0
+        45 0xa148af0 0xa146cb0 0xa143a90 0xa144f60
+          31 0xa146cb0 0xa146270 0xa146450 0xa144208
+            Is corner:  0 0xa146270 0 0 0
+            Is corner:  1 0xa146450 0 0 0
+            Is corner:  1 0xa144208 0 0 0
+          13 0xa143a90 0xa146c38 0xa147d68 0xa148b68
+            Is corner:  1 0xa146c38 0 0 0
+            37 0xa147d68 0xa146710 0xa146e90 0xa143fd0
+              Is corner:  1 0xa146710 0 0 0
+              10 0xa146e90 0xa146d88 0xa144818 0xa142a68
+                Is corner:  0 0xa146d88 0 0 0
+                29 0xa144818 0xa147c30 0xa1429d8 0xa144c90
+                  Is corner:  1 0xa147c30 0 0 0
+                  Is corner:  1 0xa1429d8 0 0 0
+                  Is corner:  1 0xa144c90 0 0 0
+                Is corner:  0 0xa142a68 0 0 0
+              6 0xa143fd0 0xa144e70 0xa141eb8 0xa142a38
+                Is corner:  0 0xa144e70 0 0 0
+                5 0xa141eb8 0xa142600 0xa1489b8 0xa146998
+                  Is corner:  1 0xa142600 0 0 0
+                  Is corner:  1 0xa1489b8 0 0 0
+                  Is corner:  1 0xa146998 0 0 0
+                34 0xa142a38 0xa1493a8 0xa148ec8 0xa1460c0
+                  Is corner:  0 0xa1493a8 0 0 0
+                  Is corner:  1 0xa148ec8 0 0 0
+                  Is corner:  1 0xa1460c0 0 0 0
+            Is corner:  1 0xa148b68 0 0 0
+          27 0xa144f60 0xa142828 0xa1445a0 0xa145fc8
+            Is corner:  1 0xa142828 0 0 0
+            12 0xa1445a0 0xa145d88 0xa145cb0 0xa1470a0
+              Is corner:  0 0xa145d88 0 0 0
+              Is corner:  1 0xa145cb0 0 0 0
+              Is corner:  1 0xa1470a0 0 0 0
+            Is corner:  1 0xa145fc8 0 0 0

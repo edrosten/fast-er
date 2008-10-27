@@ -7,7 +7,7 @@ using namespace CVD;
 using namespace std;
 ///\endcond
 
-#ifndef NOJIT
+#ifdef JIT
 #include <sys/mman.h>
 ///This struct contains a x86 machine-code compiled version of the detector. The detector
 ///operates on a single row and inserts offset from the beginning of the image in to a 
@@ -309,15 +309,15 @@ class jit_detector
 ///@param ymax y coordinate to go up to.
 void block_bytecode::detect(const CVD::Image<CVD::byte>& im, std::vector<int>& corners, int threshold, int xmin, int xmax, int ymin, int ymax)
 {
-	#ifdef NOJIT
-	for(int y = ymin; y < ymax; y++)
-		for(int x=xmin; x < xmax; x++)
-			if(detect_no_score(&im[y][x], threshold))
-				corners.push_back(&im[y][x] - im.data());
-	#else
+	#ifdef JIT
 		jit_detector jit(d);
 		for(int y = ymin; y < ymax; y++)
 			jit.detect_in_row(im, y, xmin, xmax, corners, threshold);
+	#else
+		for(int y = ymin; y < ymax; y++)
+			for(int x=xmin; x < xmax; x++)
+				if(detect_no_score(&im[y][x], threshold))
+					corners.push_back(&im[y][x] - im.data());
 	#endif
 }
 
