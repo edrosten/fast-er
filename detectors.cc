@@ -12,9 +12,6 @@
 #include <cstdlib>
 #include <gvars3/instances.h>
 
-#include <cvd/videodisplay.h>
-#include <cvd/gl_helpers.h>
-
 using namespace std;
 using namespace CVD;
 using namespace GVars3;

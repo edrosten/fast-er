@@ -27,7 +27,6 @@ Options are given in ::get_detector.
 #include <utility>
 
 #include <cvd/image_io.h>
-#include <cvd/videodisplay.h>
 #include <cvd/random.h>
 #include <cvd/image_interpolate.h>
 #include <tag/printf.h>
@@ -199,8 +198,6 @@ void mmain(int argc, char** argv)
 	auto_ptr<DetectN> detector = get_detector();
 
 	rpair(images, warps) = load_data(dir, n, format);
-	
-	//VideoDisplay dd(images[0].size());
 	
 	if(test == "noise")
 		compute_repeatability_noise(images, warps, *detector, ncpf, nmax, fuzz);

@@ -1,7 +1,6 @@
 #include <cvd/image.h>
 #include <cvd/convolution.h>
 #include <cvd/vision.h>
-#include <cvd/gl_helpers.h>
 #include <cvd/image_convert.h>
 
 #include <vector>
