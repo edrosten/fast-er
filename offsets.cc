@@ -149,7 +149,7 @@ void create_offsets()
 		ImageRef max((int)ceil(max_r+1), (int)ceil(max_r+1));
 		ImageRef min = -max, p = min;
 
-		cout << "Offsets: ";
+		//cout << "Offsets: ";
 
 		do
 		{
@@ -158,12 +158,12 @@ void create_offsets()
 			if(d >= min_r*min_r && d <= max_r * max_r)
 			{
 				offsets[0].push_back(p);
-				cout << offsets[0].back() << " ";
+				//cout << offsets[0].back() << " ";
 			}
 		}
 		while(p.next(min, max));
 
-		cout << endl;
+	//	cout << endl;
 
 		offsets_bbox = make_pair(min, max);
 	}

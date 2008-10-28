@@ -16,7 +16,7 @@ There is no install option.
 
 This will create the following executables:
  - <code>\link learn_detector.cc learn_detector\endlink</code> This learns a detector from a repeatability dataset.
- - \p extract_features This extracts features from an image sequence which can be turned in to a decision tree.
+ - \link extract_features.cc \p extract_features \endlink This extracts features from an image sequence which can be turned in to a decision tree.
  - \link learn_fast_tree.cc \p learn_fast_tree \endlink This learns a FAST decision tree, from extracted data.
  - Programs for generating code from the learned tree, in various language/library combinations.
    - C++ / libCVD
@@ -97,7 +97,7 @@ The complete sequence of operations for FAST-ER is as follows:
              \link extract_features.cc extract_features\endlink:
 
              <code>
-                ./extract_features --detector fast-er --fast-er new_detector.tree FILE1 [FILE2 ...] &gt; features.txt
+                ./extract_features IMAGE1 [IMAGE2 ...] &gt; features.txt
              </code>
 
             

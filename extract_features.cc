@@ -1,3 +1,26 @@
+/**
+\file extract_features.cc Main file for the extract_features executable.
+
+\section wpUsage Usage
+
+<code> extract_features [--VAR VAL] [--exec FILE] IMAGE1 [IMAGE2 ...]</code>
+
+\section Description
+
+This program loads a learned FAST-ER tree and extracts features so that an 
+accelerated tree can be learned. The output is is suitable for consumption 
+by \link learn_fast_tree.cc learn_fast_tree\endlink.
+
+The program accpets standard GVars3 commandline arguments, and the default
+parameters are contained in \p extract_features.cfg :
+
+\include extract_features.cfg
+
+The images from which
+features should be extracted are specified on the commandline. 
+
+*/
+
 #include <gvars3/instances.h>
 #include <cvd/image_io.h>
 #include <stdint.h>
@@ -11,11 +34,16 @@ using namespace std;
 using namespace CVD;
 using namespace GVars3;
 
-static const char Brighter = 'b';
-static const char Darker = 'd';
-static const char Similar = 's';
+static const char Brighter = 'b'; ///< Character code for pixels significantly brighter than the centre
+static const char Darker = 'd';///< Character code for pixels significantly darker than the centre
+static const char Similar = 's';///< Character code for pixels similar to the centre
 
-
+///Extracts a feature from an image.
+///@param s String to extract feature in to
+///@param im Image to extract feature from
+///@param pos Location to extract feature from
+///@param t Threshold used to compute feature
+///@param o Index in to offsets (i.e.\ feature orientation) to use
 void extract_feature(string& s, const BasicImage<byte>& im, const ImageRef&  pos, int t, int o)
 {
 	int centre = im[pos];
@@ -31,6 +59,9 @@ void extract_feature(string& s, const BasicImage<byte>& im, const ImageRef&  pos
 	}
 }
 
+///Driving program
+///@param argc Number of commandline arguments
+///@param argv List of commandline arguments. Contains GVars3 arguments, and images to process.
 int main(int argc, char** argv)
 {
 	GUI.LoadFile("extract_features.cfg");
@@ -41,7 +72,7 @@ int main(int argc, char** argv)
 	map<string, uint64_t> corners;
 	map<string, uint64_t> non_corners;
 
-	string scratch('.', num_offsets);
+	string scratch(num_offsets, '.');
 
 	int border = max(max(offsets_bbox.first.x, offsets_bbox.first.y), max(offsets_bbox.second.x, offsets_bbox.second.y));
 
