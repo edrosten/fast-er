@@ -1,22 +1,43 @@
+/**
+\file fast_N_features.cc Main file for the fant_N_features executable.
+
+\section wpUsage Usage
+
+<code> ./fast_N_features [--NUM N] | ./learn_fast_tree </code>
+
+\section Description
+
+This program generates a list of all possible FAST-N features in an output
+format suitable for consumption by \link learn_fast_tree.cc learn_fast_tree\endlink.
+The program accepts standarg GVars3 commandline arguments. The only useful argument is
+N which specifies the N for which FAST-N features should be generated.
+
+*/
+
 #include <iostream>
 #include <gvars3/instances.h>
 
+///\cond never
 using namespace std;
 using namespace GVars3;
+///\endcond
 
-struct Brighter { inline static bool test(int a) { return a == 'b'; } };
-struct Darker   { inline static bool test(int a) { return a == 'd'; } };
 
-template<class Type> inline bool is_corner(const char* str, int num_for_corner)
+///Determine if a string has the properties of a FAST-N corner.
+///In other words, if it has enough consecutive characters of the correct
+///type. This function assumes that the string wraps in a circular manner.
+///@param str String to test for cornerness.
+///@param num_for_corner Number of consecutive characters required for corner
+///@param type Character value which must appear consecutively#
+///@return whether the string is a corner.
+inline bool is_corner(const char* str, int num_for_corner, char type)
 {
-	//templating on num_for_corner makes a small increase in speed.
 	int num_consecutive=0;
 	int first_cons=0;
 	
-	//This is an approximation of 
 	for(int i=0; i<16; i++)
 	{
-		if(Type::test(str[i]))
+		if(str[i] == type)
 		{
 			num_consecutive++;
 			
@@ -38,6 +59,11 @@ template<class Type> inline bool is_corner(const char* str, int num_for_corner)
 		return 0;
 }
 
+///This is the main function for this program. It generates all possible FAST pixel rings
+///using brute-force and outputs them along with their class and a uniform weighting over all
+///features.
+///@param argc Number of commandline arguments
+///@param argv List of commandline arguments
 int main(int argc, char ** argv)
 {	
 	GUI.parseArguments(argc, argv);
@@ -67,5 +93,5 @@ int main(int argc, char ** argv)
 	             for(n = 0, F[13]='b'; n < 3; n++, F[13]=types[n])
 	              for(o = 0, F[14]='b'; o < 3; o++, F[14]=types[o])
 	               for(p = 0, F[15]='b'; p < 3; p++, F[15]=types[p])
-				    cout << F << " 1 " << (is_corner<Brighter>(F, N) || is_corner<Darker>(F, N)) << endl;
+				    cout << F << " 1 " << (is_corner(F, N, 'b') || is_corner(F, N, 'd')) << endl;
 }

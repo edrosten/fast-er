@@ -11,6 +11,81 @@ using namespace CVD;
 using namespace GVars3;
 ///\endcond
 
+///Detect corners without nonmaximal suppression in an image. This contains a large amount of
+///configurable debugging code to verify the correctness of the detector by comparing different
+///implementations. High speed is achieved by converting the detector in to \link gFastTree bytecode
+///and JIT-compiling if possible\endlink.
+///
+///The function recognises the following GVars:
+/// - \c debug.verify_detections Veryify JIT or bytecode detected corners using tree_element::detect_corner
+///
+///@param im The image to detect corners in.
+///@param detector The corner detector.
+///@param threshold The detector threshold.
+///@ingroup gTree
+vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_element* detector, int threshold)
+{
+	ImageRef tl, br, s;
+	rpair(tl,br) = detector->bbox();
+	s = im.size();
+
+	int ymin = 1 - tl.y, ymax = s.y - 1 - br.y;
+	int xmin = 1 - tl.x, xmax = s.x - 1 - br.x;
+
+	ImageRef pos;
+	
+	vector<int> corners;
+	
+	block_bytecode f2 = detector->make_fast_detector(im.size().x);
+
+	f2.detect(im, corners, threshold, xmin, xmax, ymin, ymax);
+	
+
+	if(GV3::get<bool>("debug.verify_detections"))
+	{
+		//Detect corners using slowest, but most obvious detector, since it's most likely to 
+		//be correct.
+		vector<ImageRef> t;
+		for(pos.y = ymin; pos.y < ymax; pos.y++)
+		{
+			for(pos.x = xmin; pos.x < xmax; pos.x++)
+				if(detector->detect_corner(im, pos, threshold))
+					t.push_back(pos);
+		}
+
+		//Verify detected corners against this result
+		if(t.size() == corners.size())
+		{
+			for(unsigned int i=0; i < corners.size(); i++)
+				if(im.data() + corners[i] != & im[t[i]])
+				{
+					cerr << "Fatal error: standard and fast detectors do not match!\n";
+					cerr << "Same number of corners, but different positions.\n";
+					exit(1);
+				}
+		}
+		else
+		{
+			cerr << "Fatal error: standard and fast detectors do not match!\n";
+			cerr << "Different number of corners detected.\n";
+			cerr << corners.size() << " " << t.size() << endl;
+			exit(1);
+		}
+	}
+
+	vector<ImageRef> ret;
+
+	int d = im.size().x;
+	for(unsigned int i=0; i < corners.size(); i++)
+	{
+		int o = corners[i];
+		ret.push_back(ImageRef(o %d, o/d));
+	}
+
+	return ret;
+}
+
+
 
 ///Detect corners with nonmaximal suppression in an image. This contains a large amount of
 ///configurable debugging code to verify the correctness of the detector by comparing different
@@ -123,7 +198,7 @@ vector<ImageRef> tree_detect_corners(const Image<byte>& im, const tree_element* 
 		}
 	}
 
-
+	
 	//Perform non-max suppression the simple way
 	vector<ImageRef> nonmax;
 	int d = im.size().x;

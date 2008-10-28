@@ -370,6 +370,7 @@ class tree_element
 
 tree_element* load_a_tree(std::istream& i);
 std::vector<CVD::ImageRef> tree_detect_corners(const CVD::Image<CVD::byte>& im, const tree_element* detector, int threshold, CVD::Image<int> scores);
+std::vector<CVD::ImageRef> tree_detect_corners_all(const CVD::Image<CVD::byte>& im, const tree_element* detector, int threshold);
 
 
 ///A named symbol to throw in the case that 

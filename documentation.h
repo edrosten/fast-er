@@ -17,18 +17,18 @@ There is no install option.
 This will create the following executables:
  - <code>\link learn_detector.cc learn_detector\endlink</code> This learns a detector from a repeatability dataset.
  - \p extract_features This extracts features from an image sequence which can be turned in to a decision tree.
- - \p fast_N_features This generates a complete set of features for a FAST-N detector without needing images.
  - \link learn_fast_tree.cc \p learn_fast_tree \endlink This learns a FAST decision tree, from extracted data.
  - Programs for generating code from the learned tree, in various language/library combinations.
    - C++ / libCVD
-	   - \p fast_tree_to_cxx_score_bsearch
-	   - \p fast_tree_to_cxx_score_iterate
-	   - \p fast_tree_to_cxx
+       - \p fast_tree_to_cxx_score_bsearch
+       - \p fast_tree_to_cxx_score_iterate
+       - \p fast_tree_to_cxx
    - MATLAB
        - \p FIXME
  - <code>\link test_repeatability.cc test_repeatability\endlink</code> Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
  - <code>\link image_warp.cc image_warp\endlink</code> This program allows visual inspection of the quality of a dataset.
+ - <code>\link fast_N_features.cc fast_N_features\endlink</code> This program generates all possible FAST-N features for consumption by  \link learn_fast_tree.cc \p learn_fast_tree \endlink.
 
 \section sRequirements Requirements
 
@@ -42,56 +42,77 @@ is downloaded and placed in the directory. It is abailable from http://users.fmr
 
 \section learn_detector Running the system
 
-To set the parameters, examine <code>learn_detector.cfg</code>.
-In order to run this program, you will need a repeatability dataset, such as the one from
-http://mi.eng.cam.ac.uk/~er258/work/datasets.html or
-
-The running program will generate a very extensive logfile on the standard
-output, which will include the learned detector and the results of its
-repeatability evaluation. Running <code>get_block_detector</code> on the output
-will generate source code for the detector. Note that this source code will not
-yet have been optimized for speed, only repeatability.
-
-The complete sequence of operations is as follows
+The complete sequence of operations for FAST-ER is as follows:
 <ol>
-	<li> Make the executable:
+    <li> Make the executable:
 
-		<code> ./configure && make </code>
+        <code> ./configure && make </code>
 
-	<li> Set up <code>learn_detector.cfg</code>. The default parameters are good,
-		 except you will need to set up the system to point to the
-		 repeatability dataset you wish to use.
+    <li> Generating a new FAST-ER detector.
 
-	<li> Run the corner detector learning program
+        An example detector (the best known detector, used in the results
+        section of the paper) is already in \p best_faster.tree .
 
-		<code>./learn_detector > logfile</code>
+    <ol>
 
-		If you run it more than once, you will probably want to alter the random
-		seed in the configuration file.
+        <li> Set up <code>learn_detector.cfg</code>. The default parameters 
+             are good, except you will need to set up the system to point to the
+             \link gRepeatability repeatability dataset\endlink you wish to use.
 
-	<li> Extract a detector from the logfile
+        <li> Run the corner detector learning program
 
-		<code>awk 'a&&!NF{exit}a;/Final tree/{a=1}' logfile &gt; new_detector.tree</code>
+            <code>./learn_detector > logfile</code>
 
-	<li> Measure the repeatability of the detector
-	    
-		<code>./test_repeatability --detector faster2 --faster2 new_detector.tree > new_detector_repeatability.txt</code>
+            If you run it more than once, you will probably want to alter the
+            random seed in the configuration file.
+            
 
-		The file <code>new_detector_repeatability.txt</code> can be plotted with almost any graph
-		plotting program.
+        <li> Extract a detector from the logfile
 
-	<li> make <code>extract-fast2.cxx</code>
-		
-		Note that if you have changed the list of available offsets in
-		<code>learn_detector.cfg</code> then you will need to change
-		<code>offset_list</code> in <code>extract-fast2.cxx</code>. The list of
-		offsets will be in the logfile.
+            <code>awk 'a&&!NF{exit}a;/Final tree/{a=1}' logfile &gt; new_detector.tree</code>
 
-	<li> Use <code>extract-fast2.cxx</code> to extract features from a set of
-	     training images. Any reasonable images can be used, including the 
-		 training images used earlier.  Do:
+    </ol>
 
-		 <code>./extract-fast2</code><i>imagefile  imagefile2 ...</i><code>&gt; features</code>
+    <li> Measuring the repeatability of a detector
+        
+        <code>./test_repeatability --detector faster2 --faster2 new_detector.tree > new_detector_repeatability.txt</code>
+
+        The file <code>new_detector_repeatability.txt</code> can be plotted with almost any graph
+        plotting program. A variety of detectors can be tested using this
+        program. See \link test_repeatability.cc test_repeatability\endlink for
+        more information.
+
+    <li> Generating accelerated tree based detectors.
+    
+    <ol>
+        <li> Features can be generated (for instance for FAST-N) or extracted
+             from images, as is necessary for FAST-ER. FAST-N features can be
+             extracted using \link fast_N_features.cc fast_N_features\endlink:
+
+             <code>
+                ./fast_N_features --N 9 &gt; features.txt
+             </code>
+
+             Alternatively, they can be extracted from images using
+             \link extract_features.cc extract_features\endlink:
+
+             <code>
+                ./extract_features --detector fast-er --fast-er new_detector.tree FILE1 [FILE2 ...] &gt; features.txt
+             </code>
+
+            
+
+        <li> A decision tree can be learned from the features using
+             \link learn_fast_tree.cc learn_fast_tree\endlink:
+
+             <code>
+             learn_fast_tree < features.txt > fast-tree.txt
+             </code>
+
+        <li> The decision tree needs to be turned in to source code before it
+             can be easily used.
+
+    </ol>
 </ol>
 
 */
@@ -133,8 +154,8 @@ be the same size.
 
 The consists of <i>N</i> images, and an arbitrary warp for each image pair. From
 some base directory, the files are stored as:
-	- frames/frame_<i>x</i>.pgm
-	- warps/warp_<i>i</i>_<i>j</i>.warp
+    - frames/frame_<i>x</i>.pgm
+    - warps/warp_<i>i</i>_<i>j</i>.warp
 The warp files have the mapping positions stored in row-major format, one pixel
 per line, stored as a pair of real numbers in text format. Details are in
 ::load_warps_cambridge() and ::load_images_cambridge(). The indices, <i>x</i>,
@@ -144,8 +165,8 @@ per line, stored as a pair of real numbers in text format. Details are in
 
 This stores the warp data in 16 bit per channel (with a numeric range of
 0--65535), colour PNG format:
-	- frames/frame_<i>x</i>.pgm
-	- pngwarps/warp_<i>i</i>_<i>j</i>.png
+    - frames/frame_<i>x</i>.pgm
+    - pngwarps/warp_<i>i</i>_<i>j</i>.png
 The destination of the <i>x</i> coordinare is stored as \f$x =
 \frac{\text{red}}{\text{MULTIPLIER}} - \text{SHIFT}\f$, and the <i>y</i> destination as \f$y =
 \frac{\text{green}}{\text{MULTIPLIER}} - \text{SHIFT}\f$. ::MULTIPLIER is 64.0 and ::SHIFT is 10.0 The
