@@ -33,6 +33,7 @@ void extract_feature(string& s, const BasicImage<byte>& im, const ImageRef&  pos
 
 int main(int argc, char** argv)
 {
+	GUI.LoadFile("extract_features.cfg");
 	int lastarg = GUI.parseArguments(argc, argv);
 
 	create_offsets();
