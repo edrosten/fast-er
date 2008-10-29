@@ -20,7 +20,7 @@ The images from which
 features should be extracted are specified on the commandline. 
 
 */
-
+#define CVD_IMAGE_DEBUG
 #include <gvars3/instances.h>
 #include <cvd/image_io.h>
 #include <stdint.h>
@@ -112,10 +112,13 @@ int main(int argc, char** argv)
 
 			//Extract features for all corners
 			for(unsigned int j=0; j < detected_corners.size(); j++)
-				for(unsigned int k=0; k < offsets.size(); k++)
+				for(unsigned int k=0; k < 1; k++)
 				{
 					extract_feature(scratch, im, detected_corners[j], threshold, k);
 					corners[scratch]++;
+
+					if(non_corners.count(scratch))
+						cerr << "fuck!\n";
 				}
 			
 			//Extract features for some non corners
@@ -126,13 +129,16 @@ int main(int argc, char** argv)
 			for(int r=border; r < im.size().y - border; r+=skip)
 				for(int c=border; c < im.size().x - border; c+=skip)
 					if(mask[r][c] == 0)
-						for(unsigned int k=0; k < offsets.size(); k++)
+						for(unsigned int k=0; k < 1; k++)
 						{
 							extract_feature(scratch, im, ImageRef(c,r), threshold, k);
 							non_corners[scratch]++;
+
+							if(corners.count(scratch))
+								cerr << "shit!\n";
 						}
 			
-			cerr << "Processes " << argv[i] << endl;
+			cerr << "Processed " << argv[i] << endl;
 		}
 		catch(Exceptions::All e)
 		{

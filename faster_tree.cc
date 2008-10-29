@@ -69,6 +69,13 @@ vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_eleme
 			cerr << "Fatal error: standard and fast detectors do not match!\n";
 			cerr << "Different number of corners detected.\n";
 			cerr << corners.size() << " " << t.size() << endl;
+			
+			for(unsigned int i=0; i < t.size(); i++)
+				cerr << "TREE " << t[i] << endl;
+
+			for(unsigned int i=0; i < corners.size(); i++)
+				cerr << "BYTECODE " << im.pos(corners[i] + im.data()) << endl;
+			
 			exit(1);
 		}
 	}

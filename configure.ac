@@ -250,7 +250,6 @@ then
 	echo JIT compilation is not enabled: the program will run very slowly.
 	echo You need a working 32 bit x86 executable to enable JIT.
 	echo
-	CXXFLAGS="$CXXFLAGS -DNOJIT"
 else
 	CXXFLAGS="$CXXFLAGS -DJIT"
 fi

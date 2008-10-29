@@ -442,7 +442,7 @@ struct tree{
 ///@param weights Weights on the features
 ///@param nfeats Number of features actually used
 ///@return The tree required to classify corners
-template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats)
+template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, const vector<double>& weights, int nfeats, string foo="")
 {
 	//Find the split
 	int f = find_best_split<S>(corners, weights, nfeats);
@@ -492,6 +492,10 @@ template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, cons
 	
 	//Build the subtrees
 	shared_ptr<tree> b_tree, d_tree, s_tree;
+
+	cout << foo << "Split " << f << endl;
+
+	foo += " ";
 	
 	//If the sublist contains a single class, then instantiate a leaf,
 	//otherwise recursively build the tree.
@@ -500,7 +504,7 @@ template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, cons
 	else if(cor_bri == num_bri)
 		b_tree = tree::CornerLeaf(num_bri);
 	else
-		b_tree = build_tree<S>(brighter, weights, nfeats);
+		b_tree = build_tree<S>(brighter, weights, nfeats, foo);
 	
 
 	if(cor_dar == 0)
@@ -508,7 +512,7 @@ template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, cons
 	else if(cor_dar == num_dar)
 		d_tree = tree::CornerLeaf(num_dar);
 	else
-		d_tree = build_tree<S>(darker, weights, nfeats);
+		d_tree = build_tree<S>(darker, weights, nfeats, foo);
 
 
 	if(cor_sim == 0)
@@ -516,7 +520,7 @@ template<int S> shared_ptr<tree> build_tree(vector<datapoint<S> >& corners, cons
 	else if(cor_sim == num_sim)
 		s_tree = tree::CornerLeaf(num_sim);
 	else
-		s_tree = build_tree<S>(similar, weights, nfeats);
+		s_tree = build_tree<S>(similar, weights, nfeats, foo);
 	
 	return shared_ptr<tree>(new tree(b_tree, d_tree, s_tree, f, num_tests));
 }

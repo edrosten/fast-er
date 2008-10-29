@@ -314,6 +314,7 @@ void block_bytecode::detect(const CVD::Image<CVD::byte>& im, std::vector<int>& c
 		for(int y = ymin; y < ymax; y++)
 			jit.detect_in_row(im, y, xmin, xmax, corners, threshold);
 	#else
+		cerr << "Hello!\n";
 		for(int y = ymin; y < ymax; y++)
 			for(int x=xmin; x < xmax; x++)
 				if(detect_no_score(&im[y][x], threshold))
