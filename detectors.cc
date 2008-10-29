@@ -32,7 +32,7 @@ int binary_search_threshold(const Image<byte>& i, vector<ImageRef>& c, unsigned 
 	
 	//The high and low thresholds.
 	unsigned int t_high = 256;
-	unsigned int t_low = 60;
+	unsigned int t_low = 0;
 
 
 	detector(i, ch, t_high);

@@ -68,6 +68,8 @@ int main(int argc, char** argv)
 	int lastarg = GUI.parseArguments(argc, argv);
 
 	create_offsets();
+	cout << offsets.size() << endl;
+	cout << num_offsets << endl;
 
 	map<string, uint64_t> corners;
 	map<string, uint64_t> non_corners;
