@@ -269,9 +269,10 @@ template<class C> C ato(const string & s)
 ///Parses a tree from an istream. This will deserialize a tree serialized by ::tree_element::print().
 ///On error, ParseError is thrown.
 ///@param i The stream to parse
+///@param eq_branch Is it an EQ branch? Check the invariant.
 ///@return An allocated tree. Ownership is passed to the callee.
 ///@ingroup gTree
-tree_element* load_a_tree(istream& i)
+tree_element* load_a_tree(istream& i, bool eq_branch)
 {	
 	string line;
 	getline(i, line);
@@ -286,7 +287,15 @@ tree_element* load_a_tree(istream& i)
 		if(tok.size() != 7)
 			throw ParseError();
 
-		return new tree_element(ato<bool>(tok[2]));
+		bool is_corner = ato<bool>(tok[2]);
+
+		if(eq_branch && is_corner)
+		{
+			cerr << "Warning: Fixing invariant in tree\n";
+			is_corner=0;
+		}
+
+		return new tree_element(is_corner);
 	}
 	else
 	{
@@ -295,14 +304,25 @@ tree_element* load_a_tree(istream& i)
 
 		int offset = ato<int>(tok[0]);
 
-		auto_ptr<tree_element> t1(load_a_tree(i));
-		auto_ptr<tree_element> t2(load_a_tree(i));
-		auto_ptr<tree_element> t3(load_a_tree(i));
+		auto_ptr<tree_element> t1(load_a_tree(i, false));
+		auto_ptr<tree_element> t2(load_a_tree(i, true));
+		auto_ptr<tree_element> t3(load_a_tree(i, false));
 		auto_ptr<tree_element> ret(new tree_element(t1.release(), t2.release(), t3.release(), offset));	
 
 		return ret.release();
 
 	}
+}
+
+///Parses a tree from an istream. This will deserialize a tree serialized by ::tree_element::print().
+///On error, ParseError is thrown.
+///@param i The stream to parse
+///@param eq_branch Is it an EQ branch? Check the invariant.
+///@return An allocated tree. Ownership is passed to the callee.
+///@ingroup gTree
+tree_element* load_a_tree(istream& i)
+{
+	load_a_tree(i, true);
 }
 
 

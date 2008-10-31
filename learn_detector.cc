@@ -394,8 +394,8 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 					//when it can decuce its structure from the invariant.
 
 					//The following line should have been present in the paper:
-					if(eq->is_leaf())
-					    eq->is_corner = 0;
+					if(node->eq->is_leaf())
+					    node->eq->is_corner = 0;
 
 					//Happily, because the bytecode compiler deduces this
 					//it behaves as if this line was present, at evaluation time.
