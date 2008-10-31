@@ -383,6 +383,25 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 						delete node->gt;
 						node->gt = tmp;
 					}
+
+					//NB BUG!!!
+					//At this point the invariant can be broken,
+					//since a "corner" leaf could have been copied
+					//to an "eq" branch.
+
+					//Oh dear. This bug made it in to the paper.
+					//Fortunately, the bytecode compiler ignores the tree
+					//when it can decuce its structure from the invariant.
+
+					//The following line should have been present in the paper:
+					if(eq->is_leaf())
+					    eq->is_corner = 0;
+
+					//Happily, because the bytecode compiler deduces this
+					//it behaves as if this line was present, at evaluation time.
+					//Of course, the presense of this line will produce different
+					//results later if the node is subsequently copied back in one
+					//of these operations.
 				}
 				else //Splat!!! ie delete a subtree
 				{
