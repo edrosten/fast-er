@@ -10,7 +10,7 @@ then
 fi
 
 
-debug_use_test_rig=1
+debug_use_test_rig=0
 
 num_offsets=$(head -1 $file)
 
