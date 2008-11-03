@@ -322,7 +322,7 @@ tree_element* load_a_tree(istream& i, bool eq_branch)
 ///@ingroup gTree
 tree_element* load_a_tree(istream& i)
 {
-	load_a_tree(i, true);
+	return load_a_tree(i, true);
 }
 
 
