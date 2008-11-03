@@ -206,8 +206,18 @@ then
 else
 	AC_MSG_RESULT(no)
 	AC_MSG_WARN([susan2l.c not found. I can not distribute it, but it can be found here:
-http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
-])
+http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c])
+
+	AC_MSG_NOTICE([Attempting to fetch...])
+
+	if wget http://users.fmrib.ox.ac.uk/~steve/susan/susan2l.c
+	then
+		AC_MSG_NOTICE([Fetch successful.])
+		AC_SUBST(susan, ["mod_susan.o susan.o"])
+		APPEND(CXXFLAGS, -DUSESUSAN)
+	else
+		AC_MSG_WARN([Unable to fetch susan2l.c. Disabling.])
+	fi
 fi
 
 ################################################################################
