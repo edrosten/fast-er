@@ -22,9 +22,8 @@ This will create the following executables:
    - C++ / libCVD
        - \p fast_tree_to_cxx_score_bsearch
        - \p fast_tree_to_cxx_score_iterate
-       - \p fast_tree_to_cxx
    - MATLAB
-       - \p FIXME
+       - \p fast_tree_to_matlab_score_bsearch
  - <code>\link test_repeatability.cc test_repeatability\endlink</code> Measure the repeatability of a detector.
  - <code>\link warp_to_png.cc warp_to_png\endlink</code> This converts a repeatability dataset in to a rather faster loading format.
  - <code>\link image_warp.cc image_warp\endlink</code> This program allows visual inspection of the quality of a dataset.
@@ -110,8 +109,34 @@ The complete sequence of operations for FAST-ER is as follows:
              </code>
 
         <li> The decision tree needs to be turned in to source code before it
-             can be easily used.
+             can be easily used. This is performed using \p fast_tree_to_cxx_score_bsearch ,
+			 \p fast_tree_to_cxx_score_iterate , or \p fast_tree_to_matlab_score_bsearch .
+			
+             The name describes the target language, and the method by which the
+			 score is computed (iteraton or binary search). For monotonic trees, the
+			 result is the same, but for the more general non-monotonic trees produced
+			 by FAST-ER, the results may be slightly different.
 
+			 These programs are used in the following way:
+
+			 <code>
+			 fast_tree_to_cxx_score_bsearch NAME fast-tree.txt > fast_tree.cxx
+			 </code>
+
+			 NAME specifies the name of the function. If Matlab code is generated, 
+			 then it is recommended that NAME is used for an output file NAME.m.
+
+			 The result is a usable source code file. In the case of generated C++, 
+			 the file is compatible with libCVD, and the output of the corner detector
+			 can be fed to libCVD's nonmax_suppression function.  The generated code
+			 does not make use of SSE. To do this, you will have to specify weights
+			 to \link learn_fast_tree.cc learn_fast_tree\endlink and modify
+			 \p fast_tree_to_cxx_score_bsearch to hardwire the initial questions in 
+			 the tree.
+
+			 In the case of Matlab, the generated file comes with code to perform 
+			 nonmaximal suppression if desired. This code is generated in straight
+			 Matlab, so corner detection will not be especially fast.
     </ol>
 </ol>
 
