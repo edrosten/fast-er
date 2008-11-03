@@ -21,7 +21,7 @@ using namespace GVars3;
 
 extern "C"
 {
-	void free_fux0red_memory();
+	void free_haxored_memory();
 	int*  susan(unsigned char* in, int x_size, int y_size, float dt, int bt);
 }
 
@@ -36,5 +36,5 @@ void SUSAN::operator()(const CVD::Image<CVD::byte>& im, std::vector<CVD::ImageRe
 	for(int i=0; i < n; i++)
 		corners.push_back(ImageRef(c[2*i+2], c[2*i+3]));
 
-	free_fux0red_memory();
+	free_haxored_memory();
 }

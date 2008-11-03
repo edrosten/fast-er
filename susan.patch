@@ -6,10 +6,10 @@
   
   /**********************************************************************\
   
-+   SUSAN Version Haxxxxxxed 22/9/2005
++   SUSAN Version Hacked 22/9/2005
 +   By Ed.
 +   Attempted to stem the memory hemmorage.
-+   Search for fux0red.
++   Search for haxored.
 + 
     SUSAN Version 2l, 12/2/99
     Changed GNUDOS option to FOPENB.
@@ -47,8 +47,8 @@
 + void* allocs[100000];
 + 
 + /*When the example code has 4x as many mallocs as frees, it is CLEARLY
-+   fux0r3d beyond all hope. Hence:*/
-+ void *malloc_fux0red(size_t s)
++   need some haxorizing:*/
++ void *malloc_haxored(size_t s)
 + {
 +   void* a = malloc(s);
 + 
@@ -62,7 +62,7 @@
 +   commercial purposes will go out ob business faster than this program
 +   leaks memory.*/
 + 
-+ void free_fux0red_memory()
++ void free_haxored_memory()
 + {
 +   int i;
 +   for(i=0 ; i < num_things_allocated; i++)
@@ -71,7 +71,7 @@
 +   num_things_allocated=0;
 + }
 + 
-+ void free_fux0red(void* a)
++ void free_haxored(void* a)
 + {
 + }
 + 
@@ -95,7 +95,7 @@
   
   /* }}} */
   
-!   *in = (uchar *) malloc_fux0red(*x_size * *y_size);
+!   *in = (uchar *) malloc_haxored(*x_size * *y_size);
   
     if (fread(*in,1,*x_size * *y_size,fd) == 0)
       exit_error("Image %s is wrong size.\n",filename);
@@ -146,7 +146,7 @@
   int   k;
   float temp;
   
-!   *bp=(unsigned char *)malloc_fux0red(516);
+!   *bp=(unsigned char *)malloc_haxored(516);
     *bp=*bp+258;
   
     for(k=-256;k<257;k++)
@@ -214,7 +214,7 @@
       exit(0);
     }
   
-!   tmp_image = (uchar *) malloc_fux0red( (x_size+mask_size*2) * (y_size+mask_size*2) );
+!   tmp_image = (uchar *) malloc_haxored( (x_size+mask_size*2) * (y_size+mask_size*2) );
     enlarge(&in,tmp_image,&x_size,&y_size,mask_size);
   
   /* }}} */
@@ -231,7 +231,7 @@
   
     increment = x_size - n_max;
   
-!   dp     = (unsigned char *)malloc_fux0red(n_max*n_max);
+!   dp     = (unsigned char *)malloc_haxored(n_max*n_max);
     dpt    = dp;
     temp   = -(dt*dt);
   
@@ -699,8 +699,8 @@
 + 
     memset (r,0,x_size * y_size * sizeof(int));
   
-!   cgx=(int *)malloc_fux0red(x_size*y_size*sizeof(int));
-!   cgy=(int *)malloc_fux0red(x_size*y_size*sizeof(int));
+!   cgx=(int *)malloc_haxored(x_size*y_size*sizeof(int));
+!   cgy=(int *)malloc_haxored(x_size*y_size*sizeof(int));
   
     for (i=5;i<y_size-5;i++)
       for (j=5;j<x_size-5;j++) {
@@ -725,8 +725,8 @@
            }}}}
   corner_list[n].info=7;
   
-! free_fux0red(cgx);
-! free_fux0red(cgy);
+! free_haxored(cgx);
+! free_haxored(cgy);
   
 +   
   }
@@ -965,7 +965,7 @@
 !   mode=2;
   
 !   /* {{{ corners */
-!   r   = (int *) malloc_fux0red(x_size * y_size * sizeof(int));
+!   r   = (int *) malloc_haxored(x_size * y_size * sizeof(int));
 !   setup_brightness_lut(&bp,bt,6);
   
 !   /*if (principle)
@@ -996,7 +996,7 @@
 !   while(corner_list[counter].info != 7)
 !       counter++;
 !   
-!   ret = malloc_fux0red(sizeof(int) * 2 * (counter + 1));
+!   ret = malloc_haxored(sizeof(int) * 2 * (counter + 1));
 !   counter = 0;
   
 !   while(corner_list[counter].info != 7)
