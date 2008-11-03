@@ -42,7 +42,7 @@ then
 cat<<END
 
 function test()
-	image = imread('/scratch/er258/repeatability/box/frames/frame_1.pgm');
+	image = imread('frame_1.pgm');
 	
 	corners = ${name}(image, 20, 'nonmax');
 
