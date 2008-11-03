@@ -4,17 +4,45 @@ file="$2"
 name="$1"
 if [ "$#" != 2 ]
 then
-	echo `basename $0`: error: incirrect arguments.
+	echo `basename $0`: error: incorrect arguments.
 	echo "Usage:  `basename $0` <function_name> <file>"
 	exit 1
 fi
 
 
-file=$1
+num_offsets=$(head -1 $file)
+
+
+border=$(
+      awk '
+        NR==1{features = $1}
+        NR==2{
+          gsub(/[\[\],]/, "")
+          if(features != NF/2)
+          {
+            print "Malformed offsets line"
+            exit(1);
+          }
+		  o=0
+          
+          for(x=1; x <= NF; x++)
+		  	o = ($x > o? $x : o)
+
+		  print o
+
+		  exit(0);
+      } ' $file 
+)
+
+
 cat << END
+#include <cvd/image_io.h>
 #include <cvd/image.h>
 #include <cvd/byte.h>
+#include <cvd/fast_corner.h>
 #include <vector>
+#include <algorithm>
+#include <climits>
 using namespace CVD;
 using namespace std;
 
@@ -51,38 +79,107 @@ $(
                 /corner/{print ind "b += min_diff;"}
                 /background/{print ind "break;"}
             ' $file
-        )
+)
 
 	}
 
 	return b-1;
 }
 
-
-void $name(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
+static void make_offsets(int pixel[], int row_stride)
 {
-    scores.resize(corners.size());
-    $(
+$(
       awk '
         NR==1{features = $1}
-        
         NR==2{
           gsub(/[\[\],]/, "")
-          if(features != NF/2)
-          {
-            print "Malformed offsets line"
-            exit(1);
-          }
           
-          print "int pixel[" features "] = {"
           for(x=1; x <= features; x++)
-            print "        "$(2*x-1) " + i.row_stride() * " $(2*x)","
-          print "    };"
+            print "        pixel[" (x-1) "] = "$(2*x-1) " + row_stride * " $(2*x)";"
+
+		  exit(0);
       } ' $file 
     )
-  
+
+
+}
+
+void ${name}_score(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores)
+{
+    scores.resize(corners.size());
+	int pixel[$num_offsets];
+	make_offsets(pixel, i.row_stride());
+
     for(unsigned int n=0; n < corners.size(); n++)
         scores[n] = fast_corner_score(&i[corners[n]], pixel, b);
 }
+
+void ${name}_detect(const SubImage<byte>& i, vector<ImageRef>& corners, int b)
+{
+	corners.clear();
+
+	int pixel[$num_offsets];
+	make_offsets(pixel, i.row_stride());
+
+	for(int y=$border; y < i.size().y - $border; y++)
+		for(int x=$border; x < i.size().x - $border; x++)
+		{
+			const byte* p = i[y] + x;
+		
+			int cb = *p + b;
+			int c_b= *p - b;
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if(p[pixel["$2"]] > cb)"}
+                /elsf_darker/ {print ind "else if(p[pixel["$2"]] < c_b)"}
+                /if_darker/ {print ind "if(p[pixel["$2"]] < c_b)"}
+                /if_either/{print ind "if(p[pixel["$2"]] > cb || p[pixel["$2"]]<c_b)"}
+                /else/{print ind "else"}
+                /corner/{print ind "{}"}
+                /background/{print ind "continue;"}
+            ' $file
+)
+
+			corners.push_back(ImageRef(x, y));
+		}
+
+}
+END
+
+cat<<END
+
+int main(int argc, char** argv)
+{	
+	for(int i=1; i < argc; i++)
+	{
+		cerr << argv[i]<< endl;
+		Image<byte> im = img_load(argv[i]);
+		vector<ImageRef> c1, c2;
+		vector<int> s1, s2;
+		for(int t=0; t < 256; t++)
+		{
+			c1.clear();
+			c2.clear();
+			s1.clear();
+			s2.clear();
+
+			${name}_detect(im, c1, t);
+			${name}_score(im, c1, t, s1);
+			fast_corner_detect_9(im, c2, t);
+			fast_corner_score_9(im, c2, t, s2);
+			
+			cerr << t << endl;
+			if(c1.size() != c2.size())
+				cerr << "Size mismatch\n";
+			else if(!equal(c1.begin(), c1.end(), c2.begin()))
+				cerr << "Detection mismatch\n";
+			else if(!equal(s1.begin(), s1.end(), s2.begin()))
+				cerr << "Score mismatch\n";
+		}
+	}
+}
+
+
 END
 

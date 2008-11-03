@@ -69,13 +69,6 @@ vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_eleme
 			cerr << "Fatal error: standard and fast detectors do not match!\n";
 			cerr << "Different number of corners detected.\n";
 			cerr << corners.size() << " " << t.size() << endl;
-			
-			for(unsigned int i=0; i < t.size(); i++)
-				cerr << "TREE " << t[i] << endl;
-
-			for(unsigned int i=0; i < corners.size(); i++)
-				cerr << "BYTECODE " << im.pos(corners[i] + im.data()) << endl;
-			
 			exit(1);
 		}
 	}
@@ -317,7 +310,6 @@ tree_element* load_a_tree(istream& i, bool eq_branch)
 ///Parses a tree from an istream. This will deserialize a tree serialized by ::tree_element::print().
 ///On error, ParseError is thrown.
 ///@param i The stream to parse
-///@param eq_branch Is it an EQ branch? Check the invariant.
 ///@return An allocated tree. Ownership is passed to the callee.
 ///@ingroup gTree
 tree_element* load_a_tree(istream& i)
