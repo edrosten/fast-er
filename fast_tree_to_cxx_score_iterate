@@ -10,6 +10,8 @@ then
 fi
 
 
+debug_use_test_rig=1
+
 num_offsets=$(head -1 $file)
 
 
@@ -36,12 +38,9 @@ border=$(
 
 
 cat << END
-#include <cvd/image_io.h>
 #include <cvd/image.h>
 #include <cvd/byte.h>
-#include <cvd/fast_corner.h>
 #include <vector>
-#include <algorithm>
 #include <climits>
 using namespace CVD;
 using namespace std;
@@ -57,7 +56,37 @@ static inline bool test_gt_set(int a, int b, int& min_diff)
 	}
 	return 0;
 }
+
 static inline int fast_corner_score(const byte* p, const int pixel[], int b)
+{	
+	b++;
+	//This function computes the score for a pixel which is known to be 
+	//a corner at barrier b. So we start looking at b+1 and above to 
+	//establish where it stops becoming a corner.
+	for(;;)
+	{
+		int cb = *p + b;
+		int c_b= *p - b;
+		int min_diff = INT_MAX;
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff))"}
+                /elsf_darker/ {print ind "else if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /if_darker/ {print ind "if(test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /if_either/{print ind "if(test_gt_set(p[pixel["$2"]], cb, min_diff) || test_gt_set(c_b, p[pixel["$2"]], min_diff))"}
+                /else/{print ind "else"}
+                /corner/{print ind "b += min_diff;"}
+                /background/{print ind "break;"}
+            ' $file
+)
+
+	}
+
+	return b-1;
+}
+
+static inline int corner_score(const byte* p, const int pixel[], int b)
 {	
 	b++;
 	//This function computes the score for a pixel which is known to be 
@@ -111,7 +140,7 @@ void ${name}_score(const SubImage<byte>& i, const vector<ImageRef>& corners, int
 	make_offsets(pixel, i.row_stride());
 
     for(unsigned int n=0; n < corners.size(); n++)
-        scores[n] = fast_corner_score(&i[corners[n]], pixel, b);
+        scores[n] = corner_score(&i[corners[n]], pixel, b);
 }
 
 void ${name}_detect(const SubImage<byte>& i, vector<ImageRef>& corners, int b)
@@ -147,7 +176,13 @@ $(
 }
 END
 
+
+if [ "$debug_use_test_rig" == 1 ]
+then
 cat<<END
+#include <cvd/fast_corner.h>
+#include <cvd/image_io.h>
+#include <algorithm>
 
 int main(int argc, char** argv)
 {	
@@ -179,7 +214,6 @@ int main(int argc, char** argv)
 		}
 	}
 }
-
-
 END
+fi
 
