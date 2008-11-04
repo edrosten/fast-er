@@ -45,9 +45,9 @@ using namespace TooN;
 @return The loaded images.
 @ingroup gDataset
 */
-vector<Image<byte> > load_images_cambridge(string dir, int n)
+vector<Image<byte> > load_images_cambridge(string dir, int n, string suffix)
 {
-	dir += "/frames/frame_%i.pgm";
+	dir += "/frames/frame_%i." + suffix;
 
 	vector<Image<byte> > ret;
 
@@ -329,8 +329,11 @@ pair<vector<Image<byte> >, vector<vector<Image<array<float, 2> > > > > load_data
 	switch(d)
 	{
 		case Cambridge:
+			images = load_images_cambridge(dir, num, "pgm");
+			break;
+
 		case CambridgePNGWarp:
-			images = load_images_cambridge(dir, num);
+			images = load_images_cambridge(dir, num, "png");
 			break;
 
 		case VGG:
