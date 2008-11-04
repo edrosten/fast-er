@@ -252,6 +252,8 @@ template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >:
 	
 	uint64_t total_num = 0;
 
+	uint64_t line_num=2;
+
 	for(;;)
 	{
 		uint64_t count;
@@ -262,8 +264,10 @@ template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >:
 		if(!cin)
 			break;
 
+		line_num++;
+
 		if(unpacked_feature.size() != nfeats)
-			fatal(1, "Feature string length is %i, not %i", unpacked_feature.size(), nfeats);
+			fatal(1, "Feature string length is %i, not %i on line %i", unpacked_feature.size(), nfeats, line_num);
 
 		if(count == 0)
 			fatal(4, "Zero count is invalid");
