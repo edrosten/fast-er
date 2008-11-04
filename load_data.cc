@@ -42,6 +42,7 @@ using namespace TooN;
 
 @param dir The base directory of the dataset.
 @param n   The number of images in the dataset.
+@param suffix   Image filename suffix to use.
 @return The loaded images.
 @ingroup gDataset
 */
