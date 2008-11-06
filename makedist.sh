@@ -4,6 +4,7 @@ cd latex
 make
 cp refman.pdf ..
 cd ..
+rm -r latex
 cd fast_trees
 rm -r CVS
 tar -xvjf FAST_trees.tar.bz2
