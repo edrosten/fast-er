@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+#    This file is part of the FAST-ER machine learning system.
+#    Copyright (C) 2008  Edward Rosten and Los Alamos National Laboratory
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+file="$2"
+name="$1"
+if [ "$#" != 2 ]
+then
+	echo `basename $0`: error: incorrect arguments.
+	echo "Usage:  `basename $0` <function_name> <file>"
+	exit 1
+fi
+
+debug_use_test_rig=0
+
+num_offsets=$(head -1 $file)
+
+
+border=$(
+      awk '
+        NR==1{features = $1}
+        NR==2{
+          gsub(/[\[\],]/, "")
+          if(features != NF/2)
+          {
+            print "Malformed offsets line"
+            exit(1);
+          }
+		  o=0
+          
+          for(x=1; x <= NF; x++)
+		  	o = ($x > o? $x : o)
+
+		  print o
+
+		  exit(0);
+      } ' $file 
+)
+
+
+
+
+
+cat << END
+/*This is mechanically generated code*/
+#include <stdlib.h>
+
+typedef struct { int x, y; } xy; 
+typedef unsigned char byte;
+
+int ${name}_corner_score(const byte* p, const int pixel[], int bstart)
+{    
+    int bmin = bstart;
+    int bmax = 255;
+    int b = (bmax + bmin)/2;
+    
+    /*Compute the score using binary search*/
+	for(;;)
+    {
+		int cb = *p + b;
+		int c_b= *p - b;
+
+
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if( p[pixel["$2"]] > cb)"}
+                /elsf_darker/ {print ind "else if( p[pixel["$2"]] < c_b)"}
+                /if_darker/{print ind "if( p[pixel["$2"]] < c_b)"}
+                /if_either/{print ind "if( p[pixel["$2"]] > cb || p[pixel["$2"]] < c_b )"}
+                /else/{print ind "else"}
+                /corner/{print ind "goto is_a_corner;"}
+                /background/{print ind "goto is_not_a_corner;"}
+            ' $file
+        )
+
+		is_a_corner:
+			bmin=b;
+			goto end_if;
+
+		is_not_a_corner:
+			bmax=b;
+			goto end_if;
+
+		end_if:
+
+		if(bmin == bmax - 1 || bmin == bmax)
+			return bmin;
+		b = (bmin + bmax) / 2;
+    }
+}
+
+static void make_offsets(int pixel[], int row_stride)
+{
+$(
+      awk '
+        NR==1{features = $1}
+        NR==2{
+          gsub(/[\[\],]/, "")
+          
+          for(x=1; x <= features; x++)
+            print "        pixel[" (x-1) "] = "$(2*x-1) " + row_stride * " $(2*x)";"
+
+		  exit(0);
+      } ' $file 
+    )
+}
+
+
+
+int* ${name}_score(const byte* i, int stride, xy* corners, int num_corners, int b)
+{	
+	int* scores = (int*)malloc(sizeof(int)* num_corners);
+	int n;
+
+	int pixel[$num_offsets];
+	make_offsets(pixel, stride);
+
+    for(n=0; n < num_corners; n++)
+        scores[n] = ${name}_corner_score(i + corners[n].y*stride + corners[n].x, pixel, b);
+
+	return scores;
+}
+
+
+xy* ${name}_detect(const byte* im, int xsize, int ysize, int stride, int b, int* ret_num_corners)
+{
+	int num_corners=0;
+	xy* ret_corners;
+	int rsize=512;
+	int pixel[$num_offsets];
+	int x, y;
+
+	ret_corners = (xy*)malloc(sizeof(xy)*rsize);
+	make_offsets(pixel, stride);
+
+	for(y=$border; y < ysize - $border; y++)
+		for(x=$border; x < xsize - $border; x++)
+		{
+			const byte* p = im + y*stride + x;
+		
+			int cb = *p + b;
+			int c_b= *p - b;
+$(
+            awk '
+                { ind = "        "substr($0, 1, match($0, /[^ ]/)-1)}
+                /if_brighter/{print ind "if(p[pixel["$2"]] > cb)"}
+                /elsf_darker/ {print ind "else if(p[pixel["$2"]] < c_b)"}
+                /if_darker/ {print ind "if(p[pixel["$2"]] < c_b)"}
+                /if_either/{print ind "if(p[pixel["$2"]] > cb || p[pixel["$2"]]<c_b)"}
+                /else/{print ind "else"}
+                /corner/{print ind "{}"}
+                /background/{print ind "continue;"}
+            ' $file
+)
+			if(num_corners == rsize)
+			{
+				rsize*=2;
+				ret_corners = (xy*)realloc(ret_corners, sizeof(xy)*rsize);
+
+				ret_corners[num_corners].x = x;
+				ret_corners[num_corners].y = y;
+				num_corners++;
+				
+			}
+		}
+	
+	*ret_num_corners = num_corners;
+	return ret_corners;
+
+}
+
+
+END
+
+if [ "$debug_use_test_rig" == 1 ]
+then
+cat<<END
+#include <cvd/fast_corner.h>
+#include <cvd/image_io.h>
+#include <algorithm>
+
+int main(int argc, char** argv)
+{	
+	for(int i=1; i < argc; i++)
+	{
+		cerr << argv[i]<< endl;
+		Image<byte> im = img_load(argv[i]);
+		vector<ImageRef> c1, c2;
+		vector<int> s1, s2;
+		for(int t=0; t < 256; t++)
+		{
+			c1.clear();
+			c2.clear();
+			s1.clear();
+			s2.clear();
+
+			${name}_detect(im, c1, t);
+			${name}_score(im, c1, t, s1);
+			fast_corner_detect_9(im, c2, t);
+			fast_corner_score_9(im, c2, t, s2);
+			
+			cerr << t << endl;
+			if(c1.size() != c2.size())
+				cerr << "Size mismatch\n";
+			else if(!equal(c1.begin(), c1.end(), c2.begin()))
+				cerr << "Detection mismatch\n";
+			else if(!equal(s1.begin(), s1.end(), s2.begin()))
+				cerr << "Score mismatch\n";
+		}
+	}
+}
+END
+fi
+
