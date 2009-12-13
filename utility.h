@@ -39,7 +39,7 @@ inline CVD::ImageRef ir_rounded(const tag::array<float, 2>& v)
 ///@return The output Vector<2>
 inline TooN::Vector<2> Vec(const tag::array<float, 2>& f)
 {
-        return (TooN::make_Vector, f[0], f[1]);
+        return TooN::makeVector(f[0], f[1]);
 }
 
 #endif

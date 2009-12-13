@@ -20,6 +20,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 
 #include <cvd/vector_image_ref.h>
 #include <cvd/image.h>
@@ -70,7 +71,7 @@ vector<ImageRef> transform_offsets(const vector<ImageRef>& offsets, int angle, b
 	double R_[] = { cos(a), sin(a), -sin(a) , cos(a) };
 	double F_[] = { 1, 0, 0, r?-1:1};
 
-	Matrix<2> R(R_), F(F_);
+	Matrix<2,2,double,Reference::RowMajor> R(R_), F(F_);
 	Matrix<2> T = R*F;
 
 	vector<ImageRef> ret;

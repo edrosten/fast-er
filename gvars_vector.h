@@ -44,29 +44,31 @@ namespace GVars3{ namespace serialize {
 
 		return o.str();
 	}
+	
 
-	template<class C> int from_string(const std::string& s, std::set<C>& o)
+	template<class C> struct FromStream<std::set<C> >
 	{
-		std::istringstream i(s);
-		using namespace tag;
-		
-		while(1)
-		{	
-			C c;
-			i >> c;
+		static std::set<C> from(std::istream& i)
+		{
+			std::set<C> o;
+			while(1)
+			{	
+				C c;
+				i >> c;
 
-			if(i) //No data lost: 
-				o.insert(o.end(), c);
-			else //Stream finished for some reason (either bad or b0rked)
-				return check_stream(i);
+				if(i) //No data lost: 
+					o.insert(o.end(), c);
+				else //Stream finished for some reason (either bad or b0rked)
+					return o;
+			}
 		}
-	}
+	};
 
 	/**GVars serialization for containers. 
 	   @ingroup gUtility
 	*/
 
-	template<class C>std::string to_string(const std::vector<C>& s)
+	/*template<class C>std::string to_string(const std::vector<C>& s)
 	{
 		std::ostringstream o;
 		typename std::vector<C>::const_iterator i;
@@ -96,7 +98,7 @@ namespace GVars3{ namespace serialize {
 			else //Stream finished for some reason (either bad or b0rked)
 				return check_stream(i);
 		}
-	}
+	}*/
 }}
 ///\endcond
 #include <gvars3/instances.h>

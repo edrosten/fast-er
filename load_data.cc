@@ -245,8 +245,7 @@ vector<vector<Image<array<float, 2> > > > load_warps_vgg(string dir, int num, Im
 	
 	//The first homography is always the identity.
 	{
-		Matrix<3> i;
-		Identity(i);
+		Matrix<3> i = Identity;
 		H_1_to_x.push_back(i);
 	}
 
@@ -284,7 +283,7 @@ vector<vector<Image<array<float, 2> > > > load_warps_vgg(string dir, int num, Im
 				for(int y=0; y < size.y; y++)
 					for(int x=0; x < size.x; x++)
 					{
-						Vector<2> p = project(from_to_to * Vector<3>((make_Vector, x, y, 1)));
+						Vector<2> p = project(from_to_to * Vector<3>(makeVector( x, y, 1)));
 
 						if(p[0] >= 0 && p[1] >= 0 && p[0] <= size.x-1 && p[1] <= size.y-1)
 							w[y][x] = Arr(p);
