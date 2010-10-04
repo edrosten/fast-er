@@ -238,7 +238,7 @@ function bmin = corner_score(i, posx, posy)
     
     bmin = 0;
     bmax = 255;
-    b = floor(bmax + bmin)/2;
+    b = floor((bmax + bmin)/2);
     
     %Compute the score using binary search
 	while 1
