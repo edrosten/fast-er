@@ -1,6 +1,6 @@
 CXXFLAGS=@CXXFLAGS@
 CFLAGS=@CXXFLAGS@
-LDFLAGS=@LDFLAGS@
+LDFLAGS=@LDFLAGS@ @LIBS@
 CXX=@CXX@
 
 PROGS=learn_detector warp_to_png image_warp test_repeatability learn_fast_tree fast_N_features extract_features

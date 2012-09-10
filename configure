@@ -3473,13 +3473,16 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lapack_dgetri_" >&5
 $as_echo "$ac_cv_lib_lapack_dgetri_" >&6; }
 if test "x$ac_cv_lib_lapack_dgetri_" = xyes; then :
-  lapack=yes
-else
-  lapack=no
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBLAPACK 1
+_ACEOF
+
+  LIBS="-llapack $LIBS"
+
 fi
 
 
-if test $lapack = no
+if test x$ac_cv_lib_lapack_dgetri_ != xyes
 then
 	as_fn_error $? "Lapack support missing. Please install LAPACK" "$LINENO" 5
 fi

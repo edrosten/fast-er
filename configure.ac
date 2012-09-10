@@ -105,9 +105,9 @@ Get libCVD here: http://savannah.nongnu.org/projects/libcvd
 fi
 
 lapack=no
-AC_CHECK_LIB(lapack, dgetri_, [lapack=yes],[lapack=no])
+AC_CHECK_LIB(lapack, dgetri_)
 
-if test $lapack = no
+if test x$ac_cv_lib_lapack_dgetri_ != xyes
 then
 	AC_MSG_ERROR([Lapack support missing. Please install LAPACK])
 fi
