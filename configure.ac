@@ -39,8 +39,8 @@ define([TEST_AND_SET_CXXFLAG],[
 	m4_if([$2],[],[pushdef(prog, [int main(){}])], [pushdef(prog, [$2])])
 
 	m4_if([$4],[run],
-		[AC_RUN_IFELSE([prog], [cvd_conf_test=1],[cvd_conf_test=0], [cvd_conf_test=0])],
-		[AC_COMPILE_IFELSE([prog], [cvd_conf_test=1],[cvd_conf_test=0])]
+		[AC_RUN_IFELSE([AC_LANG_SOURCE([prog])], [cvd_conf_test=1],[cvd_conf_test=0], [cvd_conf_test=0])],
+		[AC_COMPILE_IFELSE([AC_LANG_SOURCE([prog])], [cvd_conf_test=1],[cvd_conf_test=0])]
 	)
 	
 	
@@ -76,11 +76,11 @@ AC_MSG_CHECKING(libCVD)
 LDFLAGS="$LDFLAGS -lcvd"
 
 comp=no
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <cvd/fast_corner.h>
 	#include <cvd/image_io.h>
 	int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
-], [comp=yes], [comp=no])
+])], [comp=yes], [comp=no])
 
 AC_MSG_RESULT([$comp])
 
@@ -89,11 +89,11 @@ then
 	AC_MSG_CHECKING(If libcvd needs -msse2)
 	APPEND(CXXFLAGS,[ -msse2])
 
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 		#include <cvd/fast_corner.h>
 		#include <cvd/image_io.h>
 		int main(){ CVD::Image<CVD::byte> i = CVD::img_load(""); return 0;}
-	], [comp=yes], [comp=no])
+	])], [comp=yes], [comp=no])
 	AC_MSG_RESULT($comp)
 fi
 
@@ -104,12 +104,12 @@ Get libCVD here: http://savannah.nongnu.org/projects/libcvd
 ])
 fi
 
-cvd_lapack=no
-AC_CHECK_LIB(cvd, dgetri_, [cvd_lapack=yes],[cvd_lapack=no])
+lapack=no
+AC_CHECK_LIB(lapack, dgetri_, [lapack=yes],[lapack=no])
 
-if test $cvd_lapack = no
+if test $lapack = no
 then
-	AC_MSG_ERROR([libCVD must be compiled with lapack support.])
+	AC_MSG_ERROR([Lapack support missing. Please install LAPACK])
 fi
 
 ################################################################################
@@ -121,10 +121,10 @@ AC_CHECK_HEADERS(TooN/TooN.h, [], [toon=no])
 
 comp=no
 AC_MSG_CHECKING([TooN])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <TooN/TooN.h>
 	int main(){TooN::Vector<2> v;return 0;}
-], [comp=yes], [toon=no])
+])], [comp=yes], [toon=no])
 
 AC_MSG_RESULT($comp)
 
@@ -143,10 +143,10 @@ fi
 tag=yes
 AC_CHECK_HEADERS(tag/printf.h, [], [tag=no])
 AC_MSG_CHECKING([tag])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <tag/printf.h>
 	int main(){Printf("Hello, world.\n");}
-], [comp=yes], [tag=no])
+])], [comp=yes], [tag=no])
 
 AC_MSG_RESULT($comp)
 
@@ -178,10 +178,10 @@ fi
 
 comp=no
 AC_MSG_CHECKING([gvars])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <gvars3/instances.h>
 	int main(){GVars3::GUI.LoadFile("");}
-], [comp=yes], [gvars=no])
+])], [comp=yes], [gvars=no])
 
 AC_MSG_RESULT($comp)
 
@@ -234,7 +234,7 @@ then
 	AC_CHECK_SIZEOF(void*)
 	AC_MSG_CHECKING(working x86 machine code)
 
-	AC_RUN_IFELSE([
+	AC_RUN_IFELSE([AC_LANG_SOURCE([
 	#include <sys/mman.h>
 	int main()
 	{
@@ -248,7 +248,7 @@ then
 		);
 
 		return 0;
-	}], [comp=yes], [comp=no])
+	}])], [comp=yes], [comp=no])
 
 	AC_MSG_RESULT($comp)
 fi
