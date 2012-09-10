@@ -1,0 +1,7 @@
+*.o
+*.swp
+susan2l.c
+Makefile
+autom4te.cache
+config.log
+config.status
