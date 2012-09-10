@@ -30,9 +30,11 @@ namespace GVars3{ namespace serialize {
 	   @ingroup gUtility
 	*/
 
-	template<class C>std::string to_string(const std::set<C>& s)
+	template<class C>std::string to_string(const std::set<C>& s, bool precise)
 	{
 		std::ostringstream o;
+		generic_setup(o,precise);
+
 		typename std::set<C>::const_iterator i;
 
 		for(i=s.begin();i != s.end(); i++)
