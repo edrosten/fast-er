@@ -34,6 +34,9 @@ test_repeatability:test_repeatability.o load_data.o detectors.o harrislike.o dog
 extract_features:extract_features.o faster_tree.o  offsets.o faster_bytecode.o 
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
+extract_fast_n_features:extract_fast_n_features.o
+	$(CXX) -o $@ $^ $(LDFLAGS) 
+
 mod_susan.c:susan2l.c susan.patch
 	cp susan2l.c mod_susan.c
 	patch mod_susan.c susan.patch
