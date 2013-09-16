@@ -22,12 +22,18 @@
 
 \section wpUsage Usage
 
-<code> test_repeatability [--var VAL] [--exec FILE] </code>
+<code> test_repeatability [--var VAL] [--exec FILE] --type TYPE --dir DIR </code>
 
 \section Description
 
 This program \link gDataset loads a dataset\endlink and then 
-computes repeatability of the specified detector on the dataset. This
+computes repeatability of the specified detector on the dataset. 
+
+Datasets types are "vgg" for the Oxford VGG affine covariant features
+datased, "cambridge" for the Cambridge repeatability dataset and 
+"cam-png" for the Cambridge dataset in PNG format.
+
+This
 program accepts standard GVars3 commandline arguments and loads 
 <code>learn_detector.cfg</code> as a the default configuration:
 
@@ -206,8 +212,8 @@ void mmain(int argc, char** argv)
 
 
 	int n = GV3::get<int>("num", 2, 1);
-	string dir = GV3::get<string>("dir", "./", 1);
-	string format = GV3::get<string>("type", "cambridge", 1);
+	string dir = GV3::get<string>("dir", "./", 0);
+	string format = GV3::get<string>("type", "cambridge", 0);
 	double fuzz = GV3::get<double>("r", 5, 1);
 	vector<int> cpf = GV3::get<vector<int> >("cpf", "0 10 20 30 40 50 60 70 80 90 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 1100 1200 1300 1400 1500 1600 1700 1800 1900 2000 2200", 1);
 	int ncpf = GV3::get<int>("ncpf", 500, 1);

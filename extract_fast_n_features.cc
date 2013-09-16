@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 /**
-\file extract_features.cc Main file for the extract_features executable.
+\file extract_fast_n_features.cc Main file for the extract_features executable.
 
 \section wpUsage Usage
 

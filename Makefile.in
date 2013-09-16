@@ -28,7 +28,7 @@ warp_to_png:warp_to_png.o
 image_warp:image_warp.o load_data.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
-test_repeatability:test_repeatability.o load_data.o detectors.o harrislike.o dog.o cvd_fast.o  faster_tree.o   faster_detector.o offsets.o faster_bytecode.o @susan@
+test_repeatability:test_repeatability.o load_data.o detectors.o harrislike.o dog.o cvd_fast.o  faster_tree.o   faster_detector.o offsets.o faster_bytecode.o twofast.o @susan@
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 extract_features:extract_features.o faster_tree.o  offsets.o faster_bytecode.o 

@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <cstdlib>
+#include <cvd/nonmax_suppression.h>
 #include <gvars3/instances.h>
 
 using namespace std;
@@ -137,6 +138,24 @@ struct Random:public DetectN
 	}
 };
 
+typedef struct { int x, y; } xy; 
+void twofast_detect(const SubImage<byte>& i, vector<ImageRef>& corners, int b);
+void twofast_score(const SubImage<byte>& i, const vector<ImageRef>& corners, int b, vector<int>& scores);
+
+
+struct twofast: public DetectT
+{
+	 virtual void operator()(const CVD::Image<CVD::byte>& i, std::vector<CVD::ImageRef>& c, unsigned int n) const
+	 {
+        vector<ImageRef> cs;
+        twofast_detect(i, cs, n);
+        vector<int> sc;
+        twofast_score(i, cs, n, sc);
+        nonmax_suppression(cs, sc, c);
+
+	}
+};
+
 ///Very simple factory function for getting detector objects.
 ///Paramaters (including the detector type) are drawn from 
 ///the GVars database. The parameter "detector" determines the
@@ -180,6 +199,8 @@ auto_ptr<DetectN> get_detector()
 		return auto_ptr<DetectN>(new SearchThreshold(new fast_12));
 	else if(d == "faster2")
 		return auto_ptr<DetectN>(new SearchThreshold(new faster_learn(GV3::get<string>("faster2"))));
+	else if(d == "twofast")
+		return auto_ptr<DetectN>(new SearchThreshold(new twofast));
 	else
 	{
 		cerr << "Unknown detector: " << d << endl;

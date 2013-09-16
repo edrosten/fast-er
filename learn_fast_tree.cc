@@ -651,8 +651,13 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 		{
 			o << i << "if_brighter " << f << " "  <<  bt->num_datapoints << " " << dt->num_datapoints  << " " << st->num_datapoints << endl;
 				print_tree(bt, o, ii);
-			o << i << "elsf_darker " << f << endl;
-				print_tree(dt, o, ii);
+
+			//Prune off trees with no data
+			if(dt->num_datapoints)
+			{
+				o << i << "elsf_darker " << f << endl;
+					print_tree(dt, o, ii);
+			}
 			o << i << "else" << endl;
 				print_tree(st, o, ii);
 			o << i << "end" << endl;
