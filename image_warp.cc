@@ -41,15 +41,14 @@ quality of alignment within a dataset.
 #include <cvd/image_io.h>
 #include <cvd/image_interpolate.h>
 #include <gvars3/instances.h>
-#include <tag/printf.h>
-#include <tag/stdpp.h>
+#include "varprintf/varprintf.h"
 
 #include "load_data.h"
 #include "utility.h"
 
 using namespace std;
 using namespace CVD;
-using namespace tag;
+using namespace varPrintf;
 using namespace GVars3;
 using namespace TooN;
 
@@ -92,7 +91,7 @@ int main(int argc, char** argv)
 		string format = GV3::get<string>("type", "cambridge", 1);
 
 		//Load the dataset
-		rpair(images, warps) = load_data(dir, n, format);
+		tie(images, warps) = load_data(dir, n, format);
 
 		//Generate the output printf string	
 		string out = GV3::get<string>("out", "./out/", 1) + "/" + GV3::get<string>("stub", "warped_%i_%i.jpg", 1);

@@ -88,24 +88,20 @@ bsdsb 1000  1
 #include <cassert>
 #include <bitset>
 #include <algorithm>
+#include <iterator>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 #include <stdint.h>
-
-#include <tag/tuple.h>
-#include <tag/printf.h>
-#include <tag/stdpp.h>
-#include <tag/fn.h>
 
 #include <cvd/image_ref.h>
 
 #include <gvars3/instances.h>
+#include "varprintf/varprintf.h"
 #endif
 
 using namespace std;
-using namespace tr1;
-using namespace tag;
+using namespace varPrintf;
 using namespace CVD;
 using namespace GVars3;
 ///\endcond 
@@ -122,15 +118,15 @@ enum Ternary
 ///@param E Error code
 ///@param S Format string
 ///@ingroup gUtility
-#define fatal(E, S, ...) vfatal((E), (S), (tag::Fmt,## __VA_ARGS__))
+
 ///Print an error message and the exit, using Tuple stype VARARGS
 ///@param err Error code
 ///@param s Format string
 ///@param list Argument list
 ///@ingroup gUtility
-template<class C> void vfatal(int err, const string& s, const C& list)
+template<typename... Args> void fatal(int err, const string& s, Args&&... list)
 {
-	vfPrintf(cerr, s + "\n", list);
+	fPrintf(cerr, s + "\n", list...);
 	exit(err);
 }
 
@@ -243,7 +239,7 @@ The tokens are whitespace separated.
 @param nfeats Number of features in a feature vector. Used to spot errors.
 @return Loaded datapoints and total number of instances.
 */
-template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >::type load_features(unsigned int nfeats)
+template<int S> tuple<shared_ptr<vector<datapoint<S>>>, uint64_t> load_features(unsigned int nfeats)
 {
 	shared_ptr<vector<datapoint<S> > > ret(new vector<datapoint<S> >);
 
@@ -280,7 +276,7 @@ template<int S> typename V_tuple<shared_ptr<vector<datapoint<S> > >, uint64_t >:
 	cerr << "Num features: " << total_num << endl
 	     << "Num distinct: " << ret->size() << endl;
 
-	return make_vtuple(ret, total_num);
+	return make_tuple(ret, total_num);
 }
 
 
@@ -665,7 +661,7 @@ void print_tree(const tree* node, ostream& o, const string& i="")
 ///@param num_features Number of features used
 ///@param weights Weights on each feature. 
 ///@return The learned tree, and number of datapoints.
-template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(unsigned int num_features, const vector<double>& weights)
+template<int S> tuple<shared_ptr<tree>, uint64_t> load_and_build_tree(unsigned int num_features, const vector<double>& weights)
 {
     assert(weights.size() == num_features);
 
@@ -673,7 +669,7 @@ template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(un
 	uint64_t num_datapoints;
 	
 	//Load the data
-	make_rtuple(l, num_datapoints) = load_features<S>(num_features);
+	tie(l, num_datapoints) = load_features<S>(num_features);
 	
 	cerr << "Loaded.\n";
 	
@@ -681,7 +677,7 @@ template<int S> V_tuple<shared_ptr<tree>, uint64_t>::type load_and_build_tree(un
 	shared_ptr<tree> tree;
 	tree  = build_tree<S>(*l, weights, num_features);
 
-	return make_vtuple(tree, num_datapoints);
+	return make_tuple(tree, num_datapoints);
 }
 
 
@@ -727,13 +723,13 @@ int main(int argc, char** argv)
     ///then 32 bits for hetrogenous structs, there is no point in having
     ///granularity finer than 16 features.
 	if(num_features <= 16)
-		make_rtuple(tree, num_datapoints) = load_and_build_tree<16>(num_features, weights);
+		tie(tree, num_datapoints) = load_and_build_tree<16>(num_features, weights);
 	else if(num_features <= 32)
-		make_rtuple(tree, num_datapoints) = load_and_build_tree<32>(num_features, weights);
+		tie(tree, num_datapoints) = load_and_build_tree<32>(num_features, weights);
 	else if(num_features <= 48)
-		make_rtuple(tree, num_datapoints) = load_and_build_tree<48>(num_features, weights);
+		tie(tree, num_datapoints) = load_and_build_tree<48>(num_features, weights);
 	else if(num_features <= 64)
-		make_rtuple(tree, num_datapoints) = load_and_build_tree<64>(num_features, weights);
+		tie(tree, num_datapoints) = load_and_build_tree<64>(num_features, weights);
 	else
 		fatal(8, "Too many feratures (%i). To learn from this, see %s, line %i.", num_features, __FILE__, __LINE__);
 

@@ -48,8 +48,7 @@ Options are given in ::get_detector.
 #include <cvd/image_io.h>
 #include <cvd/random.h>
 #include <cvd/image_interpolate.h>
-#include <tag/printf.h>
-#include <tag/stdpp.h>
+#include "varprintf/varprintf.h"
 
 
 #include "gvars_vector.h"
@@ -59,7 +58,7 @@ Options are given in ::get_detector.
 
 using namespace std;
 using namespace CVD;
-using namespace tag;
+using namespace varPrintf;
 using namespace GVars3;
 using namespace TooN;
 
@@ -142,7 +141,7 @@ void compute_repeatability_all(const vector<Image<byte> >& images, const vector<
 		}
 
 		//Compute and print the repeatability.
-		cout << print << num_corners / images.size() << compute_repeatability_exact(warps, corners, fuzz);
+		cout <<num_corners / images.size() << " " << compute_repeatability_exact(warps, corners, fuzz) << endl;
 	}
 }
 
@@ -171,7 +170,7 @@ void compute_repeatability_noise(const vector<Image<byte> >& images, const vecto
 
 		for(unsigned int j=0; j < images.size(); j++)
 		{
-			Image<byte> ni = images[j].copy_from_me();
+			Image<byte> ni = images[j];
 
 			//Add noise to the image
 			for(Image<byte>::iterator i=ni.begin(); i != ni.end(); i++)
@@ -185,7 +184,7 @@ void compute_repeatability_noise(const vector<Image<byte> >& images, const vecto
 		}
 
 		//Compute and print the repeatability.
-		cout << print << s << compute_repeatability_exact(warps, corners, fuzz) << num_corners / images.size();
+		cout << s << " " << compute_repeatability_exact(warps, corners, fuzz) << " " << num_corners / images.size() << endl;
 	}
 }
 
@@ -216,7 +215,7 @@ void mmain(int argc, char** argv)
 	
 	auto_ptr<DetectN> detector = get_detector();
 
-	rpair(images, warps) = load_data(dir, n, format);
+	tie(images, warps) = load_data(dir, n, format);
 	
 	if(test == "noise")
 		compute_repeatability_noise(images, warps, *detector, ncpf, nmax, fuzz);

@@ -136,29 +136,6 @@ fi
 
 ################################################################################
 #
-# Check for TaG
-#
-tag=yes
-AC_CHECK_HEADERS(tag/printf.h, [], [tag=no])
-AC_MSG_CHECKING([tag])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-	#include <tag/printf.h>
-	int main(){Printf("Hello, world.\n");}
-])], [comp=yes], [tag=no])
-
-AC_MSG_RESULT($comp)
-
-if test $tag = no
-then
-	AC_MSG_ERROR([A working copy of tag is required for this program.
-Get tag here: http://savannah.nongnu.org/projects/TooN
-])
-fi
-
-
-
-################################################################################
-#
 # Check for GVars
 #
 gvars=yes

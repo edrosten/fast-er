@@ -19,8 +19,7 @@
 */
 #include <cvd/image_io.h>
 #include <cvd/vector_image_ref.h>
-#include <tag/printf.h>
-#include <tag/array.h>
+#include <array>
 #include <TooN/TooN.h>
 #include <TooN/LU.h>
 #include <TooN/helpers.h>
@@ -30,11 +29,12 @@
 #include "load_data.h"
 #include "warp_to_png.h"
 #include "utility.h"
+#include "varprintf/varprintf.h"
 
 ///\cond never
 using namespace std;
 using namespace CVD;
-using namespace tag;
+using namespace varPrintf;
 using namespace TooN;
 ///\endcond
 
@@ -96,7 +96,7 @@ istream& operator>>(istream& i, array<float, 2>& f)
 ///@ingroup gUtility
 array<float, 2> Arr(const Vector<2>& vec)
 {
-	return array<float, 2>((TupleHead, vec[0], vec[1]));
+	return {{(float)vec[0], (float)vec[1]}};
 }
 
 
@@ -118,7 +118,7 @@ vector<vector<Image<array<float,2> > > > load_warps_cambridge_png(string dir, in
 
 	BasicImage<byte> tester(NULL, size);
 
-	array<float, 2> outside((TupleHead, -1, -1));
+	array<float, 2> outside{{-1, -1}};
 
 	for(int from = 0; from < num; from ++)
 		for(int to = 0; to < num; to ++)
@@ -173,7 +173,7 @@ vector<vector<Image<array<float,2> > > > load_warps_cambridge(string dir, int nu
 
 	BasicImage<byte> tester(NULL, size);
 
-	array<float, 2> outside((TupleHead, -1, -1));
+	array<float, 2> outside{{-1, -1}};
 
 	for(int from = 0; from < num; from ++)
 		for(int to = 0; to < num; to ++)
@@ -238,7 +238,7 @@ as homographies, so warps need to be generated.
 vector<vector<Image<array<float, 2> > > > load_warps_vgg(string dir, int num, ImageRef size)
 {
 	dir += "/H1to%ip";
-	array<float, 2> outside((TupleHead, -1, -1));
+	array<float, 2> outside{{-1, -1}};
 
 	//Load the homographies
 	vector<Matrix<3> > H_1_to_x;
@@ -383,7 +383,7 @@ will save on .in_image() tests later.
 void prune_warps(vector<vector<Image<array<float, 2> > > >& warps, ImageRef size)
 {
 	BasicImage<byte> test(NULL, size);
-	array<float, 2> outside = make_tuple(-1, -1);
+	array<float, 2> outside{{-1, -1}};
 
 	for(unsigned int i=0; i < warps.size(); i++)	
 		for(unsigned int j=0; j < warps[i].size(); j++)	

@@ -30,9 +30,6 @@
 #include <cvd/random.h>
 #include <cvd/vector_image_ref.h>
 
-#include <tag/stdpp.h>
-#include <tag/fn.h>
-
 #include <sys/mman.h>
 
 #include <TooN/TooN.h>
@@ -48,7 +45,6 @@
 
 using namespace std;
 using namespace CVD;
-using namespace tag;
 using namespace GVars3;
 using namespace TooN;
 

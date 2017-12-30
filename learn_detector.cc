@@ -68,12 +68,6 @@ For details on how the data loading and so on operated, refer to
 #include <cvd/random.h>
 #include <cvd/vector_image_ref.h>
 
-/*#include <tag/tuple.h>
-#include <tag/stdpp.h>
-#include <tag/fn.h>
-#include <tag/printf.h>
-*/
-
 #include <TooN/TooN.h>
 
 #include "gvars_vector.h"
@@ -82,11 +76,12 @@ For details on how the data loading and so on operated, refer to
 #include "offsets.h"
 #include "utility.h"
 #include "load_data.h"
+#include "varprintf/varprintf.h"
 
 ///\cond never
 using namespace std;
 using namespace CVD;
-//using namespace tag;
+using namespace varPrintf;
 using namespace GVars3;
 using namespace TooN;
 ///\endcond
@@ -311,7 +306,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 		tree_element* new_tree = tree->copy();
 
 		cout << "\n\n-------------------------------------\n";
-		cout << print << "Iteration" << itnum;
+		cout << "Iteration " << itnum << endl;
 
 		if(GV3::get<bool>("debug.print_old_tree"))
 		{
@@ -331,10 +326,10 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 
 			//Select a random node
 			int nnum = rand() % new_tree->num_nodes();
-			rpair(node, node_is_eq) = new_tree->nth_element(nnum);
+			tie(node, node_is_eq) = new_tree->nth_element(nnum);
 
 			cout << "Permuting tree at node " << nnum << endl;
-			cout << print << "Node" << node << node_is_eq;
+			cout << "Node " << node << " " << node_is_eq << endl;
 			
 
 			//See section 4 in the paper.
@@ -463,11 +458,11 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 		for(unsigned int i=0; i < detected_corners.size(); i++)
 		{
 			double cost = sq(detected_corners[i].size() / num_cost);
-			cout << print << "Image" << i << detected_corners[i].size()<< cost;
+			cout << "Image " << i << " " << detected_corners[i].size()<< " " << cost << endl;
 			number_cost += cost;
 		}
 		number_cost = 1 + number_cost / detected_corners.size();
-		cout << print << "Number cost" << number_cost;
+		cout << "Number cost " << number_cost << endl;
 
 		//Cost associated with tree size
 		double size_cost = 1 + sq(1.0 * new_tree->num_nodes()/max_nodes);
@@ -485,13 +480,13 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 		double liklihood=exp((old_cost-cost) / temperature);
 
 		
-		cout << print << "Temperature" << temperature;
-		cout << print << "Number cost" << number_cost;
-		cout << print << "Repeatability" << repeatability << repeatability_cost;
-		cout << print << "Nodes" << new_tree->num_nodes() << size_cost;
-		cout << print << "Cost" << cost;
-		cout << print << "Old cost" << old_cost;
-		cout << print << "Liklihood" << liklihood;
+		cout << "Temperature" << temperature << endl;
+		cout << "Number cost" << number_cost << endl;
+		cout << "Repeatability" << repeatability << " " << repeatability_cost << endl;
+		cout << "Nodes" << new_tree->num_nodes() << " " << size_cost << endl;
+		cout << "Cost" << cost << endl;
+		cout << "Old cost" << old_cost << endl;
+		cout << "Liklihood" << liklihood << endl;
 		
 		//Make the Boltzmann decision
 		if(rand_u() < liklihood)
@@ -507,7 +502,7 @@ tree_element* learn_detector(const vector<Image<byte> >& images, const vector<ve
 			delete new_tree;
 		}
 		
-		cout << print << "Final cost" << old_cost;
+		cout << "Final cost " << old_cost << endl;
 
 	}
 
@@ -546,7 +541,7 @@ void run_learn_detector(int argc, char** argv)
 	vector<Image<byte> > images;
 	vector<vector<Image<array<float, 2> > > > warps;
 	
-	rpair(images, warps) = load_data(dir, num, format);
+	tie(images, warps) = load_data(dir, num, format);
 
 	prune_warps(warps, images[0].size());
 

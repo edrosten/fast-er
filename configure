@@ -3478,53 +3478,6 @@ fi
 
 ################################################################################
 #
-# Check for TaG
-#
-tag=yes
-for ac_header in tag/printf.h
-do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "tag/printf.h" "ac_cv_header_tag_printf_h" "$ac_includes_default"
-if test "x$ac_cv_header_tag_printf_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_TAG_PRINTF_H 1
-_ACEOF
-
-else
-  tag=no
-fi
-
-done
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking tag" >&5
-$as_echo_n "checking tag... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-	#include <tag/printf.h>
-	int main(){Printf("Hello, world.\n");}
-
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  comp=yes
-else
-  tag=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $comp" >&5
-$as_echo "$comp" >&6; }
-
-if test $tag = no
-then
-	as_fn_error $? "A working copy of tag is required for this program.
-Get tag here: http://savannah.nongnu.org/projects/TooN
-" "$LINENO" 5
-fi
-
-
-
-################################################################################
-#
 # Check for GVars
 #
 gvars=yes

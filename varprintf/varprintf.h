@@ -256,7 +256,7 @@ namespace varPrintf
 			stream_printf_runner(o, fmt, fpos, xs...);
 		}
 
-		void print_or_not_and_recurse(std::ostream& o, const std::string& fmt, int fpos, const format& f)
+		inline void print_or_not_and_recurse(std::ostream& o, const std::string& fmt, int fpos, const format& f)
 		{
 			o << "<missing value>";
 			stream_printf_runner(o, fmt, fpos);
