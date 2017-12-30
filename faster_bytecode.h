@@ -26,7 +26,6 @@
 #include <iostream>
 #include <cvd/byte.h>
 #include <cvd/image.h>
-#include <tag/stdpp.h>
 
 /// This struct contains a byte code compiled version of the detector.
 /// 
@@ -159,11 +158,10 @@ struct block_bytecode
 	///@param width 	width the detector was created at, required to back out the offsets correctly.
 	void print(std::ostream& o, int width) const
 	{
-		using tag::operator<<;
 		for(unsigned int i=0; i < d.size(); i++)
 		{
 			if(d[i].lt == 0)
-				o << tag::print << "Block" << i <<  (d[i].gt?"corner":"non_corner");
+				o << "Block " << i <<" " <<  (d[i].gt?"corner":"non_corner") << std::endl;
 			else
 			{
 				int a = abs(d[i].offset) + width / 2;
@@ -172,7 +170,7 @@ struct block_bytecode
 				int y = a / width;
 
 				int x = d[i].offset - y * width;
-				o << tag::print << "Block" << i << CVD::ImageRef(x , y) << d[i].gt << d[i].eq << d[i].lt;
+				o << "Bloc k" << i << " " << CVD::ImageRef(x , y) << " " << d[i].gt << " " << d[i].eq << " " << d[i].lt << std::endl;
 			}
 		}
 	}

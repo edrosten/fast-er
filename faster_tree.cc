@@ -17,7 +17,6 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#include <tag/stdpp.h>
 #include <memory>
 #include <gvars3/instances.h>
  
@@ -25,7 +24,6 @@
 
 ///\cond never
 using namespace std;
-using namespace tag;
 using namespace CVD;
 using namespace GVars3;
 ///\endcond
@@ -45,7 +43,7 @@ using namespace GVars3;
 vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_element* detector, int threshold)
 {
 	ImageRef tl, br, s;
-	rpair(tl,br) = detector->bbox();
+	tie(tl,br) = detector->bbox();
 	s = im.size();
 
 	int ymin = 1 - tl.y, ymax = s.y - 1 - br.y;
@@ -125,7 +123,7 @@ vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_eleme
 vector<ImageRef> tree_detect_corners(const Image<byte>& im, const tree_element* detector, int threshold, Image<int> scores)
 {
 	ImageRef tl, br, s;
-	rpair(tl,br) = detector->bbox();
+	tie(tl,br) = detector->bbox();
 	s = im.size();
 
 	int ymin = 1 - tl.y, ymax = s.y - 1 - br.y;

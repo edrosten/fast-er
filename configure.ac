@@ -61,8 +61,6 @@ define([TEST_AND_SET_CXXFLAG],[
 TEST_AND_SET_CXXFLAG(-Wall)
 TEST_AND_SET_CXXFLAG(-Wextra)
 TEST_AND_SET_CXXFLAG(-W)
-TEST_AND_SET_CXXFLAG(-ansi)
-TEST_AND_SET_CXXFLAG(-pedantic)
 
 ################################################################################
 #

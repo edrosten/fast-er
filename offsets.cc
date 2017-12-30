@@ -27,8 +27,7 @@
 
 #include <TooN/TooN.h>
 
-#include <tag/stdpp.h>
-#include <tag/fn.h>
+#include "tag/fn.h"
 
 #include <gvars3/instances.h>
 
@@ -100,7 +99,7 @@ void draw_offset_list(const vector<ImageRef>& offsets)
 	min.y = *min_element(member_iterator(offsets.begin(), &ImageRef::y), member_iterator(offsets.end(), &ImageRef::y));
 	max.y = *max_element(member_iterator(offsets.begin(), &ImageRef::y), member_iterator(offsets.end(), &ImageRef::y));
 
-	cout << print << min <<max << endl;
+	cout << min << " " <<max << endl;
 
 	Image<int> o(max-min+ImageRef(1,1), -1);
 	for(unsigned int i=0; i <offsets.size(); i++)

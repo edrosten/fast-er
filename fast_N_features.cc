@@ -86,6 +86,7 @@ inline bool is_corner(const char* str, int num_for_corner, char type)
 int main(int argc, char ** argv)
 {	
 	GUI.parseArguments(argc, argv);
+	cout.sync_with_stdio(false);
 
 	char types[]="bsd.";
 	char F[17]="................";

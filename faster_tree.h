@@ -27,8 +27,6 @@
 #include <cvd/image.h>
 #include <cvd/byte.h>
 
-#include <tag/stdpp.h>
-
 #include "offsets.h"
 #include "faster_bytecode.h"
 
@@ -231,14 +229,13 @@ class tree_element
 		///Select the n'th elment of the tree.
 		std::pair<tree_element*, bool> nth_element(int target, int& n, bool eq_branch)
 		{
-			using tag::operator<<;
 			#ifndef NDEBUG
 				if(!( (eq==0 && lt == 0 && gt == 0) || (eq!=0 && lt!=0 &&gt != 0)))
 				{
 					std::clog << "Error: corrupted tree\n";
-					std::clog << tag::print << "lt" << lt;
-					std::clog << tag::print << "eq" << eq;
-					std::clog << tag::print << "gt" << gt;
+					std::clog << "lt " << lt << "\n";
+					std::clog << "eq " << eq << "\n";
+					std::clog << "gt " << gt << "\n";
 					
 					abort();
 				}
@@ -257,11 +254,11 @@ class tree_element
 					return std::make_pair(r=0,eq_branch);
 				else
 				{
-					tag::rpair(r, e) = lt->nth_element(target, n, false);
+					std::tie(r, e) = lt->nth_element(target, n, false);
 					if(r != NULL)
 						return std::make_pair(r, e);
 
-					tag::rpair(r, e) = eq->nth_element(target, n, true);
+					std::tie(r, e) = eq->nth_element(target, n, true);
 					if(r != NULL)
 						return std::make_pair(r, e);
 
@@ -347,14 +344,12 @@ class tree_element
 		///@param ind The indent level to use for the current branch.
 		void print(std::ostream& o, std::string ind="  ") const
 		{
-			using tag::operator<<;
-
 
 			if(eq == NULL)
-				o << ind << tag::print << "Is corner: " << is_corner << this << lt << eq << gt;
+				o << ind << "Is corner: " << is_corner << " " << this << " " << lt << " " << eq << " " << gt << "\n";
 			else
 			{
-				o << ind << tag::print << offset_index << this << lt << eq << gt;
+				o << ind << offset_index << " " << this << lt << " " << eq << " " << gt << "\n";
 				lt->print(o, ind + "  ");
 				eq->print(o, ind + "  ");
 				gt->print(o, ind + "  ");

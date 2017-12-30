@@ -62,15 +62,17 @@ For details on how the data loading and so on operated, refer to
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <array>
 
 #include <cvd/image_io.h>
 #include <cvd/random.h>
 #include <cvd/vector_image_ref.h>
 
-#include <tag/tuple.h>
+/*#include <tag/tuple.h>
 #include <tag/stdpp.h>
 #include <tag/fn.h>
 #include <tag/printf.h>
+*/
 
 #include <TooN/TooN.h>
 
@@ -84,7 +86,7 @@ For details on how the data loading and so on operated, refer to
 ///\cond never
 using namespace std;
 using namespace CVD;
-using namespace tag;
+//using namespace tag;
 using namespace GVars3;
 using namespace TooN;
 ///\endcond
