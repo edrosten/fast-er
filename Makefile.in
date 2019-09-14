@@ -3,7 +3,7 @@ CFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@ @LIBS@
 CXX=@CXX@
 
-PROGS=learn_detector warp_to_png image_warp test_repeatability learn_fast_tree fast_N_features extract_features
+PROGS=learn_detector warp_to_png image_warp test_repeatability learn_fast_tree fast_N_features extract_features extract_FAST_features
 
 .PHONY: all clean
 
@@ -32,6 +32,9 @@ test_repeatability:test_repeatability.o load_data.o detectors.o harrislike.o dog
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 extract_features:extract_features.o faster_tree.o  offsets.o faster_bytecode.o 
+	$(CXX) -o $@ $^ $(LDFLAGS) 
+
+extract_FAST_features:extract_FAST_features.o
 	$(CXX) -o $@ $^ $(LDFLAGS) 
 
 extract_fast_n_features:extract_fast_n_features.o
