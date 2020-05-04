@@ -64,7 +64,7 @@ static const char SimilarFlag = 's';///< Character code for pixels similar to th
 ///@param barrier Threshold used to compute feature
 ///@param o Index in to offsets (i.e.\ feature orientation) to use
 ///@param invert_sense Whether or not to invert the extracted feature
-void extract_feature(string& s, const BasicImage<byte>& im, const ImageRef&  pos, int barrier, int o, bool invert_sense)
+void extract_feature(string& s, const BasicImage<CVD::byte>& im, const ImageRef&  pos, int barrier, int o, bool invert_sense)
 {
 	int cb = im[pos] + barrier;
 	int c_b = im[pos] - barrier;
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 	for(int i=lastarg; i < argc; i++)
 	{
 		try{
-			Image<byte> im = img_load(argv[i]);
+			Image<CVD::byte> im = img_load(argv[i]);
 			for(int r=border; r < im.size().y - border; r++)
 				for(int c=border; c < im.size().x - border; c++)
 				{
@@ -177,9 +177,9 @@ int main(int argc, char** argv)
 				}
 			cerr << "Processed " << argv[i] << endl;
 		}
-		catch(Exceptions::All e)
+		catch(const Exceptions::All& e)
 		{
-			cerr << "Failed to load " << argv[i] << ": " << e.what << endl;
+			cerr << "Failed to load " << argv[i] << ": " << e.what() << endl;
 		}
 	}
 

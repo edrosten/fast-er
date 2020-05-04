@@ -48,7 +48,7 @@ extern "C"
 void SUSAN::operator()(const CVD::Image<CVD::byte>& im, std::vector<CVD::ImageRef>& corners, unsigned int N) const
 {
 	float dt = GV3::get<float>("susan.dt", 4.0, 1);
-	int* c = susan(const_cast<byte*>(im.data()), im.size().x, im.size().y, dt, N);
+	int* c = susan(const_cast<CVD::byte*>(im.data()), im.size().x, im.size().y, dt, N);
 
 	int n = c[0];
 

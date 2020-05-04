@@ -44,9 +44,9 @@ Options are given in ::get_detector.
 #include <cfloat>
 #include <map>
 #include <utility>
+#include <random>
 
 #include <cvd/image_io.h>
-#include <cvd/random.h>
 #include <cvd/image_interpolate.h>
 #include "varprintf/varprintf.h"
 
@@ -62,6 +62,12 @@ using namespace varPrintf;
 using namespace GVars3;
 using namespace TooN;
 
+
+double rand_g(){
+	static std::mt19937 eng;
+	static std::normal_distribution<> nd;
+	return nd(eng);
+};
 
 ///Computes repeatability the slow way to avoid rounding errors, by comparing the warped
 ///corner position to every detected corner. A warp to x=-1, y=? is considered to be outside
@@ -122,7 +128,7 @@ double compute_repeatability_exact(const vector<vector<Image<array<float,2> > > 
 /// @param cpf      The number of corners per frame to be tested.
 /// @param fuzz		A corner must be as close as this to be considered repeated
 /// @ingroup gRepeatability
-void compute_repeatability_all(const vector<Image<byte> >& images, const vector<vector<Image<array<float, 2> > > >& warps, const DetectN& detector, const vector<int>& cpf, double fuzz)
+void compute_repeatability_all(const vector<Image<CVD::byte> >& images, const vector<vector<Image<array<float, 2> > > >& warps, const DetectN& detector, const vector<int>& cpf, double fuzz)
 {
 	
 	for(unsigned int i=0; i < cpf.size(); i++)
@@ -157,7 +163,7 @@ void compute_repeatability_all(const vector<Image<byte> >& images, const vector<
 /// @param n		The initial noise level
 /// @param fuzz		A corner must be as close as this to be considered repeated
 /// @ingroup gRepeatability
-void compute_repeatability_noise(const vector<Image<byte> >& images, const vector<vector<Image<array<float, 2> > > >& warps, const DetectN& detector, int cpf,  float n, double fuzz)
+void compute_repeatability_noise(const vector<Image<CVD::byte> >& images, const vector<vector<Image<array<float, 2> > > >& warps, const DetectN& detector, int cpf,  float n, double fuzz)
 {
 		
 	for(float s=0; s <= n; s++)
@@ -170,10 +176,10 @@ void compute_repeatability_noise(const vector<Image<byte> >& images, const vecto
 
 		for(unsigned int j=0; j < images.size(); j++)
 		{
-			Image<byte> ni = images[j];
+			Image<CVD::byte> ni = images[j];
 
 			//Add noise to the image
-			for(Image<byte>::iterator i=ni.begin(); i != ni.end(); i++)
+			for(Image<CVD::byte>::iterator i=ni.begin(); i != ni.end(); i++)
 				*i = max(0, min(255, (int)floor(*i + rand_g() * s + .5)));
 
 			vector<ImageRef> c;
@@ -200,7 +206,7 @@ void mmain(int argc, char** argv)
 	GUI.LoadFile("test_repeatability.cfg");
 	GUI.parseArguments(argc, argv);
 
-	vector<Image<byte> > images;
+	vector<Image<CVD::byte> > images;
 	vector<vector<Image<array<float, 2> > > > warps;
 
 
@@ -213,7 +219,7 @@ void mmain(int argc, char** argv)
 	float nmax = GV3::get<int>("nmax", 50, 1);
 	string test = GV3::get<string>("test", "normal", 1);
 	
-	auto_ptr<DetectN> detector = get_detector();
+	unique_ptr<DetectN> detector = get_detector();
 
 	tie(images, warps) = load_data(dir, n, format);
 	
@@ -233,8 +239,8 @@ int main(int argc, char** argv)
 	{
 		mmain(argc, argv);
 	}
-	catch(Exceptions::All e)
+	catch(const Exceptions::All& e)
 	{
-		cerr << "Error: " << e.what << endl;
+		cerr << "Error: " << e.what() << endl;
 	}	
 }

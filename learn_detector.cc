@@ -63,9 +63,9 @@ For details on how the data loading and so on operated, refer to
 #include <utility>
 #include <algorithm>
 #include <array>
+#include <random>
 
 #include <cvd/image_io.h>
-#include <cvd/random.h>
 #include <cvd/vector_image_ref.h>
 
 #include <TooN/TooN.h>
@@ -99,6 +99,12 @@ double sq(double d)
 	return d*d;
 }
 
+
+double rand_u(){
+	static std::mt19937 eng;
+	static std::uniform_real_distribution<> u(0,1);
+	return u(eng);
+}
 
 ///Populate a std::vector with the numbers 0,1,...,num
 ///@param num Size if the range
@@ -252,7 +258,7 @@ double compute_temperature(int i, int imax)
 ///@param images The training images
 ///@param warps  Warps for evaluating the performance on the training images.
 ///@return An optimized detector.
-tree_element* learn_detector(const vector<Image<byte> >& images, const vector<vector<Image<array<float,2> > > >& warps)
+tree_element* learn_detector(const vector<Image<CVD::byte> >& images, const vector<vector<Image<array<float,2> > > >& warps)
 {
 	unsigned int  iterations=GV3::get<unsigned int>("iterations");       // Number of iterations of simulated annealing.
 	int threshold = GV3::get<int>("FAST_threshold");                     // Threshold at which to perform detection
@@ -538,7 +544,7 @@ void run_learn_detector(int argc, char** argv)
 	string format=GV3::get<string>("repeatability_dataset.format");
 	int num=GV3::get<int>("repeatability_dataset.size");
 
-	vector<Image<byte> > images;
+	vector<Image<CVD::byte> > images;
 	vector<vector<Image<array<float, 2> > > > warps;
 	
 	tie(images, warps) = load_data(dir, num, format);
@@ -572,9 +578,9 @@ int main(int argc, char** argv)
 	{	
 		run_learn_detector(argc, argv);
 	}
-	catch(Exceptions::All w)
+	catch(const Exceptions::All& w)
 	{	
-		cerr << "Error: " << w.what << endl;
+		cerr << "Error: " << w.what() << endl;
 	}
 }
 

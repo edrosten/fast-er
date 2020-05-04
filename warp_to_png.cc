@@ -100,9 +100,9 @@ int main(int argc, char** argv)
 
 		img_save(si, cout, ImageType::PNG);
 	}
-	catch(Exceptions::All e)
+	catch(const Exceptions::All& e)
 	{
-		cerr << "Error: " << e.what << endl;
+		cerr << "Error: " << e.what() << endl;
 		return 1;
 	}	
 }

@@ -47,7 +47,7 @@ struct faster_learn: public DetectT
 
 	private:
 		///Loaded FAST-ER tree
-		std::auto_ptr<tree_element> tree;
+		std::unique_ptr<tree_element> tree;
 };
 
 #endif

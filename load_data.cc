@@ -46,15 +46,15 @@ using namespace TooN;
 @return The loaded images.
 @ingroup gDataset
 */
-vector<Image<byte> > load_images_cambridge(string dir, int n, string suffix)
+vector<Image<CVD::byte> > load_images_cambridge(string dir, int n, string suffix)
 {
 	dir += "/frames/frame_%i." + suffix;
 
-	vector<Image<byte> > ret;
+	vector<Image<CVD::byte> > ret;
 
 	for(int i=0;  i < n; i++)
 	{
-		Image<byte> im;
+		Image<CVD::byte> im;
 		im = img_load(sPrintf(dir, i));
 		ret.push_back(im);
 	}
@@ -69,11 +69,11 @@ vector<Image<byte> > load_images_cambridge(string dir, int n, string suffix)
 @return The loaded images.
 @ingroup gDataset
 */
-vector<Image<byte> > load_images_vgg(string dir, int n)
+vector<Image<CVD::byte> > load_images_vgg(string dir, int n)
 {
 	dir += "/img%i.ppm";
 
-	vector<Image<byte> > ret;
+	vector<Image<CVD::byte> > ret;
 
 	for(int i=0;  i < n; i++)
 		ret.push_back(img_load(sPrintf(dir, i+1)));
@@ -116,7 +116,7 @@ vector<vector<Image<array<float,2> > > > load_warps_cambridge_png(string dir, in
 
 	vector<vector<Image<array<float, 2> > > > ret(num, vector<Image<array<float, 2> > >(num));
 
-	BasicImage<byte> tester(NULL, size);
+	BasicImage<CVD::byte> tester(NULL, size);
 
 	array<float, 2> outside{{-1, -1}};
 
@@ -171,7 +171,7 @@ vector<vector<Image<array<float,2> > > > load_warps_cambridge(string dir, int nu
 
 	vector<vector<Image<array<float, 2> > > > ret(num, vector<Image<array<float, 2> > >(num));
 
-	BasicImage<byte> tester(NULL, size);
+	BasicImage<CVD::byte> tester(NULL, size);
 
 	array<float, 2> outside{{-1, -1}};
 
@@ -312,9 +312,9 @@ enum DataFormat
 @return The images and the warps.
 @ingroup gDataset
 */
-pair<vector<Image<byte> >, vector<vector<Image<array<float, 2> > > > > load_data(string dir, int num, string format)
+pair<vector<Image<CVD::byte> >, vector<vector<Image<array<float, 2> > > > > load_data(string dir, int num, string format)
 {
-	vector<Image<byte> > images;
+	vector<Image<CVD::byte> > images;
 	vector<vector<Image<array<float, 2> > > > warps;
 
 	DataFormat d;
@@ -382,7 +382,7 @@ will save on .in_image() tests later.
 */
 void prune_warps(vector<vector<Image<array<float, 2> > > >& warps, ImageRef size)
 {
-	BasicImage<byte> test(NULL, size);
+	BasicImage<CVD::byte> test(NULL, size);
 	array<float, 2> outside{{-1, -1}};
 
 	for(unsigned int i=0; i < warps.size(); i++)	

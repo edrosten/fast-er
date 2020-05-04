@@ -40,7 +40,7 @@ using namespace GVars3;
 ///@param detector The corner detector.
 ///@param threshold The detector threshold.
 ///@ingroup gTree
-vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_element* detector, int threshold)
+vector<ImageRef> tree_detect_corners_all(const Image<CVD::byte>& im, const tree_element* detector, int threshold)
 {
 	ImageRef tl, br, s;
 	tie(tl,br) = detector->bbox();
@@ -120,7 +120,7 @@ vector<ImageRef> tree_detect_corners_all(const Image<byte>& im, const tree_eleme
 ///              the same size as im. It is passed as a parameter since allocation of an image of this
 ///              size is a significant expense.
 ///@ingroup gTree
-vector<ImageRef> tree_detect_corners(const Image<byte>& im, const tree_element* detector, int threshold, Image<int> scores)
+vector<ImageRef> tree_detect_corners(const Image<CVD::byte>& im, const tree_element* detector, int threshold, Image<int> scores)
 {
 	ImageRef tl, br, s;
 	tie(tl,br) = detector->bbox();
@@ -314,10 +314,10 @@ tree_element* load_a_tree(istream& i, bool eq_branch)
 
 		int offset = ato<int>(tok[0]);
 
-		auto_ptr<tree_element> t1(load_a_tree(i, false));
-		auto_ptr<tree_element> t2(load_a_tree(i, true));
-		auto_ptr<tree_element> t3(load_a_tree(i, false));
-		auto_ptr<tree_element> ret(new tree_element(t1.release(), t2.release(), t3.release(), offset));	
+		unique_ptr<tree_element> t1(load_a_tree(i, false));
+		unique_ptr<tree_element> t2(load_a_tree(i, true));
+		unique_ptr<tree_element> t3(load_a_tree(i, false));
+		unique_ptr<tree_element> ret(new tree_element(t1.release(), t2.release(), t3.release(), offset));	
 
 		return ret.release();
 

@@ -44,7 +44,7 @@ close as possible to the requested number of corners.
 @param detector The corner detector.
 @ingroup gDetect
 */
-int binary_search_threshold(const Image<byte>& i, vector<ImageRef>& c, unsigned int N, const DetectT& detector)
+int binary_search_threshold(const Image<CVD::byte>& i, vector<ImageRef>& c, unsigned int N, const DetectT& detector)
 {
 	//Corners for high, low and midpoint thresholds.
 	vector<ImageRef> ch, cl, cm;
@@ -112,14 +112,14 @@ struct SearchThreshold:public DetectN
 	///@param im Image in which to detect corners
 	///@param corners Detected corners are inserted in to this array
 	///@param N number of corners to detect
-	virtual void operator()(const Image<byte>& im, vector<ImageRef>& corners, unsigned int N)const
+	virtual void operator()(const Image<CVD::byte>& im, vector<ImageRef>& corners, unsigned int N)const
 	{
 		int t = binary_search_threshold(im, corners, N, *detector);	
 	}
 	
 	private: 
 	///Detector to wrap
-	auto_ptr<DetectT> detector; 
+	unique_ptr<DetectT> detector; 
 };
 
 ///@ingroup gDetect
@@ -130,7 +130,7 @@ struct Random:public DetectN
 	///@param im Image in which to detect corners
 	///@param corners Detected corners are inserted in to this array
 	///@param N number of corners to detect
-	virtual void operator()(const Image<byte>& im, vector<ImageRef>& corners, unsigned int N)const
+	virtual void operator()(const Image<CVD::byte>& im, vector<ImageRef>& corners, unsigned int N)const
 	{
 		for(unsigned int i=0; i < N; i++)
 			corners.push_back(ImageRef(rand() % im.size().x, rand() % im.size().y));
@@ -153,33 +153,33 @@ struct Random:public DetectN
 ///  - \link ::fast_12 fast12\endlink libCVD's builtin FAST-12 detector
 ///  - \link ::faster_learn faster2\endlink A FAST-ER detector loaded from a file containing the tree
 ///@ingroup gDetect
-auto_ptr<DetectN> get_detector()
+unique_ptr<DetectN> get_detector()
 {
 	
 	string d = GV3::get<string>("detector", "fast9", 1);
 	
 	if(d == "random")
-		return auto_ptr<DetectN>(new Random);
+		return unique_ptr<DetectN>(new Random);
 	else if(d == "dog")
-		return auto_ptr<DetectN>(new dog);
+		return unique_ptr<DetectN>(new dog);
 	else if(d == "harrisdog")
-		return auto_ptr<DetectN>(new harrisdog);
+		return unique_ptr<DetectN>(new harrisdog);
 	else if(d == "shitomasi")
-		return auto_ptr<DetectN>(new ShiTomasiDetect);
+		return unique_ptr<DetectN>(new ShiTomasiDetect);
 	else if(d == "harris")
-		return auto_ptr<DetectN>(new HarrisDetect);
+		return unique_ptr<DetectN>(new HarrisDetect);
 	#ifdef USESUSAN
 		else if(d == "susan")
-			return auto_ptr<DetectN>(new SearchThreshold(new SUSAN));
+			return unique_ptr<DetectN>(new SearchThreshold(new SUSAN));
 	#endif
 	else if(d == "fast9")
-		return auto_ptr<DetectN>(new SearchThreshold(new fast_9));
+		return unique_ptr<DetectN>(new SearchThreshold(new fast_9));
 	else if(d == "fast9old")
-		return auto_ptr<DetectN>(new SearchThreshold(new fast_9_old));
+		return unique_ptr<DetectN>(new SearchThreshold(new fast_9_old));
 	else if(d == "fast12")
-		return auto_ptr<DetectN>(new SearchThreshold(new fast_12));
+		return unique_ptr<DetectN>(new SearchThreshold(new fast_12));
 	else if(d == "faster2")
-		return auto_ptr<DetectN>(new SearchThreshold(new faster_learn(GV3::get<string>("faster2"))));
+		return unique_ptr<DetectN>(new SearchThreshold(new faster_learn(GV3::get<string>("faster2"))));
 	else
 	{
 		cerr << "Unknown detector: " << d << endl;

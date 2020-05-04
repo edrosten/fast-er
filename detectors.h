@@ -55,6 +55,6 @@ struct DetectT
 
 ///Get a corner detector. The detector is read from the GVars3 database
 ///as the <code>detector</code> variable.
-std::auto_ptr<DetectN> get_detector();
+std::unique_ptr<DetectN> get_detector();
 
 #endif

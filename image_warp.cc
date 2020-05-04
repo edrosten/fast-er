@@ -56,11 +56,11 @@ using namespace TooN;
 ///@param in The image to warp
 ///@param warp  The warp to use to warp the image
 ///@return The warped image
-Image<byte> warp_image(const Image<byte>& in, const Image<array<float, 2> >& warp)
+Image<CVD::byte> warp_image(const Image<CVD::byte>& in, const Image<array<float, 2> >& warp)
 {
-	Image<byte> ret(in.size(), 0);
+	Image<CVD::byte> ret(in.size(), 0);
 
-	image_interpolate<Interpolate::Bilinear, byte> interp(in);
+	image_interpolate<Interpolate::Bilinear, CVD::byte> interp(in);
 
 	for(int y=0; y < ret.size().y; y++)
 		for(int x=0; x < ret.size().x; x++)
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 		//Load command line arguments
 		GUI.parseArguments(argc, argv);
 
-		vector<Image<byte> > images;
+		vector<Image<CVD::byte> > images;
 		vector<vector<Image<array<float, 2> > > > warps;
 
 		//Extract arguments relavent to loading a dataset
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 			for(int from=0; from < n; from ++)
 				if(from != to)
 				{
-					Image<byte> w = warp_image(images[from], warps[to][from]);
+					Image<CVD::byte> w = warp_image(images[from], warps[to][from]);
 					img_save(w, sPrintf(out, to, from));
 
 					cout << "Done " << from << " -> " << to << endl;
@@ -112,8 +112,8 @@ int main(int argc, char** argv)
 					img_save(images[from], sPrintf(out, to, from));
 				}
 	}
-	catch(Exceptions::All e)
+	catch(const Exceptions::All& e)
 	{
-		cerr << "Error: " << e.what << endl;
+		cerr << "Error: " << e.what() << endl;
 	}	
 }

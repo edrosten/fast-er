@@ -27,7 +27,6 @@
 
 #include <cvd/image.h>
 #include <cvd/byte.h>
-#include <cvd/random.h>
 #include <cvd/vector_image_ref.h>
 
 #include <sys/mman.h>
