@@ -91,6 +91,7 @@ bsdsb 1000  1
 #include <iterator>
 #include <string>
 #include <memory>
+#include <cmath>
 
 #include <stdint.h>
 

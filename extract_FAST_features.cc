@@ -139,7 +139,7 @@ int main(int argc, char** argv)
 			extract_features(im, t, features);
 			cerr << "image ";
 		}
-		catch(CVD::Exceptions::All&){
+		catch(std::exception&){
 			try{
 				VideoBuffer<byte>* vbuf = open_video_source<byte>(argv[arg]);
 
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 					cerr << nf << " ";
 				}
 			}
-			catch(CVD::Exceptions::All&){
+			catch(std::exception&){
 				cerr << "bad ";	
 			}
 		}
