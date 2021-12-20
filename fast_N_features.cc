@@ -57,7 +57,7 @@ vector<ImageRef> circle(double r){
 
 int main(){
 
-	vector<ImageRef> ring = circle(3.3);
+	vector<ImageRef> ring = circle(2.3);
 	int N = ring.size();
 
 	
